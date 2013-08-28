@@ -22,14 +22,14 @@ void tokenizer(int *argc, char ***argv, char *input) {
 
 void commhand() {
   int maxSize, promptSize, i;
-  char buffer[64], prompt[2];
+  char buffer[64], prompt[3];
   int (*functions[NUM_COMMANDS]) (int *, char **);
   char commands[NUM_COMMANDS][60];
   int argc;
   char **argv;
   maxSize = 64;
-  promptSize = 2;
-  prompt = ">";
+  promptSize = 3;
+  prompt = "$>";
   functions[0] = &help; commands[0] = "help";
   while(TRUE) {
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
