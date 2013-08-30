@@ -1,13 +1,13 @@
-#include <stdio.h>
+#include "help.h"
 
 /*Author: Billy Hardy
  *
  *
  */
-int help(int argc, char *argv) {
+int help(int argc, char **argv) {
   FILE *fptr;
-  char *buffer;
-  int fSize;
+  char *buffer, invalidCommand[30];
+  int fSize, result, lSize, iCommandSize;
   fptr = fopen(argv[2], "r");
   if(fptr != NULL) {
     fseek(fptr, 0, SEEK_END);
@@ -19,10 +19,13 @@ int help(int argc, char *argv) {
       if(result != lSize) {
 	fputs("Reading error", stderr);
       }
+      sys_req(WRITE, TERMINAL, buffer, &fSize);
     } else {
       fputs("Memory error", stderr);
     }
   } else {
-    sys_req(WRITE, TERMINAL,"No such command"); //TODO write to command line
+    invalidCommand = "No such command";
+    iCommandSize = strlen(invalidCommand);
+    sys_req(WRITE, TERMINAL, invalidcommand, &iCommandSize);
   }
 }
