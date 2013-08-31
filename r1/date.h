@@ -14,4 +14,5 @@
 //function prototypes
 int date(int, char **);
 int isLeapYear(int);
+int checkDays(int, int, int);
 #endif
