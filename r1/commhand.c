@@ -49,20 +49,20 @@ int commhand() {
     sys_req(READ, TERMINAL, buffer, &maxSize);
     tokenize(&argc, &argv, buffer);
     if(strcmp(argv[0], "rename")) { //I think rename might be extra credit
-      if(strcmp(argv[1], "prompt")) {
-	strcpy(prompt, argv[2]);
-	promptSize = strlen(prompt);
-      } else {
-	rename(&commands, argc, argv);
-      }
+		if(strcmp(argv[1], "prompt")) {
+			strcpy(prompt, argv[2]);
+			promptSize = strlen(prompt);
+		} else {
+			rename(&commands, argc, argv);
+		}
     } else {                        //Loop through the other commands
-      for(i=0; i<NUM_COMMANDS; i++) {
-	if(strcmp(commands[i], argv[0])) {
-	  repl = functions[i](argc, argv);
-	  break;
+		for(i=0; i<NUM_COMMANDS; i++) {
+			if(strcmp(commands[i], argv[0])) {
+				repl = functions[i](argc, argv);
+				break;
+			}
+		}
 	}
-      }
-    }
   }
   strcpy(exitMessage,"Goodbye");
   exitSize = strlen(exitMessage);
@@ -81,13 +81,13 @@ void rename(char ***commands, int argc, char **argv) {
   int i;
   char **commandToRenamePtr;
   if(argc != 3) {
-    invalidArgs(argv[0]);
+	invalidArgs(argv[0]);
   } else {
-    for(i=0; i<NUM_COMMANDS; i++) {
-      if(strcmp(*commands[i], argv[1])) {
-	commandToRenamePtr= &(*commands[i]); //round about, but don't know if it will be parsed correctly otherwise
-	strcpy(commandToRenamePtr, argv[2]);
-      }
-    }
-  }
+		for(i=0; i<NUM_COMMANDS; i++) {
+			if(strcmp(*commands[i], argv[1])) {
+				commandToRenamePtr= &(*commands[i]); //round about, but don't know if it will be parsed correctly otherwise
+				strcpy(commandToRenamePtr, argv[2]);
+			}
+		}
+	}
 }

@@ -1,7 +1,9 @@
-/* -- Name:			Date.c						*
- * -- Author:		Robert Brown				*
- * -- Created:		August 30, 2013				*
- * -- Last Edited: 	August 30, 2013				*/
+/* -- Name:			Date.c																					*
+ * -- Author:		Robert Brown																			*
+ * -- Created:		August 30, 2013																			*
+ * -- Last Edited: 	August 30, 2013																			*
+ * -- Pre Cond:		commhand.c matched on date and 0 < argc <= 2											*
+ * -- Post Cond: 	argc = 1: returns system date.  argc = 2: changes system date given an acceptable date	*/
 
 #include "date.h"
 
