@@ -6,11 +6,13 @@
 #include "date.h"
 
 //Not sure why this is returning an int....check this in commhand *****************************************//
+//BILLY: return LOOP (a constant that is 1) if the repl continues, !LOOP if it ends (so for exit)
 int date(int argc, char **argv) {
 	
 	today_p = (date*) sys_alloc_mem((size_t) sizeof(date));
 
 	if(argc == 1){ //unsure about this, and how args are being passed (check commhand I believe) **********//
+	  //BILLY: yep, argc is the length of argv and argv includes the command
 		char buffer[75];
 		int bufferSize;
 		date *today_p;
@@ -30,6 +32,7 @@ int date(int argc, char **argv) {
 	}
 	else if(argc == 2){ //This may need to be changed as above *********************************************//
 		int month=-1, day=-1, year=-1; //Do all of these need to be moved up to the top? *******************//
+		//Don't know, we'll find out when we compile in turboc
 		int scanReturn;
 		
 		scanReturn = sscanf(argv[1], "%d-%d-%d", &month, &day, &year);
@@ -57,6 +60,8 @@ int date(int argc, char **argv) {
 		//Billy's Function here
 		//??
 		//invalidArgs("date"); //<---Or does this need to be an actual allocated character pointer?
+	  //BILLY: I think it's fine, but
+	  //invalidArgs(argv[0]); //will definitely work.
 	}
 	sys_free_mem(today);
 }
