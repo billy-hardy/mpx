@@ -13,5 +13,5 @@
 
 //function prototypes
 int date(int, char **);
-
+int isLeapYear(int);
 #endif
