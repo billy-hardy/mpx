@@ -24,7 +24,7 @@ int date(int argc, char **argv) {
 		if(argc == 1){ 
 
 			sys_get_date(today);
-			strcpy(buffer, "The current system date is: %d-%d-%d\n", today->month, today->day, today->year); //FIX THIS FORMATTED STRING COPY
+			sprintf(buffer, "The current system date is: %d-%d-%d\n", today->month, today->day, today->year); //FIX THIS FORMATTED STRING COPY
 			bufferSize = strlen(buffer);
 			sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 		
