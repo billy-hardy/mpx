@@ -9,13 +9,13 @@
 
 int date(int argc, char **argv) {
 	
-	today_p = (date*) sys_alloc_mem((size_t) sizeof(date));
-
+	date_rec today_p = (date_rec*) sys_alloc_mem((size_t) sizeof(date_rec));
+	char buffer[75];
+	int bufferSize;
+	int month=-1, day=-1, year=-1; // This might need to be moved to the top.  Will know during compile in TurboC
+	int scanReturn;
 	if(argc == 1){ 
-		char buffer[75];
-		int bufferSize;
-		date *today_p;
-
+		
 		if(today_p == NULL){
 			strcpy(buffer, "Memory Allocation Failed!\n");
 			bufferSize = strlen(buffer);
@@ -30,8 +30,7 @@ int date(int argc, char **argv) {
 		}
 	}
 	else if(argc == 2){ 
-		int month=-1, day=-1, year=-1; // This might need to be moved to the top.  Will know during compile in TurboC
-		int scanReturn;
+
 		
 		scanReturn = sscanf(argv[1], "%d-%d-%d", &month, &day, &year);
 		if(scanReturn != 3){
