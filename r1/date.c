@@ -9,55 +9,56 @@
 
 int date(int argc, char **argv) {
 	
-	date_rec today_p = (date_rec*) sys_alloc_mem((size_t) sizeof(date_rec));
+	date_rec today = (date_rec*) sys_alloc_mem((size_t) sizeof(date_rec));
 	char buffer[75];
 	int bufferSize;
 	int month=-1, day=-1, year=-1; // This might need to be moved to the top.  Will know during compile in TurboC
 	int scanReturn;
-	if(argc == 1){ 
 		
-		if(today_p == NULL){
-			strcpy(buffer, "Memory Allocation Failed!\n");
-			bufferSize = strlen(buffer);
-			sys_req(WRITE, TERMINAL, buffer, &bufferSize);
-		}
-		
-		else{
+	if(today == NULL){
+		strcpy(buffer, "Memory Allocation Failed!\n");
+		bufferSize = strlen(buffer);
+		sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+	}
+	else{
+		if(argc == 1){ 
+
 			sys_get_date(today);
 			strcpy(buffer, "The current system date is: %d-%d-%d\n", today->month, today->day, today->year); //FIX THIS FORMATTED STRING COPY
 			bufferSize = strlen(buffer);
 			sys_req(WRITE, TERMINAL, buffer, &bufferSize);
-		}
-	}
-	else if(argc == 2){ 
-
 		
-		scanReturn = sscanf(argv[1], "%d-%d-%d", &month, &day, &year);
-		if(scanReturn != 3){
-			strcpy(buffer, "Error Scanning Date.  Type \"help\" for help.\n");
-			bufferSize = strlen(buffer);
-			sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 		}
-		else{
-			//Moved all that mess to a separate function
-			if(!checkDays(month, day, year)){
-				buffer[0] = '\0';
-				strcpy(buffer, "Invalid Date Parameters!  Please see help for functionality.\n")
+		else if(argc == 2){ 
+		
+			scanReturn = sscanf(argv[1], "%d-%d-%d", &month, &day, &year);
+			
+			if(scanReturn != 3){
+				strcpy(buffer, "Error Scanning Date.  Type \"help\" for help.\n");
 				bufferSize = strlen(buffer);
 				sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 			}
 			else{
-				today->month = month;
-				today->day = day;
-				today->year = year;
+				//Moved all that mess to a separate function
+				if(!checkDays(month, day, year)){
+					buffer[0] = '\0';
+					strcpy(buffer, "Invalid Date Parameters!  Please see help for functionality.\n")
+					bufferSize = strlen(buffer);
+					sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+				}
+				else{
+					today->month = month;
+					today->day = day;
+					today->year = year;
+				}
 			}
 		}
+		else{
+			invalidArgs(argv[0]); 
+		}
+		
+		sys_free_mem(today);
 	}
-	else{
-		invalidArgs(argv[0]); 
-	}
-	
-	sys_free_mem(today);
 	return 1; //True
 }
 
@@ -147,5 +148,6 @@ int checkDays(int month, int day, int year){
 		bufferSize = strlen(buffer);
 		sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 	}
+	
 return returnVal;
 }
