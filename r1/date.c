@@ -5,11 +5,11 @@
  * -- Pre Cond:		commhand.c matched on date and 0 < argc <= 2											*
  * -- Post Cond: 	argc = 1: returns system date.  argc = 2: changes system date given an acceptable date	*/
 
-#include "date.h"
+#include "r1.h"
 
 int date(int argc, char **argv) {
 	
-	date_rec today = (date_rec*) sys_alloc_mem((size_t) sizeof(date_rec));
+	date_rec *today = (date_rec*) sys_alloc_mem((size_t) sizeof(date_rec));
 	char buffer[75];
 	int bufferSize;
 	int month=-1, day=-1, year=-1; // This might need to be moved to the top.  Will know during compile in TurboC
@@ -42,7 +42,7 @@ int date(int argc, char **argv) {
 				//Moved all that mess to a separate function
 				if(!checkDays(month, day, year)){
 					buffer[0] = '\0';
-					strcpy(buffer, "Invalid Date Parameters!  Please see help for functionality.\n")
+					strcpy(buffer, "Invalid Date Parameters!  Please see help for functionality.\n");
 					bufferSize = strlen(buffer);
 					sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 				}
@@ -63,15 +63,17 @@ int date(int argc, char **argv) {
 }
 
 int isLeapYear(int year){
-	returnVal = 0;
+	int returnVal = 0;
 	if(((year%4 == 0) && (year%100 != 0) || (year%400 == 0)))
 		returnVal = 1;
 	return returnVal;
-}	
+}
 
 int checkDays(int month, int day, int year){
 	int returnVal = 0;
-	
+	char buffer[100];
+	int bufferSize;
+
 	if(month > 0 && day > 0 && year > 0){
 	//Should there be an upper bounds on the year? 9999ish?
 		if(month < 13){
@@ -96,7 +98,7 @@ int checkDays(int month, int day, int year){
 						else{
 							returnVal = 0;
 							buffer[0]='\0';
-							strcpy(buffer, "Current Month \"%d\" does not support day values greater than 30\n", month);
+							sprintf(buffer, "Current Month \"%d\" does not support day values greater than 30\n", month);
 							bufferSize = strlen(buffer);
 							sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 						}
@@ -121,7 +123,7 @@ int checkDays(int month, int day, int year){
 						else{
 							returnVal = 0;
 							buffer[0] = '\0';
-							strcpy(buffer, "Current Month \"%d\" does not support values greater than 29\n", month);
+							sprintf(buffer, "Current Month \"%d\" does not support values greater than 29\n", month);
 							bufferSize = strlen(buffer);
 							sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 						}
@@ -136,7 +138,7 @@ int checkDays(int month, int day, int year){
 				returnVal =0;
 				buffer[0]='\0';
 				strcpy(buffer, "Month value must be between 1 and 12\n");
-				buffernSize = strlen(buffer);
+				bufferSize = strlen(buffer);
 				sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 			}			
 		}
