@@ -1,4 +1,4 @@
-#include "common.h"
+#include "r1.h"
 
 //Author: Billy Hardy
 //Date Created: 8/30 4pm
@@ -9,6 +9,7 @@
 void invalidArgs(char *command) {
   int bufferSize;
   char buffer[75];
-  strcpy(buffer, "%s: invalid number of arguments. Type \"help\" for help.\n");
+  sprintf(buffer, "%s: invalid number of arguments. Type \"help\" for help.\n", command);
+  bufferSize = strlen(buffer);
   sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 }

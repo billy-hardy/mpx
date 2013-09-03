@@ -1,4 +1,4 @@
-#include "exit.h"
+#include "r1.h"
 
 //Author: Billy Hardy
 //Date Created: 8/31 3pm
@@ -20,7 +20,7 @@ int exit(int argc, char **argv) {
     } while(!response);
     returnVal = yes?(!LOOP):LOOP; //if 'y', exit repl, else continue repl
   } else {
-    invaldArgs(argv[0]); //argv[0] has the name of the command
+    invalidArgs(argv[0]); //argv[0] has the name of the command
     returnVal = LOOP;
   }
   return returnVal;

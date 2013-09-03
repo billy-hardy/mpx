@@ -1,4 +1,4 @@
-#include "version.h"
+#include "r1.h"
 
 //Author: Billy Hardy
 //Date Created: 8/30
@@ -9,7 +9,7 @@ int version(int argc, char **argv) {
   if(argc == 1) {
     char buffer[50];
     int bufferSize;
-    strcpy(buffer, "MPX is at version %s, with that last modification on %i/%i/%i", VERSION, DAY, MONTH, YEAR);
+    sprintf(buffer, "MPX is at version %s, with that last modification on %i/%i/%i", VERSION, DAY, MONTH, YEAR);
     bufferSize = strlen(buffer);
     sys_req(WRITE, TERMINAL, buffer, &bufferSize);
   } else {

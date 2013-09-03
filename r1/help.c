@@ -1,4 +1,4 @@
-#include "help.h"
+#include "r1.h"
 
 //Author: Billy Hardy
 //Date Created: 8/28
@@ -35,7 +35,7 @@ int help(int argc, char **argv) {
   } else {
     strcpy(invalidCommand,"No such command");
     invCommandSize = strlen(invalidCommand);
-    sys_req(WRITE, TERMINAL, invalidcommand, &invCommandSize);
+    sys_req(WRITE, TERMINAL, invalidCommand, &invCommandSize);
   }
   return LOOP;
 }
