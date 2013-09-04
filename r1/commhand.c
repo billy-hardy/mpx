@@ -8,11 +8,17 @@
 //           and *argc contains the length of *argv
 void tokenize(int *argc, char ***argv, char *input) {
   char token[60];
+  int tokenSize,tokenLoop;
   *argc = 0;
   strcpy(token, strtok(input, " \t\n"));
-  while(token != NULL) {
-    (*argv)[*argc] = (char *) sys_alloc_mem(sizeof(char)*strlen(token));
+  for(tokenLoop = 0; tokenLoop < 5 && token!= NULL; tokenLoop++){
+  //while(token != NULL) {
+    tokenSize = strlen(token);
+    //REMOVE THIS LATER
+   // sys_req(WRITE, TERMINAL, token, &tokenSize);
+    //(*argv)[*argc] = (char *) sys_alloc_mem(sizeof(char)*strlen(token));
     strcpy((*argv)[*argc], token);
+  //(*argv)[*argc] = token;
     (*argc)++;
     strcpy(token, strtok(NULL, " \t\n"));
   }
@@ -30,10 +36,10 @@ int commhand() {
   int (*functions[NUM_COMMANDS]) (int, char **);
   char commands[NUM_COMMANDS][60];
   int argc;
-  char **argv;
+  char *argv[5];
   int repl;
   maxSize = 64;
-  promptSize = 3;
+  promptSize = 2;
   strcpy(prompt, "$>");
   //functions go below here
   functions[0] = &help;    strcpy(commands[0], "help");
@@ -46,6 +52,7 @@ int commhand() {
   while(repl) {
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
     sys_req(READ, TERMINAL, buffer, &maxSize);
+    strcat(buffer, "\0");
     tokenize(&argc, &argv, buffer);
     if(strcmp(argv[0], "rename")) { //I think rename might be extra credit
 		if(argc != 3) {
