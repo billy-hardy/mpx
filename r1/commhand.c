@@ -8,19 +8,13 @@
 //           and *argc contains the length of *argv
 void tokenize(int *argc, char ***argv, char *input) {
   char token[60];
-  int tokenSize,tokenLoop;
-  *argc = 0;
   strcpy(token, strtok(input, " \t\n"));
-  for(tokenLoop = 0; tokenLoop < 5 && token!= NULL; tokenLoop++){
-  //while(token != NULL) {
-    tokenSize = strlen(token);
-    //REMOVE THIS LATER
-   // sys_req(WRITE, TERMINAL, token, &tokenSize);
-    //(*argv)[*argc] = (char *) sys_alloc_mem(sizeof(char)*strlen(token));
+  for((*argc)=0; (*argc) < 5; tokenLoop++) { //continue while less than 5 arguments
     strcpy((*argv)[*argc], token);
-  //(*argv)[*argc] = token;
     (*argc)++;
     strcpy(token, strtok(NULL, " \t\n"));
+    if(token == NULL) //break when out of tokens
+      break;
   }
 }
 
@@ -31,8 +25,8 @@ void tokenize(int *argc, char ***argv, char *input) {
 //Post-cond: command is read in from user, parsed, matched to
 //           a function, function is executed, and loop
 int commhand() {
-  int maxSize, promptSize, i, exitSize;
-  char buffer[64], prompt[60], exitMessage[60];
+  int maxSize, promptSize, i, exitSize, invalidRenameSize;
+  char buffer[64], prompt[60], exitMessage[60], invalidRename[60];
   int (*functions[NUM_COMMANDS]) (int, char **);
   char commands[NUM_COMMANDS][60];
   int argc;
@@ -55,29 +49,32 @@ int commhand() {
     strcat(buffer, "\0");
     tokenize(&argc, &argv, buffer);
     if(strcmp(argv[0], "rename")) { //I think rename might be extra credit
-		if(argc != 3) {
-			invalidArgs(argv[0]);
-		} else {
-			if(strcmp(argv[1], "prompt")) {
-				strcpy(prompt, argv[2]);
-				promptSize = strlen(prompt);
-			} else {
-				for(i=0; i<NUM_COMMANDS; i++) {
-					if(strcmp(commands[i], argv[1])) {
-						strcpy(commands[i], argv[2]);
-						break;
-					}
-				}
-			}
-		}
-    } else {                        //Loop through the other commands
-		for(i=0; i<NUM_COMMANDS; i++) {
-			if(strcmp(commands[i], argv[0])) {
-				repl = functions[i](argc, argv);
-				break;
-			}
-		}
+      if(argc != 3) {
+	invalidArgs(argv[0]);
+      } else if(strcmp(argv[1], "prompt")) {
+	strcpy(prompt, argv[2]);
+	promptSize = strlen(prompt);
+      } else { //check if renaming other commands
+	for(i=0; i<NUM_COMMANDS; i++) {
+	  if(strcmp(commands[i], argv[1])) {
+	    strcpy(commands[i], argv[2]);
+	    break;
+	  }
 	}
+	if(i==NUM_COMMANDS) {
+	  strcpy(invalidRename, "That's not a command, sorry. Type commands for a list of commands\n"); //TODO: make "commands" command.
+	  invalidRenameSize = strlen(invalidRename);
+	  sys_req(WRITE, TERMINAL, invalidRename, &invalidRenameSize);
+	}
+      }
+    } else {                        //Loop through the other commands
+      for(i=0; i<NUM_COMMANDS; i++) {
+	if(strcmp(commands[i], argv[0])) {
+	  repl = functions[i](argc, argv);
+	  break;
+	}
+      }
+    }
   }
   strcpy(exitMessage,"Goodbye");
   exitSize = strlen(exitMessage);
