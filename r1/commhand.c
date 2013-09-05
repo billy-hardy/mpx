@@ -25,8 +25,8 @@ void tokenize(int *argc, char ***argv, char *input) {
 //Post-cond: command is read in from user, parsed, matched to
 //           a function, function is executed, and loop
 int commhand() {
-  int maxSize, promptSize, i, exitSize, invalidRenameSize;
-  char buffer[64], prompt[60], exitMessage[60], invalidRename[60];
+  int maxSize, promptSize, i, invalidCommandSize, exitSize;
+  char buffer[64], prompt[60], invalidCommand[60], exitMessage[60];
   int (*functions[NUM_COMMANDS]) (int, char **);
   char commands[NUM_COMMANDS][60];
   int argc;
@@ -48,25 +48,13 @@ int commhand() {
     sys_req(READ, TERMINAL, buffer, &maxSize);
     strcat(buffer, "\0");
     tokenize(&argc, &argv, buffer);
-    if(strcmp(argv[0], "rename")) { //I think rename might be extra credit
-      if(argc != 3) {
+    if(strcmp(argv[0], "renamePrompt")) { //I think rename might be extra credit
+      if(argc != 2) {
 	invalidArgs(argv[0]);
-      } else if(strcmp(argv[1], "prompt")) {
-	strcpy(prompt, argv[2]);
+      } else {
+	strcpy(prompt, argv[1]);
 	promptSize = strlen(prompt);
-      } else { //check if renaming other commands
-	for(i=0; i<NUM_COMMANDS; i++) {
-	  if(strcmp(commands[i], argv[1])) {
-	    strcpy(commands[i], argv[2]);
-	    break;
-	  }
-	}
-	if(i==NUM_COMMANDS) {
-	  strcpy(invalidRename, "That's not a command, sorry. Type commands for a list of commands\n"); //TODO: make "commands" command.
-	  invalidRenameSize = strlen(invalidRename);
-	  sys_req(WRITE, TERMINAL, invalidRename, &invalidRenameSize);
-	}
-      }
+      } 
     } else {                        //Loop through the other commands
       for(i=0; i<NUM_COMMANDS; i++) {
 	if(strcmp(commands[i], argv[0])) {
@@ -74,9 +62,14 @@ int commhand() {
 	  break;
 	}
       }
+      if(i==NUM_COMMANDS) {
+	strcpy(invalidCommand, "That is not a valid command. Type \"help\" for help");
+	invalidCommandSize = strlen(invalidCommand);
+	sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
+      }
     }
   }
-  strcpy(exitMessage,"Goodbye");
+  strcpy(exitMessage,"Goodbye\n");
   exitSize = strlen(exitMessage);
   sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
   //Clean up processes here

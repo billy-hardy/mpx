@@ -8,8 +8,8 @@
 //Pos-cond: contents of the corresponding file are printed to the screen
 int help(int argc, char **argv) {
   FILE *fptr;
-  char *buffer, invalidCommand[30];
-  int fSize, result, lSize, invCommandSize;
+  char buffer[60], invalidCommand[30];
+  int bufferSize, invCommandSize;
   if(argc == 1) {
     fptr = fopen("generalHelp", "r");
   } else if(argc == 2) {
@@ -19,19 +19,11 @@ int help(int argc, char **argv) {
     return LOOP; //Tanner would hate this, but I don't feel like duplicating the checks
   }
   if(fptr != NULL) {
-    fseek(fptr, 0, SEEK_END);
-    fSize = ftell(fptr); //get size of file
-    rewind(fptr);
-    buffer = (char *) sys_alloc_mem(sizeof(char)*fSize);
-    if(buffer != NULL) {
-      result = fread(buffer, 1, lSize, fptr);
-      if(result != lSize) {
-	fputs("Reading error", stderr);
-      }
-      sys_req(WRITE, TERMINAL, buffer, &fSize);
-    } else {
-      fputs("Memory error", stderr);
-    }
+    while(fscanf(fptr, "%s ", buffer) != EOF) {
+      bufferSize = strlen(buffer);
+      sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+      //TODO: read an enter
+    } 
   } else {
     strcpy(invalidCommand,"No such command");
     invCommandSize = strlen(invalidCommand);
