@@ -16,7 +16,7 @@
 #define YEAR 2013
 
 //function prototypes
-void tokenize(int *, char ***, char *);
+void tokenize(int *, char *[], char *);
 int commhand();
 void invalidArgs(char *);
 int exit(int, char **);

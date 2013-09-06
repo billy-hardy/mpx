@@ -50,6 +50,7 @@ int date(int argc, char **argv) {
 					today->month = month;
 					today->day = day;
 					today->year = year;
+					sys_set_date(today);
 				}
 			}
 		}

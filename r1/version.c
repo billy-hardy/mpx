@@ -7,13 +7,13 @@
 //Post-cond: the current version is printed to the screen
 int version(int argc, char **argv) {
   if(argc == 1) {
-    char buffer[50];
+    char buffer[256];
     int bufferSize;
-    sprintf(buffer, "MPX is at version %s, with that last modification on %i/%i/%i", VERSION, DAY, MONTH, YEAR);
+    sprintf(buffer, "MPX is at version %i, with that last modification on %i/%i/%i\n", VERSION, MONTH, DAY, YEAR);
     bufferSize = strlen(buffer);
     sys_req(WRITE, TERMINAL, buffer, &bufferSize);
   } else {
     invalidArgs(argv[0]);
   }
-  return LOOP;
+  return 1;
 }
