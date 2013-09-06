@@ -15,7 +15,7 @@ void tokenize(int *argc, char *argv[], char *input) {
   int tempArgC=0;
   token = strtok(input, " \t\n");
   while(token != NULL){
-  strcpy(argv[tempArgC], token);
+  argv[tempArgC] = token;
   token = strtok(NULL, " \t\n");
   tempArgC++;
   }

@@ -9,36 +9,35 @@
 int help(int argc, char **argv) {
   if(argc == 1) {
 	displayHelp(argc, NULL);
-    //fptr = fopen("generalHelp", "r");
   } else if(argc == 2) {
 	displayHelp(argc, argv[1]);
-    //fptr = fopen(argv[1], "r");
   } else {
     invalidArgs(argv[0]);
   }
-  return LOOP; //Tanner would hate this, but I don't feel like duplicating the checks
+  return LOOP;
  }
- 
- void displayHelp(int argc, char *command){
+
+ void displayHelp(int argc, char *command) {
   FILE *fptr;
-  char buffer[60], invalidCommand[30];
-  int bufferSize, invCommandSize, commandSize;
-  
-  if(argc == 1){
-	//fptr = fopen("generalHelp.txt", "r");
-	//commandSize = 0;
-	}else{
-		//fptr = fopen(command, "r");
-		//commandSize = strlen(command);
-		//command[commandSize] = '\0';
-		
-	}	
+  char file[48], buffer[60], cReturn[2], invalidCommand[30];
+  int bufferSize, invCommandSize, cReturnSize;
+  if(argc == 1) {
+    fptr = fopen("generalHelp.txt", "r");
+  } else {
+    strcpy(file, command);
+    strcat(file, ".txt");
+    fptr = fopen(file, "r");
+  }
   if(fptr != NULL) {
     while(fscanf(fptr, "%s ", buffer) != EOF) {
+      strcat(buffer, " ");
       bufferSize = strlen(buffer);
       sys_req(WRITE, TERMINAL, buffer, &bufferSize);
       //TODO: read an enter
-    } 
+    }
+    strcpy(cReturn, "\n");
+    cReturnSize = 1;
+    sys_req(WRITE, TERMINAL, cReturn, &cReturnSize);
   } else {
     strcpy(invalidCommand,"No such command\n");
     invCommandSize = strlen(invalidCommand);

@@ -15,8 +15,8 @@ int exit(int argc, char **argv) {
       sys_req(WRITE, TERMINAL, confirm, &confirmSize);
       maxSize = 20;
       sys_req(READ, TERMINAL, ans, &maxSize);
-      yes = !strcmp(ans, "y\n");
-      response = yes || !strcmp(ans, "n\n");
+      yes = (ans[0] == 'y') || (ans[0] == 'Y');
+      response = yes || ((ans[0] == 'n') || (ans[0] == 'N'));
     } while(!response);
     returnVal = (yes?(!LOOP):LOOP); //if 'y', exit repl, else continue repl
   } else {
