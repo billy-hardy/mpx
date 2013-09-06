@@ -22,6 +22,7 @@ void invalidArgs(char *);
 int exit(int, char **);
 int ls(int, char **);
 int help(int, char **);
+void displayHelp(int, char *);
 int date(int, char **);
 int isLeapYear(int);
 int checkDays(int, int, int);
