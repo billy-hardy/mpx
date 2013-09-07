@@ -50,6 +50,7 @@ int commhand() {
   repl = LOOP;
   while(repl) {
     buffer[0] = '\0';
+	argv[0] = 0;
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
     sys_req(READ, TERMINAL, buffer, &maxSize);
     tokenize(&argc, argv, buffer);

@@ -19,7 +19,8 @@ int help(int argc, char **argv) {
 
  void displayHelp(int argc, char *command) {
   FILE *fptr;
-  char file[48], buffer[60], cReturn[2], invalidCommand[30];
+  char file[48],cReturn[2], invalidCommand[30];
+  char *buffer;
   int bufferSize, invCommandSize, cReturnSize;
   if(argc == 1) {
     fptr = fopen("help.txt", "r");
@@ -29,12 +30,23 @@ int help(int argc, char **argv) {
     fptr = fopen(file, "r");
   }
   if(fptr != NULL) {
-    while(fscanf(fptr, "%s ", buffer) != EOF) {
-      strcat(buffer, " ");
-      bufferSize = strlen(buffer);
-      sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+	fseek(fptr, 0L, SEEK_END);
+	bufferSize = ftell(fptr);
+	fseek(fptr, 0L, SEEK_SET);
+    
+	buffer = (char *)sys_alloc_mem(bufferSize+1);
+	fread(buffer, bufferSize, 1, fptr);
+	buffer[bufferSize]=0;
+		
+		sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+	
+	
+	//while(fscanf(fptr, "%s ", buffer) != EOF) {
+    //  strcat(buffer, " ");
+    //  bufferSize = strlen(buffer);
+    //  sys_req(WRITE, TERMINAL, buffer, &bufferSize);
       //TODO: read an enter
-    }
+    
     strcpy(cReturn, "\n");
     cReturnSize = 1;
     sys_req(WRITE, TERMINAL, cReturn, &cReturnSize);
@@ -44,4 +56,5 @@ int help(int argc, char **argv) {
     sys_req(WRITE, TERMINAL, invalidCommand, &invCommandSize);
   }
   fclose(fptr);
+  sys_free_mem(buffer);
 }
