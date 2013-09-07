@@ -1,0 +1,10 @@
+
+LS
+
+ls				Displays all files and sub-directoires
+				--- within the current directory
+ls [drive:][path]		Displays all files within 
+				--- the given directory
+ls [drive:][path][filename] 	Displays the name and size
+				--- in bytes of a file if it exists.
+				

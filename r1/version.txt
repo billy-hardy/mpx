@@ -1,0 +1,4 @@
+
+VERSION
+
+version		Displays the current operating version of MPX.

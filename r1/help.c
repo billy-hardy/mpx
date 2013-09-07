@@ -38,7 +38,7 @@ int help(int argc, char **argv) {
 	fread(buffer, bufferSize, 1, fptr);
 	buffer[bufferSize]=0;
 		
-		sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 	
 	
 	//while(fscanf(fptr, "%s ", buffer) != EOF) {

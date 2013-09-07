@@ -1,0 +1,7 @@
+
+DATE
+
+date		Displays the current system date.
+date MM-DD-YYYY Changes the system date.
+		--- Must be a valid date.
+						

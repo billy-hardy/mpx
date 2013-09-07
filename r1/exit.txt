@@ -1,0 +1,6 @@
+
+EXIT
+
+exit		Gracefully closes the MPX program upon
+		--- Y/N verification.
+	
