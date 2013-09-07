@@ -2,7 +2,7 @@
 
 //Author: Billy Hardy
 //Date Created: 8/31 3pm
-//Last Modified: n/a
+//Last Modified: 9/5 by Billy:  added case sensitivity
 //Pre-cond: commhand.c matched on exit and argc == 1
 //Post-cond: exits repl iff user types 'y'
 int exit(int argc, char **argv) {
@@ -19,7 +19,7 @@ int exit(int argc, char **argv) {
       response = yes || ((ans[0] == 'n') || (ans[0] == 'N'));
     } while(!response);
     returnVal = (yes?(!LOOP):LOOP); //if 'y', exit repl, else continue repl
-  } else {
+  } else { //Invalid catch
     invalidArgs(argv[0]); //argv[0] has the name of the command
     returnVal = LOOP;
   }

@@ -7,6 +7,9 @@
 //				Changes made to tokenize and commhand
 //				the repl should now work correctly.
 //				sorry I had to remove the ***
+//		 9/7/13 by Robert
+//				Fixed the repl to allow for blank entries.
+//				Added some \n's and commented code
 //Pre-cond: input is user input, words separated by spaces or tabs
 //Post-cond: input is split on the spaces and tabs and written to *argv
 //           and *argc contains the length of *argv
@@ -35,7 +38,7 @@ int commhand() {
   int (*functions[NUM_COMMANDS]) (int, char **);
   char commands[NUM_COMMANDS][60];
   int argc;
-  char *argv[5];  //Memory Leak here?  Is this being allocated correctly later when it is used?
+  char *argv[5]; 
   int repl;
   maxSize = 64;
   promptSize = 2;
@@ -48,13 +51,13 @@ int commhand() {
   functions[4] = &exit;    strcpy(commands[4], "exit");
   //functions go above here (don't forget to change NUM_COMMANDS)
   repl = LOOP;
-  while(repl) {
+  while(repl) { //Loops until exit command is given
     buffer[0] = '\0';
 	argv[0] = 0;
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
     sys_req(READ, TERMINAL, buffer, &maxSize);
     tokenize(&argc, argv, buffer);
-    if(strcmp(argv[0], "renamePrompt")==1) { //I think rename might be extra credit
+    if(!strcmp(argv[0], "renamePrompt")) { //Robert:  Fixed this work correctly.
       if(argc != 2) {
 	invalidArgs(argv[0]);
       } else {
@@ -70,7 +73,7 @@ int commhand() {
       }
 	  if((strlen(argv[0]) == 0))
 		repl = LOOP;
-	  else if(i==NUM_COMMANDS) {
+	  else if(i==NUM_COMMANDS) {  //Invalid argument catch
 	strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
 	invalidCommandSize = strlen(invalidCommand);
 	sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
@@ -80,6 +83,5 @@ int commhand() {
   strcpy(exitMessage,"Goodbye\n");
   exitSize = strlen(exitMessage);
   sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
-  //Clean up processes here
   return 0;
 }

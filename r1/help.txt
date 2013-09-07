@@ -1,9 +1,10 @@
 
+GENERAL HELP
 For more information on a specific command, type help command-name
 
+COMMANDS
 date		Displays or modifies the current system date.
 exit		Gracefully exits MPX upon y/n confirmation.
 help		Displays general help information.
-		--- help command-name for specific command info.
 ls		Displays a list of files and subdirectories in a directory.
 version		Displays the current version of MPX.
