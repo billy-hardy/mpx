@@ -67,7 +67,9 @@ int commhand() {
 	  break;
 	}
       }
-      if(i==NUM_COMMANDS) {
+	  if((strlen(argv[0]) == 0))
+		repl = LOOP;
+	  else if(i==NUM_COMMANDS) {
 	strcpy(invalidCommand, "That is not a valid command.\nType \"help\" for more information!\n");
 	invalidCommandSize = strlen(invalidCommand);
 	sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);

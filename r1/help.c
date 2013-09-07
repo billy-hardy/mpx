@@ -22,7 +22,7 @@ int help(int argc, char **argv) {
   char file[48], buffer[60], cReturn[2], invalidCommand[30];
   int bufferSize, invCommandSize, cReturnSize;
   if(argc == 1) {
-    fptr = fopen("generalHelp.txt", "r");
+    fptr = fopen("help.txt", "r");
   } else {
     strcpy(file, command);
     strcat(file, ".txt");
