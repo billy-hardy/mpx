@@ -153,7 +153,7 @@ int checkDays(int month, int day, int year){
 			returnVal = 0;
 			buffer[0] = '\0';
 			strcpy(buffer, "Month value must be between 1 and 12\n\n");
-			bufferSize = strlen(buffer)
+			bufferSize = strlen(buffer);
 			sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 		}
 	}
