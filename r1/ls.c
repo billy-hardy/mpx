@@ -9,12 +9,27 @@
  
 int ls(int argc, char **argv) {
   
+  char dir[512];
+  char file_name[512];
+  long file_size;
+  
   if(argc == 1) {
-    //do shit
-  } else if(argc == 2) {
+  
+    getcwd(*dir, 512);
+	sys_open_dir(dir);
+	sys_get_entry(file_name, 512, &file_size);
+	printf("%s  %d \n", file_name, file_size);
+	sys_close_dir();
+
+	}
+  
+  else if(argc == 2) {
     //do other shit
-  } else {
+	}
+	
+  else {
     invalidArgs(argv[0]);
-  }
+	}
+	
   return LOOP;
 }
