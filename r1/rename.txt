@@ -1,0 +1,6 @@
+
+RENAME
+
+
+rename prompt newPrompt    renames prompt to newPrompt
+	     		  --- newPrompt can be at most 24 characters long with no spaces
