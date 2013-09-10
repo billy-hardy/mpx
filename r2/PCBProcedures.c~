@@ -1,9 +1,0 @@
-#include "r2.h"
-
-PCB *findPCB(char *PCBname) {
-  //TODO: stuff
-}
-
-int insertPCB(PCB *ins) {
-  //TODO: stuff
-}
