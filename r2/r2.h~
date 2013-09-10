@@ -1,0 +1,23 @@
+#ifndef R2_H
+#define R2_H
+
+#include <stdio.h>
+
+typedef struct {
+        char name[11];
+        int class;
+        int priority;
+        int suspended;
+        int state;
+        PCB *next, *prev;
+        //TODO stack and memory info
+} PCB;
+
+struct pcb_queue {
+        int count;
+        PCB *head, *tail;
+};
+
+typedef struct pcb_queue PCB_QUEUE;
+
+#endif
