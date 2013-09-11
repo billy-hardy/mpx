@@ -40,7 +40,14 @@ int ls(int argc, char **argv) {
   
   else if(argc == 2) { //display all files with .MPX extensions in the specified directory
 	
-	sys_open_dir(argv[1]);
+	action = sys_open_dir(argv[1]);
+	
+	if (action == ERR_SUP_DIROPN || action == ERR_SUP_INVDIR){
+		sprintf(buffer, "Sorry, That directory is either inaccessible or does not exist\n\n");
+		buffer_size = strlen(buffer);
+		sys_req(WRITE, TERMINAL, buffer, &buffer_size);
+		return LOOP;
+	}
 	
 	for (i=0; i<22; i++){
 		action = sys_get_entry(file_name, 512, &file_size);
