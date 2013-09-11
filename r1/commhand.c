@@ -18,9 +18,9 @@ void tokenize(int *argc, char *argv[], char *input) {
   int tempArgC=0;
   token = strtok(input, " \t\n");
   while(token != NULL){
-  argv[tempArgC] = token;
-  token = strtok(NULL, " \t\n");
-  tempArgC++;
+    argv[tempArgC] = token;
+    token = strtok(NULL, " \t\n");
+    tempArgC++;
   }
   *argc = tempArgC;
 
@@ -53,31 +53,22 @@ int commhand() {
   repl = LOOP;
   while(repl) { //Loops until exit command is given
     buffer[0] = '\0';
-	argv[0] = 0;
+    argv[0][0] = '\0';
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
     sys_req(READ, TERMINAL, buffer, &maxSize);
     tokenize(&argc, argv, buffer);
-    if(!strcmp(argv[0], "renamePrompt")) { //Robert:  Fixed this work correctly.
-      if(argc != 2) {
-	invalidArgs(argv[0]);
-      } else {
-	strcpy(prompt, argv[1]);
-	promptSize = strlen(prompt);
+    for(i=0; i<NUM_COMMANDS; i++) {
+      if(!strcmp(commands[i], argv[0])) {
+	repl = functions[i](argc, argv);
+	break;
       }
-    } else {                        //Loop through the other commands
-      for(i=0; i<NUM_COMMANDS; i++) {
-	if(!strcmp(commands[i], argv[0])) {
-	  repl = functions[i](argc, argv);
-	  break;
-	}
-      }
-	  if((strlen(argv[0]) == 0))
-		repl = LOOP;
-	  else if(i==NUM_COMMANDS) {  //Invalid argument catch
-	strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
-	invalidCommandSize = strlen(invalidCommand);
-	sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
-      }
+    }
+    if(strlen(argv[0]) == 0)
+      repl = LOOP;
+    else if(i==NUM_COMMANDS) {  //Invalid argument catch
+      strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
+      invalidCommandSize = strlen(invalidCommand);
+      sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
     }
   }
   strcpy(exitMessage,"Goodbye\n");

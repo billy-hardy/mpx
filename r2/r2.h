@@ -11,7 +11,6 @@ typedef struct {
   char name[11];
   int class;
   int priority;
-  //next two might be unnecessary
   int state;      //running, ready or blocked
   int suspended;  //suspended or not
   //do we want descriptors?
