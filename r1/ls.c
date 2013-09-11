@@ -13,7 +13,8 @@ int ls(int argc, char **argv) {
   char file_name[512];
   long file_size;
   char buffer[256];
-  int buffer_size, i, action;
+  int buffer_size, i, action, dirCheck;
+  FILE *test;
   
   printEmpty();
   
@@ -39,6 +40,14 @@ int ls(int argc, char **argv) {
 	}
   
   else if(argc == 2) { //display all files with .MPX extensions in the specified directory
+	
+	if ((test = fopen(argv[1], "r"))){
+		fclose(test);
+		sprintf(buffer, "Sorry, the path you specified is not a directory\n\n");
+		buffer_size = strlen(buffer);
+		sys_req(WRITE, TERMINAL, buffer, &buffer_size);
+		return LOOP;
+	}
 	
 	action = sys_open_dir(argv[1]);
 	
