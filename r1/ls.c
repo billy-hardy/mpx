@@ -40,8 +40,8 @@ int ls(int argc, char **argv) {
 	}
   
   else if(argc == 2) { //display all files with .MPX extensions in the specified directory
-	
-	if ((test = fopen(argv[1], "r"))){
+	test = fopen(argv[1], "r");
+	if (test != NULL) {
 		fclose(test);
 		sprintf(buffer, "Sorry, the path you specified is not a directory\n\n");
 		buffer_size = strlen(buffer);
