@@ -13,20 +13,29 @@ typedef struct {
   int priority;
   int state;      //running, ready or blocked
   int suspended;  //suspended or not
-  //do we want descriptors?
-  PCB *next, *prev;
+  /*
   //stack
   unsigned char *top; //TODO: this is eff-ed up.
   //memory information
   int memory_size;
   unsigned char *load_address;
   unsigned char *exec_address;
-} PCB;
+  */
+} pcb;
 
 typedef struct {
   int count;
-  PCB *head, *tail;
+  pcb *head, *tail;
 } pcb_queue;
+
+//modes
+#define FIFO 1
+#define PRIORITY -1
+
+//error codes
+#define SUCCESS 0
+#define NO_SUCH_MODE -1
+#define PCB_NOT_FOUND -2
 
 //function prototypes
 //definePCB.c
@@ -44,11 +53,12 @@ int showReady(int argc, char **argv);
 int showBlocked(int argc, char **argv);
 int showAll(int argc, char **argv);
 //PCBProcedures.c
-PCB *allocatePCB();
-int freePCB(PCB *toFree);
-PCB *setupPCB(char name[], int class, int priority);
-PCB *findPCB(char *PCBname);
-int insertPCB(PCB *toInsert);
-int removePCB(PCB *toRemove);
+pcb *allocatePCB();
+int freePCB(pcb *toFree);
+pcb *setupPCB(char name[], int class, int priority);
+pcb *findPCB(char *name);
+pcb *find(char *name, pcb_queue *queue);
+int insertPCB(pcb *toInsert);
+int removePCB(pcb *toRemove);
 
 #endif
