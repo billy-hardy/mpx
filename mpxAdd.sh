@@ -1,3 +1,4 @@
+git add MPX.EXE
 git add mpxAdd.sh
 
 git add r1/commhand.c
