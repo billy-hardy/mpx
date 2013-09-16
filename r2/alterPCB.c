@@ -1,9 +1,5 @@
 #include "r2.h"
 
-//globals
-pcb *running;
-pcb_queue ready, blocked;
-
 
 //Parameters: name
 // calls findPCB(), changes PCB to blocked state

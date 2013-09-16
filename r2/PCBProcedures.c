@@ -6,15 +6,16 @@ pcb_queue ready, blocked;
 
 pcb *allocatePCB() {
   //TODO: stuff
+  return NULL;
 }
 
 //believe it works
 int freePCB(pcb *toFree) {
   int returnVal;
-  if(toFree != find(toFree->name)) {
+  if(toFree != findPCB(toFree->name)) {
     returnVal = PCB_NOT_FOUND;
   } else {
-    sys_free_mem(toFree->stack);
+    //sys_free_mem(toFree->stack);
     sys_free_mem(toFree);
     returnVal = SUCCESS;
   }
@@ -23,13 +24,14 @@ int freePCB(pcb *toFree) {
 
 pcb *setupPCB(char name[], int class, int priority) {
   //TODO: stuff
+  return NULL;
 }
 
 //believe it works
 pcb *findPCB(char *name) {
   pcb *returnVal = NULL;
-  returnVal = (strcmp(name, running->name) == 0) ? running : find(name, ready); //if not running, check ready queue
-  returnVal = (returnVal != NULL) ? returnVal : find(name, blocked);   //if NULL, check blocked queue
+  returnVal = (strcmp(name, running->name) == 0) ? running : find(name, &ready); //if not running, check ready queue
+  returnVal = (returnVal != NULL) ? returnVal : find(name, &blocked);   //if NULL, check blocked queue
   return returnVal;
 }
 
@@ -57,7 +59,7 @@ int insertPCB(pcb *toInsert, pcb_queue *queue, int mode) {
     queue->tail->prev = toInsert;
     toInsert->next = queue->tail;
     queue->tail = toInsert;
-    toInsert->prev = NULL:
+    toInsert->prev = NULL;
     queue->count++;
     returnVal = SUCCESS;
   } else if(mode == PRIORITY) {
@@ -86,4 +88,5 @@ int insertPCB(pcb *toInsert, pcb_queue *queue, int mode) {
 //return error code?
 int removePCB(pcb *toRemove) {
   //TODO: stuff
+  return 0;
 }

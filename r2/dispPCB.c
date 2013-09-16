@@ -1,8 +1,5 @@
 #include "r2.h"
 
-//globals
-pcb *running;
-pcb_queue ready, blocked;
 
 //Parameters: name
 // Must display name, class, state, suspended status and priority

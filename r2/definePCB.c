@@ -1,8 +1,5 @@
 #include "r2.h"
 
-//globals
-pcb *running;
-pcb_queue ready, blocked;
 
 //Parameters: name, class and priority
 // name must be unique

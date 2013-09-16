@@ -3,16 +3,19 @@
 
 #include <stdio.h>
 
+#define LOOP 1 //loop as before
+
 //constants
 #define SYS 0 //system process
 #define APP 1 //application process
 
-typedef struct {
+struct pcbstruct {
   char name[11];
   int class;
   int priority;
   int state;      //running, ready or blocked
   int suspended;  //suspended or not
+  struct pcbstruct *next, *prev;
   /*
   //stack
   unsigned char *top; //TODO: this is eff-ed up.
@@ -21,7 +24,9 @@ typedef struct {
   unsigned char *load_address;
   unsigned char *exec_address;
   */
-} pcb;
+};
+
+typedef struct pcbstruct pcb;
 
 typedef struct {
   int count;
@@ -58,7 +63,7 @@ int freePCB(pcb *toFree);
 pcb *setupPCB(char name[], int class, int priority);
 pcb *findPCB(char *name);
 pcb *find(char *name, pcb_queue *queue);
-int insertPCB(pcb *toInsert);
+int insertPCB(pcb *toInsert, pcb_queue *queue, int mode);
 int removePCB(pcb *toRemove);
 
 #endif
