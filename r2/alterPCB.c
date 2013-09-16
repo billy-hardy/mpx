@@ -5,10 +5,22 @@
 // calls findPCB(), changes PCB to blocked state
 // and reinserts it to correct queue
 int blockPCB(int argc, char **argv) {
+  pcb *process;
+  int errorCode;
   if(argc != 2) {
     invalidArgs(argv[0]);
   } else {
-    //TODO: stuff 
+    process = find(argv[1]);
+    if(process != NULL) {
+      if(removePCB(process, ready) == SUCCESS) {
+	process->state = BLOCKED;
+	insertPCB(process, blocked);
+      }
+      errorCode = SUCCESS;
+    } else {
+      errorCode = PCB_NOT_FOUND;
+    }
+    printError(errorCode);
   }
   return LOOP;
 }

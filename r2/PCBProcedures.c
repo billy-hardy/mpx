@@ -85,8 +85,35 @@ int insertPCB(pcb *toInsert, pcb_queue *queue, int mode) {
   return returnVal;
 }
 
-//return error code?
-int removePCB(pcb *toRemove) {
-  //TODO: stuff
-  return 0;
+//Hasn't been compiled
+int removePCB(pcb *toRemove, pcb_queue *queue) {
+  int returnVal;
+  pcb *curr;
+  curr = queue->tail;
+  for(i=0; i<queue->count; i++) {
+    if(curr == toRemove) {
+      break;
+    } else {
+      curr = curr->next;
+    }
+  }
+  if(curr == NULL) {
+    returnVal = PCB_NOT_FOUND;
+  } else if(i == queue->count) {
+    queue->head = curr->prev;
+    queue->head->next = NULL;
+    curr-next = curr->prev = NULL;
+    returnVal = SUCCESS;
+  } else if(i == 0) {
+    queue->tail = curr->next;
+    queue->tail->prev = NULL;
+    curr->next = curr->prev = NULL;
+    returnVal = SUCCESS;
+  } else {
+    curr->next->prev = curr->prev;
+    curr->prev->next = curr->next;
+    curr->next = curr->prev = NULL;
+    returnVal = SUCCESS;
+  }
+  return returnVal;
 }

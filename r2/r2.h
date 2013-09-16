@@ -8,6 +8,9 @@
 //constants
 #define SYS 0 //system process
 #define APP 1 //application process
+#define BLOCKED -1
+#define READY 0
+#define RUNNING 1
 
 struct pcbstruct {
   char name[11];
@@ -64,6 +67,6 @@ pcb *setupPCB(char name[], int class, int priority);
 pcb *findPCB(char *name);
 pcb *find(char *name, pcb_queue *queue);
 int insertPCB(pcb *toInsert, pcb_queue *queue, int mode);
-int removePCB(pcb *toRemove);
+int removePCB(pcb *toRemove, pcb_queue *queue);
 
 #endif
