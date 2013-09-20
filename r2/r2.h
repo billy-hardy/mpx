@@ -68,5 +68,6 @@ pcb *findPCB(char *name);
 pcb *find(char *name, pcb_queue *queue);
 int insertPCB(pcb *toInsert, pcb_queue *queue, int mode);
 int removePCB(pcb *toRemove, pcb_queue *queue);
+void printError(int errorCode);
 
 #endif

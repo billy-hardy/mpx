@@ -117,3 +117,17 @@ int removePCB(pcb *toRemove, pcb_queue *queue) {
   }
   return returnVal;
 }
+
+void printError(int errorCode) {
+  char buffer[100];
+  int bufferSize;
+  if(errorCode == PCB_NOT_FOUND) {
+    strcpy(buffer, "\nProcess specified not found.\n\n");
+    
+  }  
+  sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+  
+   
+  }
+  
+}

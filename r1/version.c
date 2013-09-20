@@ -9,7 +9,7 @@ int version(int argc, char **argv) {
   if(argc == 1) {
     char buffer[256];
     int bufferSize;
-    sprintf(buffer, "\nMPX is at version %i, with that last modification on %i/%i/%i\n\n", VERSION, MONTH, DAY, YEAR);
+    sprintf(buffer, "\nMPX is at version %i, with the last modification on %s at %s.\n\n", VERSION, __DATE__, __TIME__);
     bufferSize = strlen(buffer);
     sys_req(WRITE, TERMINAL, buffer, &bufferSize);
   } else {
