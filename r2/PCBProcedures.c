@@ -5,17 +5,32 @@ pcb *running;
 pcb_queue ready, blocked;
 
 pcb *allocatePCB() {
-  //TODO: stuff
-  return NULL;
+  pcb *newPcb;
+  newPCB = (pcb *) sys_alloc_mem(sizeof(pcb));
+  if(newPCB != NULL) {
+    newPCB->name[0] = '\0';
+    newPCB->class = SYS;
+    newPCB->priority = 0;
+    newPCB->state = READY;
+    newPCB->suspended = FALSE;
+    newPCB->next = NULL;
+    newPCB->prev = NULL;
+    newPCB->top = NULL;
+    newPCB->bottom = NULL;
+    newPCB->memory_size = 0;
+    newPCB->load_address = NULL;
+    newPCB->exec_address = NULL;
+  }
+  return newPCB;
 }
 
 //believe it works
 int freePCB(pcb *toFree) {
   int returnVal;
-  if(toFree != findPCB(toFree->name)) {
+  if(toFree == NULL) {
     returnVal = PCB_NOT_FOUND;
   } else {
-    //sys_free_mem(toFree->stack);
+    sys_free_mem(toFree->bottom);
     sys_free_mem(toFree);
     returnVal = SUCCESS;
   }
@@ -23,8 +38,39 @@ int freePCB(pcb *toFree) {
 }
 
 pcb *setupPCB(char name[], int class, int priority) {
-  //TODO: stuff
-  return NULL;
+  pcb *toSetup;
+  int errorCode;
+  toSetup = allocatePCB();
+  if(toSetup != NULL) {
+    if(paramsGood(name, class, priority)) {
+      strcpy(toSetup->name, name);
+      toSetup->class = class;
+      toSetup->priority = priority;
+      toSetup->state = READY;
+      toSetup->suspended = FALSE;
+      toSetup->bottom = (unsigned char *) sys_alloc_mem(STACK_SIZE*sizeof(unsigned char));
+      toSetup->top = toSetup->bottom;
+      toSetup->memory_size = 0;
+      toSetup->load_address = NULL;
+      toSetup->exec_address = NULL;
+      errorCode = SUCCESS;
+    } else {
+      toSetup = NULL;
+      errorCode = INVALID_PARAMS;
+    }
+  } else {
+    errorCode = NOT_ENOUGH_MEM;
+  }
+  printError(errorCode);
+  return toSetup;
+}
+
+int paramsGood(char name[], int class, int priority) {
+  int returnVal;
+  returnVal = strlen(name) > 10;
+  returnVal |= class != SYS && class != APP;
+  returnVal |= priority > 127 || priority < -128;
+  return !returnVal;
 }
 
 //believe it works
@@ -123,11 +169,7 @@ void printError(int errorCode) {
   int bufferSize;
   if(errorCode == PCB_NOT_FOUND) {
     strcpy(buffer, "\nProcess specified not found.\n\n");
-    
-  }  
-  sys_req(WRITE, TERMINAL, buffer, &bufferSize);
-  
-   
   }
-  
+  bufferSize = strlen(buffer);
+  sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 }
