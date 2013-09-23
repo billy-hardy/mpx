@@ -52,7 +52,7 @@ int ls(int argc, char **argv) {
 	
 		buffer_size = strlen(argv[1]);
 		if (buffer_size > 50){ //50 = MAX_PATH_SIZE
-		sprintf(buffer, "Sorry, that path either too long or invalid...\n\n");
+		sprintf(buffer, "Sorry, that path is either too long or does not exist\n\n");
 		buffer_size=strlen(buffer);
 		sys_req(WRITE, TERMINAL, buffer, &buffer_size);
 		return(LOOP);
@@ -60,10 +60,10 @@ int ls(int argc, char **argv) {
 		action = sys_open_dir(argv[1]);
 	
 		if (action == ERR_SUP_DIROPN || action == ERR_SUP_INVDIR){
-			sprintf(buffer, "Sorry, That directory is either inaccessible or does not exist\n\n");
+			sprintf(buffer, "Sorry, that directory is either inaccessible or does not exist\n\n");
 			buffer_size = strlen(buffer);
 			sys_req(WRITE, TERMINAL, buffer, &buffer_size);
-			return LOOP;
+			return(LOOP);
 		}
 	
 		for (i=0; i<22; i++){
@@ -87,7 +87,7 @@ int ls(int argc, char **argv) {
     invalidArgs(argv[0]);
 	}
 	
-  return LOOP;
+  return(LOOP);
 }
 
 int printEmpty(){ //Quick function to print an empty line, makes the code a little cleaner
