@@ -4,6 +4,9 @@
 #include <stdio.h>
 
 #define LOOP 1 //loop as before
+#define TRUE 1
+#define FALSE !TRUE
+#define STACK_SIZE 1024
 
 //constants
 #define SYS 0 //system process
@@ -19,14 +22,13 @@ struct pcbstruct {
   int state;      //running, ready or blocked
   int suspended;  //suspended or not
   struct pcbstruct *next, *prev;
-  /*
   //stack
-  unsigned char *top; //TODO: this is eff-ed up.
+  unsigned char *top; 
+  unsigned char *bottom;
   //memory information
   int memory_size;
   unsigned char *load_address;
   unsigned char *exec_address;
-  */
 };
 
 typedef struct pcbstruct pcb;
@@ -44,6 +46,7 @@ typedef struct {
 #define SUCCESS 0
 #define NO_SUCH_MODE -1
 #define PCB_NOT_FOUND -2
+#define NOT_ENOUGH_MEM -3
 
 //function prototypes
 //definePCB.c
@@ -64,6 +67,7 @@ int showAll(int argc, char **argv);
 pcb *allocatePCB();
 int freePCB(pcb *toFree);
 pcb *setupPCB(char name[], int class, int priority);
+int paramsGood(char name[], int class, int priority);
 pcb *findPCB(char *name);
 pcb *find(char *name, pcb_queue *queue);
 int insertPCB(pcb *toInsert, pcb_queue *queue, int mode);

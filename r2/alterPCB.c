@@ -1,5 +1,8 @@
 #include "r2.h"
 
+extern pcb *running;
+extern pcb_queue ready;
+extern pcb_queue blocked;
 
 //Parameters: name
 // calls findPCB(), changes PCB to blocked state
