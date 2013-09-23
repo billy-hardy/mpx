@@ -34,13 +34,13 @@ void tokenize(int *argc, char *argv[], char *input) {
 //           a function, function is executed, and loop
 int commhand() {
   int maxSize, promptSize, i, invalidCommandSize, exitSize;
-  char buffer[64], prompt[60], invalidCommand[128], exitMessage[60];
+  char buffer[129], prompt[60], invalidCommand[128], exitMessage[60];
   int (*functions[NUM_COMMANDS]) (int, char **);
-  char commands[NUM_COMMANDS][60];
+  char commands[NUM_COMMANDS][128];
   int argc;
   char *argv[5]; 
   int repl;
-  maxSize = 64;
+  maxSize = 129;
   promptSize = 2;
   strcpy(prompt, "$>");
   //functions go below here
@@ -48,12 +48,12 @@ int commhand() {
   functions[1] = &date;    strcpy(commands[1], "date");
   functions[2] = &version; strcpy(commands[2], "version");
   functions[3] = &ls;      strcpy(commands[3], "ls");
-  functions[4] = &exit;    strcpy(commands[4], "exit");
+  functions[4] = &exitMPX;    strcpy(commands[4], "exit");
   //functions go above here (don't forget to change NUM_COMMANDS)
   repl = LOOP;
   while(repl) { //Loops until exit command is given
     buffer[0] = '\0';
-    argv[0][0] = '\0';
+    **argv = NULL;
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
     sys_req(READ, TERMINAL, buffer, &maxSize);
     tokenize(&argc, argv, buffer);
@@ -69,10 +69,14 @@ int commhand() {
       strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
       invalidCommandSize = strlen(invalidCommand);
       sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
+
     }
+	for(i = 0; i < 5; i++)
+		argv[i] = NULL;
   }
   strcpy(exitMessage,"Goodbye\n");
   exitSize = strlen(exitMessage);
   sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
+  **argv = NULL;
   return 0;
 }

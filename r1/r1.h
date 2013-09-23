@@ -10,13 +10,16 @@
 #define TRUE 1
 #define LOOP 1 //If returned, repl will continue. Return !LOOP to quit
 #define NUM_COMMANDS 5
-#define VERSION 2 //version number
+#define VERSION 1 //version number
+#define DAY 11    //date of last change
+#define MONTH 9
+#define YEAR 2013
 
 //function prototypes
 void tokenize(int *, char *[], char *);
 int commhand();
 void invalidArgs(char *);
-int exit(int, char **);
+int exitMPX(int, char **);
 int ls(int, char **);
 int help(int, char **);
 void displayHelp(int, char *);

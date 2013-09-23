@@ -5,15 +5,15 @@
 //Last Modified: 9/5 by Billy:  added case sensitivity
 //Pre-cond: commhand.c matched on exit and argc == 1
 //Post-cond: exits repl iff user types 'y'
-int exit(int argc, char **argv) {
-  char confirm[75], ans[21];
+int exitMPX(int argc, char **argv) {
+  char confirm[129], ans[129];
   int confirmSize, maxSize, yes, response, returnVal;
   if(argc == 1) {
     strcpy(confirm, "Are you sure you want to exit mpx? (y/n)\n");
     confirmSize = strlen(confirm);
     do {
       sys_req(WRITE, TERMINAL, confirm, &confirmSize);
-      maxSize = 20;
+      maxSize = 129;
       sys_req(READ, TERMINAL, ans, &maxSize);
       yes = (ans[0] == 'y') || (ans[0] == 'Y');
       response = yes || ((ans[0] == 'n') || (ans[0] == 'N'));
