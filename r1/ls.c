@@ -72,10 +72,16 @@ int ls(int argc, char **argv) {
 				printEmpty();
 				break;
 			}
+			
 			else{
 				sprintf(buffer, "%s\t%d bytes\n", file_name, file_size);
 				buffer_size = strlen(buffer);
 				sys_req(WRITE, TERMINAL, buffer, &buffer_size);
+			}
+			if(i==21)
+			{
+			sys_req(READ, TERMINAL, buffer, &buffer_size);
+			i = 0;			
 			}
 		}
 
