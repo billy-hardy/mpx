@@ -67,9 +67,9 @@ pcb *setupPCB(char name[], int class, int priority) {
 
 int paramsGood(char name[], int class, int priority) {
   int returnVal;
-  returnVal = strlen(name) > 10;
-  returnVal &&= (class == SYS || class == APP);
-  returnVal &&= (priority < 128 && priority > -129);
+  returnVal = (strlen(name) < 11 && strlen(name) > 7);
+  returnVal &= (class == SYS || class == APP);
+  returnVal &= (priority < 128 && priority > -129);
   return returnVal;
 }
 
@@ -101,14 +101,14 @@ pcb *find(char *name, pcb_queue *queue) {
 int insertPCB(pcb *toInsert, pcb_queue *queue, int mode) {
   int returnVal;
   pcb *curr;
-  if(mode == FIFO) {
+  if(toInsert->state == BLOCKED) {
     queue->tail->prev = toInsert;
     toInsert->next = queue->tail;
     queue->tail = toInsert;
     toInsert->prev = NULL;
     queue->count++;
     returnVal = SUCCESS;
-  } else if(mode == PRIORITY) {
+  } else if(toInsert->state == READY) {
     curr = queue->tail;
     while(curr->priority < toInsert->priority) {
       curr = curr->next;
