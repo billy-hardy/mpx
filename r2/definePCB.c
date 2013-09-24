@@ -17,10 +17,8 @@ int createPCB(int argc, char **argv) {
   }
   else {
 	if((tempPCB=findPCB(argv[1])) == NULL){
-		classVal = integerCheck(argv[2]);
-		if(classVal != NULL){
-			priorityVal = integerCheck(argv[3]);
-			if(priority != NULL){
+		if((classVal= integerCheck(argv[2])) != NULL){
+			if((priority = integerCheck(argv[3]))!= NULL){
 				if (paramsGood(argv[1], classVal, priorityVal)){
 					tempPCB = allocatePCB();
 					tempPCB = setupPCB(argv[1], classVal, priorityVal); 

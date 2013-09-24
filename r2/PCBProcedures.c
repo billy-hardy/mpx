@@ -68,9 +68,9 @@ pcb *setupPCB(char name[], int class, int priority) {
 int paramsGood(char name[], int class, int priority) {
   int returnVal;
   returnVal = strlen(name) > 10;
-  returnVal |= class != SYS && class != APP;
-  returnVal |= priority > 127 || priority < -128;
-  return !returnVal;
+  returnVal &&= (class == SYS || class == APP);
+  returnVal &&= (priority < 128 && priority > -129);
+  return returnVal;
 }
 
 //believe it works
