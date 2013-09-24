@@ -48,7 +48,8 @@ int commhand() {
   functions[1] = &date;    strcpy(commands[1], "date");
   functions[2] = &version; strcpy(commands[2], "version");
   functions[3] = &ls;      strcpy(commands[3], "ls");
-  functions[4] = &exitMPX;    strcpy(commands[4], "exit");
+  functions[4] = &exitMPX; strcpy(commands[4], "exit");
+  functions[5] = &history; strcpy(commands[5], "history"); 
   //functions go above here (don't forget to change NUM_COMMANDS)
   repl = LOOP;
   while(repl) { //Loops until exit command is given
@@ -56,26 +57,26 @@ int commhand() {
     **argv = NULL;
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
     sys_req(READ, TERMINAL, buffer, &maxSize);
-    tokenize(&argc, argv, buffer);
-    for(i=0; i<NUM_COMMANDS; i++) {
-      if(!strcmp(commands[i], argv[0])) {
-	repl = functions[i](argc, argv);
-	break;
+    if(strlen(buffer) == 0) {
+      printCommandToFile(buffer);
+      tokenize(&argc, argv, buffer);
+      for(i=0; i<NUM_COMMANDS; i++) {
+	if(!strcmp(commands[i], argv[0])) {
+	  repl = functions[i](argc, argv);
+	  break;
+	}
+      } else if(i==NUM_COMMANDS) {  //Invalid argument catch
+	strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
+	invalidCommandSize = strlen(invalidCommand);
+	sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
       }
+      for(i = 0; i < 5; i++)
+	argv[i] = NULL;
     }
-    if(strlen(argv[0]) == 0)
-      repl = LOOP;
-    else if(i==NUM_COMMANDS) {  //Invalid argument catch
-      strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
-      invalidCommandSize = strlen(invalidCommand);
-      sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
-
-    }
-	for(i = 0; i < 5; i++)
-		argv[i] = NULL;
   }
   strcpy(exitMessage,"Goodbye\n");
   exitSize = strlen(exitMessage);
+  cleanUpHistory();
   sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
   **argv = NULL;
   return 0;

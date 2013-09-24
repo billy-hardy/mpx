@@ -9,7 +9,7 @@
 //constants
 #define TRUE 1
 #define LOOP 1 //If returned, repl will continue. Return !LOOP to quit
-#define NUM_COMMANDS 5
+#define NUM_COMMANDS 6
 #define VERSION 1 //version number
 #define DAY 11    //date of last change
 #define MONTH 9
@@ -27,5 +27,8 @@ int date(int, char **);
 int isLeapYear(int);
 int checkDays(int, int, int);
 int version(int, char **);
+int history(int, char **);
+void printCommandToFile(char []);
+void cleanUpHistory();
 
 #endif
