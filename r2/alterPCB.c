@@ -57,11 +57,16 @@ int unblockPCB(int argc, char **argv) {
 //Parameters: name
 // calls findPCB(), changes PCB to suspended state
 // and reinserts it to correct queue
-int suspendPCB(int argc, char **argv) {
+int suspendPCB(int argc, char **argv) { //How to handle the running process?
+	pcb *tempPCB;
+	int errorCode;
   if(argc != 2) {
     invalidArgs(argv[0]);
-  } else {
-    //TODO: stuff
+  } 
+  else {
+	if((tempPCB = findPCB(argv[1])) != NULL){
+		tempPCB->suspended = TRUE;
+	}
   }
   return LOOP;
 }

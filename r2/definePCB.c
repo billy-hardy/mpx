@@ -66,12 +66,21 @@ int createPCB(int argc, char **argv) {
 
 //Parameters: name
 // name must be valid
-int deletePCB(int argc, char **argv) {
+int deletePCB(int argc, char **argv) {  //Handle a PCB that is currently running??
+	pcb *tempPCB;
   if(argc != 2) {
     invalidArgs(argv[0]);
   } else {
-	removePCB(argv[1]); //This will work once the function is changed.
+	if((tempPCB = findPCB(argv[1]) != NULL)){
+		if(tempPCB->state == READY)
+			removePCB(argv[1], ready);
+		else
+			removePCB(argv[1], blocked); //This will work once the function is changed.
 	freePCB(argv[1])
+	}
+	else{
+		printError(PCB_NOT_FOUND);
+	}
   }
   return LOOP;
 }
