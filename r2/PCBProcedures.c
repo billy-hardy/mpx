@@ -2,10 +2,9 @@
 
 //globals
 pcb *running;
-pcb_queue ready, blocked;
+pcb_queue *ready, *blocked;
 
-pcb *allocatePCB() {
-  pcb *newPcb;
+void allocatePCB(pcb *newPCB) {
   newPCB = (pcb *) sys_alloc_mem(sizeof(pcb));
   if(newPCB != NULL) {
     newPCB->name[0] = '\0';
@@ -21,7 +20,6 @@ pcb *allocatePCB() {
     newPCB->load_address = NULL;
     newPCB->exec_address = NULL;
   }
-  return newPCB;
 }
 
 //believe it works
@@ -40,7 +38,7 @@ int freePCB(pcb *toFree) {
 pcb *setupPCB(char name[], int class, int priority) {
   pcb *toSetup;
   int errorCode;
-  toSetup = allocatePCB();
+  allocatePCB(toSetup);
   if(toSetup != NULL) {
     if(paramsGood(name, class, priority)) {
       strcpy(toSetup->name, name);
@@ -98,10 +96,12 @@ pcb *find(char *name, pcb_queue *queue) {
 
 //believe it works
 //TODO: helper function for insertion?
-int insertPCB(pcb *toInsert, pcb_queue *queue, int mode) {
+int insertPCB(pcb *toInsert) {
   int returnVal;
   pcb *curr;
+  pcb_queue *queue;
   if(toInsert->state == BLOCKED) {
+    queue = blocked;
     queue->tail->prev = toInsert;
     toInsert->next = queue->tail;
     queue->tail = toInsert;
@@ -109,6 +109,7 @@ int insertPCB(pcb *toInsert, pcb_queue *queue, int mode) {
     queue->count++;
     returnVal = SUCCESS;
   } else if(toInsert->state == READY) {
+    queue = ready;
     curr = queue->tail;
     while(curr->priority < toInsert->priority) {
       curr = curr->next;
@@ -132,9 +133,15 @@ int insertPCB(pcb *toInsert, pcb_queue *queue, int mode) {
 }
 
 //Hasn't been compiled
-int removePCB(pcb *toRemove, pcb_queue *queue) {
+int removePCB(pcb *toRemove) {
   int returnVal;
   pcb *curr;
+  pcb_queue *queue;
+  if(toRemove->state == READY) {
+    queue = ready;
+  } else {
+    queue = blocked;
+  }
   curr = queue->tail;
   for(i=0; i<queue->count; i++) {
     if(curr == toRemove) {
