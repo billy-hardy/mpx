@@ -26,7 +26,7 @@ int createPCB(int argc, char **argv) {
 					tempPCB = allocatePCB();
 					tempPCB = setupPCB(argv[1], classVal, priorityVal); 
 					//Add to Queue here...which queue?
-					insertPCB(tempPCB, ready);
+					insertPCB(tempPCB);
 					
 					
 					//********************Are there error codes for these somewhere.....
@@ -68,7 +68,7 @@ int createPCB(int argc, char **argv) {
 	    tempPCB = allocatePCB();
 	    tempPCB = setupPCB(argv[1], classVal, priorityVal); 
 	    //Add to Queue here...which queue?
-	    insertPCB(tempPCB, ready); //Does this ready need a *
+	    insertPCB(tempPCB);
 	  }
 	  else{
 	    //Parameters invalid (strlen, out of bounds ints)
@@ -115,9 +115,9 @@ int deletePCB(int argc, char **argv) {  //Handle a PCB that is currently running
 <<<<<<< HEAD
 	if((tempPCB = findPCB(argv[1]) != NULL)){
 		if(tempPCB->state == READY)
-			removePCB(argv[1], ready);
+		  removePCB(argv[1]);
 		else
-			removePCB(argv[1], blocked); //This will work once the function is changed.
+		  removePCB(argv[1]);
 	freePCB(argv[1])
 	}
 	else{

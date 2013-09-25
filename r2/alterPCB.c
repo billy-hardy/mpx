@@ -15,9 +15,9 @@ int blockPCB(int argc, char **argv) {
   } else {
     process = find(argv[1]);
     if(process != NULL) {
-      if(removePCB(process, ready) == SUCCESS) {
+      if(removePCB(process) == SUCCESS) {
 		process->state = BLOCKED;
-		insertPCB(process, blocked);
+		insertPCB(process);
       }
       errorCode = SUCCESS; //Move this up?********************
     } else {
@@ -40,9 +40,9 @@ int unblockPCB(int argc, char **argv) {
     invalidArgs(argv[0]);
   } else {
     if((tempPCB = findPCB(argv[1])) != NULL){
-		if(removePCB(tempPCB, blocked) == SUCCESS){
+		if(removePCB(tempPCB) == SUCCESS){
 			tempPCB->state = READY;
-			insertPCB(tempPCB, ready);
+			insertPCB(tempPCB);
 			errorCode = SUCCESS;
 		}
 	}
