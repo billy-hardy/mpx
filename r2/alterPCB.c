@@ -66,7 +66,12 @@ int suspendPCB(int argc, char **argv) { //How to handle the running process?
   else {
 	if((tempPCB = findPCB(argv[1])) != NULL){
 		tempPCB->suspended = TRUE;
+		errorCode = SUCCESS;
 	}
+	else{
+		errorCode = PCB_NOT_FOUND;
+	}
+	printError(errorCode);
   }
   return LOOP;
 }
@@ -74,11 +79,20 @@ int suspendPCB(int argc, char **argv) { //How to handle the running process?
 //Parameters: name
 // calls findPCB(), changes PCB to not suspended state
 // and reinserts it to correct queue
-int resumePCB(int argc, char **argv) {
+int resumePCB(int argc, char **argv) { //Handle the running process  ** Does this need to be removed and inserted
+	pcb *tempPCB;
+	int errorCode;
   if(argc != 2) {
     invalidArgs(argv[0]);
   } else {
-    //TODO: stuff
+	if((tempPCB = findPCB(argv[1])) != NULL){
+		tempPCB->suspended = FALSE;
+		errorCode = SUCCESS;
+	}
+	else
+		errorCode = PCB_NOT_FOUND;
+	
+	printError(errorCode);
   }
   return LOOP;
 }
@@ -86,11 +100,17 @@ int resumePCB(int argc, char **argv) {
 //Parameters: name and priority
 // calls findPCB(), changes PCB priority
 // and removes and reinserts it (to maintain priority queue)
-int setPCBPriority(int argc, char **argv) {
-  if(argc != 2) {
+int setPCBPriority(int argc, char **argv) {//Handle the running process
+	pcb *tempPCB;
+	int errorCode;
+  if(argc != 2) { // I think this should include an additional argc value ... how do I know what the priority is?
     invalidArgs(argv[0]);
   } else {
-    //TODO: stuff
+	if((tempPCB = findPCB(argv[1])) != NULL){
+		
+	}
+	else
+		errorCode = PCB_NOT_FOUND;
   }
   return LOOP;
 }
