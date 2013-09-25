@@ -18,14 +18,12 @@ int createPCB(int argc, char **argv) {
     invalidArgs(argv[0]);
   }
   else {
-<<<<<<< HEAD
 	if((tempPCB=findPCB(argv[1])) == NULL){
 		if((classVal= integerCheck(argv[2])) != NULL){
 			if((priority = integerCheck(argv[3]))!= NULL){
 				if (paramsGood(argv[1], classVal, priorityVal)){
 					tempPCB = allocatePCB();
 					tempPCB = setupPCB(argv[1], classVal, priorityVal); 
-					//Add to Queue here...which queue?
 					insertPCB(tempPCB);
 					
 					
@@ -60,80 +58,13 @@ int createPCB(int argc, char **argv) {
 		strcpy(messageBuffer, "Invalid Name! Process of this name already exists! Use \"help\" for more information.\n");
 		bufferSize = strlen(messageBuffer);
 		sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
-=======
-    if((tempPCB=findPCB(argv[1])) == NULL){
-      if((classVal= integerCheck(argv[2])) != NULL){
-	if((priority = integerCheck(argv[3]))!= NULL){
-	  if (paramsGood(argv[1], classVal, priorityVal)){
-	    tempPCB = allocatePCB();
-	    tempPCB = setupPCB(argv[1], classVal, priorityVal); 
-	    //Add to Queue here...which queue?
-	    insertPCB(tempPCB);
-	  }
-	  else{
-	    //Parameters invalid (strlen, out of bounds ints)
-	    strcpy(messageBuffer, "Invalid Parameters!  Use \"help\" for more information.");
-	    bufferSize = strlen(messageBuffer);
-	    sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
-	    
-	  }
-	}
-	else{
-	  //invalid Priority Value (not an int)
-	  strcpy(messageBuffer, "Invalid Priority Value!  Use \"help\" for more information.");
-	  bufferSize = strlen(messageBuffer);
-	  sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
->>>>>>> master
-	}
-				
-      }
-      else{
-	//invalid Class Value (not an int)
-	strcpy(messageBuffer, "Invalid Class Value!  Use \"help\" for more information.");
-	bufferSize = strlen(messageBuffer);
-	sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
-      }
-		
     }
-    else{
-      //Duplicate Name
-      strcpy(messageBuffer, "Invalid Name! Process of this name already exists! Use \"help\" for more information.");
-      bufferSize = strlen(messageBuffer);
-      sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
-    }
-  }
   return LOOP;
-}
-
-//Parameters: name
-// name must be valid
-int deletePCB(int argc, char **argv) {  //Handle a PCB that is currently running??
-	pcb *tempPCB;
-  if(argc != 2) {
-    invalidArgs(argv[0]);
-  } else {
-<<<<<<< HEAD
-	if((tempPCB = findPCB(argv[1]) != NULL)){
-		if(tempPCB->state == READY)
-		  removePCB(argv[1]);
-		else
-		  removePCB(argv[1]);
-	freePCB(argv[1])
 	}
-	else{
-		printError(PCB_NOT_FOUND);
-	}
-  }
-=======
-    removePCB(argv[1]); //This will work once the function is changed.
-    freePCB(argv[1])
-      }
->>>>>>> master
-  return LOOP;
 }
 
 
-void integerCheck(char *in){
+int integerCheck(char *in){
   double checkVal;
   int returnVal = NULL;
   checkVal = atof(in);

@@ -52,6 +52,7 @@ typedef struct {
 //definePCB.c
 int createPCB(int argc, char **argv);
 int deletePCB(int argc, char **argv);
+int integerCheck(char *);
 //alterPCB.c
 int blockPCB(int argc, char **argv);
 int unblockPCB(int argc, char **argv);
