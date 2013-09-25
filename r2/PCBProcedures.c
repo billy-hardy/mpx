@@ -2,7 +2,7 @@
 
 //globals
 pcb *running;
-pcb_queue ready, blocked;
+pcb_queue *ready, *blocked;
 
 pcb *allocatePCB() {
   pcb *newPcb;

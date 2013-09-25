@@ -1,8 +1,8 @@
 #include "r2.h"
 
 extern pcb *running;
-extern pcb_queue ready;
-extern pcb_queue blocked;
+extern pcb_queue *ready;
+extern pcb_queue *blocked;
 
 //Parameters: name, class and priority
 // name must be unique
@@ -25,11 +25,14 @@ int createPCB(int argc, char **argv) {
 					tempPCB = allocatePCB();
 					tempPCB = setupPCB(argv[1], classVal, priorityVal); 
 					//Add to Queue here...which queue?
-					insertPCB(tempPCB, ready); //Does this ready need a *
+					insertPCB(tempPCB, ready);
+					
+					
+					//********************Are there error codes for these somewhere.....
 				}
 				else{
 				//Parameters invalid (strlen, out of bounds ints)
-				strcpy(messageBuffer, "Invalid Parameters!  Use \"help\" for more information.");
+				strcpy(messageBuffer, "Invalid Parameters!  Use \"help\" for more information.\n");
 				bufferSize = strlen(messageBuffer);
 				sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
 				
@@ -37,7 +40,7 @@ int createPCB(int argc, char **argv) {
 			}
 			else{
 			//invalid Priority Value (not an int)
-				strcpy(messageBuffer, "Invalid Priority Value!  Use \"help\" for more information.");
+				strcpy(messageBuffer, "Invalid Priority Value!  Use \"help\" for more information.\n");
 				bufferSize = strlen(messageBuffer);
 				sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
 			}
@@ -45,7 +48,7 @@ int createPCB(int argc, char **argv) {
 		}
 		else{
 		//invalid Class Value (not an int)
-			strcpy(messageBuffer, "Invalid Class Value!  Use \"help\" for more information.");
+			strcpy(messageBuffer, "Invalid Class Value!  Use \"help\" for more information.\n");
 			bufferSize = strlen(messageBuffer);
 			sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
 		}
@@ -53,7 +56,7 @@ int createPCB(int argc, char **argv) {
 	}
 	else{
 	//Duplicate Name
-		strcpy(messageBuffer, "Invalid Name! Process of this name already exists! Use \"help\" for more information.");
+		strcpy(messageBuffer, "Invalid Name! Process of this name already exists! Use \"help\" for more information.\n");
 		bufferSize = strlen(messageBuffer);
 		sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
 	}
