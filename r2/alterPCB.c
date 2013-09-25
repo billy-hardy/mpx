@@ -103,16 +103,26 @@ int resumePCB(int argc, char **argv) { //Handle the running process  ** Does thi
 int setPCBPriority(int argc, char **argv) {//Handle the running process
 	pcb *tempPCB;
 	int errorCode;
-  if(argc != 2) { // I think this should include an additional argc value ... how do I know what the priority is?
+	int processVal;
+  if(argc != 3) { 
     invalidArgs(argv[0]);
   } else {
 	if((tempPCB = findPCB(argv[1])) != NULL){
 		
+		if((processVal = integerCheck(argv[2])) != NULL){
+			remove(tempPCB);
+			tempPCB->processVal;
+			insertPCB(tempPCB);
+		}
+		else{
+		//Not an integer ... ADD ERROR CODES FOR THIS
+		
+		}
 	}
 	else
 		errorCode = PCB_NOT_FOUND;
+	printError(errorCode);
   }
   return LOOP;
 }
-
 //Just a test to see how this branching works

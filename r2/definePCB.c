@@ -66,7 +66,7 @@ int deletePCB(int argc, char **argv) {  //Handle a PCB that is currently running
   }
   else {  
 	if((tempPCB = findPCB(argv[1]))!= NULL){
-		removePCB(tempPCB); //This will work once the function is changed.
+		removePCB(tempPCB);
 		freePCB(tempPCB);
 	}
 	else{
