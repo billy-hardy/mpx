@@ -24,9 +24,7 @@ int createPCB(int argc, char **argv) {
 					if (paramsGood(argv[1], classVal, priorityVal)){
 						tempPCB = allocatePCB();
 						tempPCB = setupPCB(argv[1], classVal, priorityVal); 
-						insertPCB(tempPCB);
-					
-					
+						insertPCB(tempPCB);	
 					//********************Are there error codes for these somewhere.....
 					}
 					else{
@@ -41,8 +39,7 @@ int createPCB(int argc, char **argv) {
 					strcpy(messageBuffer, "Invalid Priority Value!  Use \"help\" for more information.\n");
 					bufferSize = strlen(messageBuffer);
 					sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
-				}
-				
+				}			
 			}
 			else{
 		//invalid Class Value (not an int)
