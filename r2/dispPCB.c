@@ -8,32 +8,14 @@ extern pcb_queue *blocked;
 // Must display name, class, state, suspended status and priority
 // Displays error if PCB doesn't exist
 int showPCB(int argc, char **argv) { //This is a little bloated with variables....
+  	pcb *tempPCB;
+
   if(argc != 2) {
-	pcb *tempPCB;
-	char PCBBuffer[256];
-	char tempLine[128];
-	int bufferSize, tempInt;
     invalidArgs(argv[0]);
   } else {
     //TODO: stuff
 	if((tempPCB =findPCB(argv[1])) != NULL){
-		sprintf(tempLine, "Displaying PCB named: %s\n", tempPCB->name);
-		strcpy(PCBBuffer, tempLine);
-		tempInt = tempPCB->class;
-		sprintf(tempLine, "Class: %s", tempInt == 1 ? "Application\n" : "System\n");
-		tempInt = tempPCB->state;
-		strcat(PCBBuffer, tempLine);
-		sprintf(tempLine, "State: %s", tempInt == -1 ? "Blocked\n" : tempInt == 0 ? "Ready\n" :  "Running\n");
-		strcat(PCBBuffer, tempLine);
-		tempInt = tempPCB->suspended;
-		sprintf(tempLine, "Suspended Status: %s", tempInt == TRUE ? "TRUE\n" : "FALSE\n");
-		strcat(PCBBuffer, tempLine);
-		tempInt = tempPCB->priority;
-		sprintf(tempLine, "Priority: %d\n", tempInt);
-		strcat(PCBBuffer, tempLine);
-		
-		bufferSize = strlen(PCBBuffer);
-		sys_req(WRITE, TERMINAL, PCBBuffer, &bufferSize);
+		printPCB(tempPCB);
 	}
 	else
 		printError(PCB_NOT_FOUND);
@@ -44,11 +26,11 @@ int showPCB(int argc, char **argv) { //This is a little bloated with variables..
 //Parameters: none
 //shows all info for all PCBs in ready queue
 //requires PAGINATION
-int showReady(int argc, char **argv) {
+int showReady(int argc, char **argv) { // I think this should work.
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
-    //TODO: stuff
+		showQueue(ready);
   }
   return LOOP;
 }
@@ -60,7 +42,7 @@ int showBlocked(int argc, char **argv) {
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
-    //TODO: stuff
+		showQueue(blocked);
   }
   return LOOP;
 }
@@ -68,11 +50,97 @@ int showBlocked(int argc, char **argv) {
 //Parameters: none
 //shows all info for all PCBs in all queues
 //requires PAGINATION
-int showAll(int argc, char **argv) {
+int showAll(int argc, char **argv) { //Come up with a way to fix this duplication
+	char dummy[1024];
+	int dummySize;
+	int pcbsDisplayed;
+	pcb *tempPCB;
+	
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
-    //TODO: stuff
+    if(ready -> count >0){
+		tempPCB = ready->head;
+		while(tempPCB != NULL){
+			pcbsDisplayed++;
+			if(pcbsDisplayed%4)
+				printPCB(tempPCB);
+			else
+				sys_req(READ, TERMINAL, dummy, &dummySize);
+			tempPCB = tempPCB->next;
+		}
+	}
+	else{
+		strcpy(dummy, "Nothing exists in the Ready queue!\n");
+		dummySize = strlen(dummy);
+		sys_req(WRITE, TERMINAL, dummy, &dummySize);	
+	}
+	if(blocked -> count > 0){
+		tempPCB = blocked->head;
+		while(tempPCB != NULL){
+			pcbsDisplayed++;
+			if(pcbsDisplayed%4)
+				printPCB(tempPCB);
+			else
+				sys_req(READ, TERMINAL, dummy, &dummySize);
+			tempPCB = tempPCB->next;
+		}
+	
+	}
+	else{
+		strcpy(dummy, "Nothing exists in the Blocked queue!\n");
+		dummySize = strlen(dummy);
+		sys_req(WRITE, TERMINAL, dummy, &dummySize);	
+	}
   }
   return LOOP;
+}
+
+void showQueue(pcb_queue *in){ //I'd really like to use this to show both queues, but It will mess up pagination of the individual queues, I'll just duplicate a little ...toolazy
+	pcb *tempPCB;
+	char dummy[512]; //This may need to be either significantly larger, or dynamically allocated
+	int dummySize;
+	int loopVal = 0;
+	
+	if(in -> count > 0){
+		tempPCB = in -> head;
+		while(loopVal < in -> count){
+			loopVal++;
+			if(loopVal%4)
+				printPCB(tempPCB);
+			else
+				sys_req(READ, TERMINAL, dummy, &dummySize); 
+				
+			tempPCB = tempPCB->next; //I think this is correct
+		}		
+	}
+	else{
+		strcpy(dummy, "Nothing exists in this queue!\n");
+		dummySize = strlen(dummy);
+		sys_req(WRITE, TERMINAL, dummy, &dummySize);
+	}
+}
+
+void printPCB(pcb* tempPCB){
+	char PCBBuffer[256];
+	char tempLine[128];
+	int bufferSize, tempInt;
+	
+	sprintf(tempLine, "Displaying PCB named: %s\n", tempPCB->name);
+	strcpy(PCBBuffer, tempLine);
+	tempInt = tempPCB->class;
+	sprintf(tempLine, "Class: %s", tempInt == 1 ? "Application\n" : "System\n");
+	tempInt = tempPCB->state;
+	strcat(PCBBuffer, tempLine);
+	sprintf(tempLine, "State: %s", tempInt == -1 ? "Blocked\n" : tempInt == 0 ? "Ready\n" :  "Running\n");
+	strcat(PCBBuffer, tempLine);
+	tempInt = tempPCB->suspended;
+	sprintf(tempLine, "Suspended Status: %s", tempInt == TRUE ? "TRUE\n" : "FALSE\n");
+	strcat(PCBBuffer, tempLine);
+	tempInt = tempPCB->priority;
+	sprintf(tempLine, "Priority: %d\n", tempInt);
+	strcat(PCBBuffer, tempLine);
+	
+	bufferSize = strlen(PCBBuffer);
+	sys_req(WRITE, TERMINAL, PCBBuffer, &bufferSize);
 }

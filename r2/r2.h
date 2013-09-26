@@ -64,6 +64,8 @@ int showPCB(int argc, char **argv);
 int showReady(int argc, char **argv);
 int showBlocked(int argc, char **argv);
 int showAll(int argc, char **argv);
+void printPCB(pcb *);
+void showQueue(pcb_queue *);
 //PCBProcedures.c
 pcb *allocatePCB();
 int freePCB(pcb *toFree);
