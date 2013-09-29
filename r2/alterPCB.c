@@ -13,7 +13,7 @@ int blockPCB(int argc, char **argv) {
   if(argc != 2) {
     invalidArgs(argv[0]);
   } else {
-    process = find(argv[1]);
+    process = findVal(argv[1]);
     if(process != NULL) {
       if(removePCB(process) == SUCCESS) {
 		process->state = BLOCKED;
@@ -111,7 +111,7 @@ int setPCBPriority(int argc, char **argv) {//Handle the running process
 		
 		if((processVal = integerCheck(argv[2])) != NULL){
 			remove(tempPCB);
-			tempPCB->processVal;
+			tempPCB->priority = processVal;
 			insertPCB(tempPCB);
 		}
 		else{

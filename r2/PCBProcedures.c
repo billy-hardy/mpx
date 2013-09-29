@@ -4,7 +4,7 @@
 pcb *running;
 pcb_queue *ready, *blocked;
 
-void allocatePCB(pcb *newPCB) {
+pcb *allocatePCB(pcb *newPCB) {
   newPCB = (pcb *) sys_alloc_mem(sizeof(pcb));
   if(newPCB != NULL) {
     newPCB->name[0] = '\0';
@@ -20,6 +20,7 @@ void allocatePCB(pcb *newPCB) {
     newPCB->load_address = NULL;
     newPCB->exec_address = NULL;
   }
+  return newPCB;
 }
 
 //believe it works
@@ -134,7 +135,7 @@ int insertPCB(pcb *toInsert) {
 
 //Hasn't been compiled
 int removePCB(pcb *toRemove) {
-  int returnVal;
+  int returnVal, i;
   pcb *curr;
   pcb_queue *queue;
   if(toRemove->state == READY) {
@@ -155,7 +156,7 @@ int removePCB(pcb *toRemove) {
   } else if(i == queue->count) {
     queue->head = curr->prev;
     queue->head->next = NULL;
-    curr-next = curr->prev = NULL;
+    curr->next = curr->prev = NULL;
     returnVal = SUCCESS;
   } else if(i == 0) {
     queue->tail = curr->next;
@@ -177,6 +178,9 @@ void printError(int errorCode) {  //This just currently prints out ERROR, not SU
   if(errorCode == PCB_NOT_FOUND) {
     strcpy(buffer, "\nProcess specified not found.\n\n");
   }
+  if(errorCode == INVALID_PARAMS) {
+	strcpy(buffer, "\nParameters are incorrect.\n\n");
+	}
   bufferSize = strlen(buffer);
   sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 }

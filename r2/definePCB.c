@@ -20,7 +20,7 @@ int createPCB(int argc, char **argv) {
   else {
 		if((tempPCB=findPCB(argv[1])) == NULL){
 			if((classVal= integerCheck(argv[2])) != NULL){
-				if((priority = integerCheck(argv[3]))!= NULL){
+				if((priorityVal = integerCheck(argv[3]))!= NULL){
 					if (paramsGood(argv[1], classVal, priorityVal)){
 						tempPCB = allocatePCB();
 						tempPCB = setupPCB(argv[1], classVal, priorityVal); 
@@ -81,7 +81,7 @@ int integerCheck(char *in){
   double checkVal;
   int returnVal = NULL;
   checkVal = atof(in);
-  if(checkVal%1 > 0);
+  if(fmod(checkVal, 1) > 0);
   else{
     returnVal = (int)checkVal;
   }

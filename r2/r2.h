@@ -2,10 +2,11 @@
 #define R2_H
 
 #include <stdio.h>
+#include "../r1/r1.h"
 
 #define LOOP 1 //loop as before
 #define TRUE 1
-#define FALSE !TRUE
+#define FALSE 0
 #define STACK_SIZE 1024
 
 //constants
@@ -47,6 +48,7 @@ typedef struct {
 #define NO_SUCH_MODE -1
 #define PCB_NOT_FOUND -2
 #define NOT_ENOUGH_MEM -3
+#define INVALID_PARAMS -4
 
 //function prototypes
 //definePCB.c
@@ -73,8 +75,8 @@ pcb *setupPCB(char name[], int class, int priority);
 int paramsGood(char name[], int class, int priority);
 pcb *findPCB(char *name);
 pcb *find(char *name, pcb_queue *queue);
-int insertPCB(pcb *toInsert, pcb_queue *queue, int mode);
-int removePCB(pcb *toRemove, pcb_queue *queue);
+int insertPCB(pcb *toInsert);
+int removePCB(pcb *toRemove);
 void printError(int errorCode);
 
 #endif
