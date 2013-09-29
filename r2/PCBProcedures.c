@@ -171,7 +171,7 @@ int removePCB(pcb *toRemove) {
   return returnVal;
 }
 
-void printError(int errorCode) {
+void printError(int errorCode) {  //This just currently prints out ERROR, not SUCCESS ... fix this.
   char buffer[100];
   int bufferSize;
   if(errorCode == PCB_NOT_FOUND) {

@@ -17,7 +17,7 @@
 
 struct pcbstruct {
   char name[11];
-  int class;
+  int class;      //This name may need to be changed(I think class is reserved)
   int priority;
   int state;      //running, ready or blocked
   int suspended;  //suspended or not
@@ -64,6 +64,8 @@ int showPCB(int argc, char **argv);
 int showReady(int argc, char **argv);
 int showBlocked(int argc, char **argv);
 int showAll(int argc, char **argv);
+void printPCB(pcb *);
+void showQueue(pcb_queue *);
 //PCBProcedures.c
 pcb *allocatePCB();
 int freePCB(pcb *toFree);
