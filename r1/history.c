@@ -2,11 +2,20 @@
 
 int history(int argc, char *argv[]) {
   FILE *fptr;
+  char *buffer;
+  int bufferSize;
   if(argc != 1) {
     //TODO: print error
   } else {
     fptr = fopen("history.txt", "r");
-    paginate(fread(fptr));
+	fseek(fptr, 0L, SEEK_END);
+	bufferSize = ftell(fptr);
+	fseek(fptr, 0L, SEEK_SET);
+    
+	buffer = (char *)sys_alloc_mem(bufferSize+1);
+	fread(buffer, bufferSize, 1, fptr);
+	
+    sys_req(WRITE, TERMINAL, buffer, &bufferSize);
   }
   return LOOP;
 }

@@ -9,7 +9,7 @@
 //constants
 #define TRUE 1
 #define LOOP 1 //If returned, repl will continue. Return !LOOP to quit
-#define NUM_COMMANDS 6
+#define NUM_COMMANDS 8
 #define VERSION 1 //version number
 #define DAY 11    //date of last change
 #define MONTH 9
@@ -17,7 +17,7 @@
 
 //function prototypes
 void tokenize(int *, char *[], char *);
-int commhand();
+void commhand();
 void invalidArgs(char *);
 int exitMPX(int, char **);
 int ls(int, char **);

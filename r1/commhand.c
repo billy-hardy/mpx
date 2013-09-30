@@ -1,4 +1,5 @@
 #include "r1.h"
+#include "..\r2\r2.h"
 
 //Author: Billy Hardy
 //Date Created: 8/28
@@ -32,52 +33,57 @@ void tokenize(int *argc, char *argv[], char *input) {
 //Pre-cond: none
 //Post-cond: command is read in from user, parsed, matched to
 //           a function, function is executed, and loop
-int commhand() {
-  int maxSize, promptSize, i, invalidCommandSize, exitSize;
-  char buffer[129], prompt[60], invalidCommand[128], exitMessage[60];
-  int (*functions[NUM_COMMANDS]) (int, char **);
-  char commands[NUM_COMMANDS][128];
-  int argc;
-  char *argv[5]; 
-  int repl;
-  maxSize = 129;
-  promptSize = 2;
-  strcpy(prompt, "$>");
-  //functions go below here
-  functions[0] = &help;    strcpy(commands[0], "help");
-  functions[1] = &date;    strcpy(commands[1], "date");
-  functions[2] = &version; strcpy(commands[2], "version");
-  functions[3] = &ls;      strcpy(commands[3], "ls");
-  functions[4] = &exitMPX; strcpy(commands[4], "exit");
-  functions[5] = &history; strcpy(commands[5], "history"); 
-  //functions go above here (don't forget to change NUM_COMMANDS)
-  repl = LOOP;
-  while(repl) { //Loops until exit command is given
-    buffer[0] = '\0';
-    **argv = NULL;
-    sys_req(WRITE, TERMINAL, prompt, &promptSize);
-    sys_req(READ, TERMINAL, buffer, &maxSize);
-    if(strlen(buffer) == 0) {
-      printCommandToFile(buffer);
-      tokenize(&argc, argv, buffer);
-      for(i=0; i<NUM_COMMANDS; i++) {
-	if(!strcmp(commands[i], argv[0])) {
-	  repl = functions[i](argc, argv);
-	  break;
+void commhand() {
+	int maxSize, promptSize, i, invalidCommandSize, exitSize;
+	char buffer[129], prompt[60], invalidCommand[128], exitMessage[60];
+	int (*functions[NUM_COMMANDS]) (int, char **);
+	char commands[NUM_COMMANDS][128];
+	int argc;
+	char *argv[5]; 
+	int repl;
+	pcb *temp;
+	maxSize = 129;
+	promptSize = 2;
+	strcpy(prompt, "$>");
+	//functions go below here
+	functions[0] = &help;      strcpy(commands[0], "help");
+	functions[1] = &date;      strcpy(commands[1], "date");
+	functions[2] = &version;   strcpy(commands[2], "version");
+	functions[3] = &ls;        strcpy(commands[3], "ls");
+	functions[4] = &exitMPX;   strcpy(commands[4], "exit");
+	functions[5] = &history;   strcpy(commands[5], "history"); 
+	functions[6] = &createPCB; strcpy(commands[6], "createPCB");
+	functions[7] = &showAll;   strcpy(commands[7], "showAllPCBs");
+	//functions go above here (don't forget to change NUM_COMMANDS)
+	repl = LOOP;
+	setupPCB(temp,"hellother", APP, 19);
+	insertPCB(temp);
+	while(repl) { //Loops until exit command is given
+		buffer[0] = '\0';
+		**argv = NULL;
+		sys_req(WRITE, TERMINAL, prompt, &promptSize);
+		sys_req(READ, TERMINAL, buffer, &maxSize);
+		if(strlen(buffer) > 1) {
+			printCommandToFile(buffer);
+			tokenize(&argc, argv, buffer);
+			for(i=0; i<NUM_COMMANDS; i++) {
+				if(!strcmp(commands[i], argv[0])) {
+					repl = functions[i](argc, argv);
+					break;
+				}
+			}
+			if(i==NUM_COMMANDS) {  //Invalid argument catch
+				strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
+				invalidCommandSize = strlen(invalidCommand);
+				sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
+			}
+			for(i = 0; i < 5; i++) {
+				argv[i] = NULL;
+			}
+		}
 	}
-      } else if(i==NUM_COMMANDS) {  //Invalid argument catch
-	strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
-	invalidCommandSize = strlen(invalidCommand);
-	sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
-      }
-      for(i = 0; i < 5; i++)
-	argv[i] = NULL;
-    }
-  }
-  strcpy(exitMessage,"Goodbye\n");
-  exitSize = strlen(exitMessage);
-  cleanUpHistory();
-  sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
-  **argv = NULL;
-  return 0;
+	strcpy(exitMessage,"Goodbye\n");
+	exitSize = strlen(exitMessage);
+	cleanUpHistory();
+	sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
 }

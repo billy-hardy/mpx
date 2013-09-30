@@ -31,10 +31,9 @@ int help(int argc, char **argv) {
   char *buffer;
   int bufferSize, invCommandSize, cReturnSize;
   if(argc == 1) { //General help 
-    fptr = fopen("help.txt", "r");
+    fptr = fopen("r1/help/help.txt", "r");
   } else { //Specific command help
-    strcpy(file, command);
-    strcat(file, ".txt");
+    sprintf(file, "r1/help/%s.txt", command);
     fptr = fopen(file, "r");
   }
   if(fptr != NULL) { // If file exists, perform writing to terminal

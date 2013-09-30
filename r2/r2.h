@@ -12,9 +12,11 @@
 //constants
 #define SYS 0 //system process
 #define APP 1 //application process
+#define INV_CLASS -1
 #define BLOCKED -1
 #define READY 0
 #define RUNNING 1
+#define INV_PRIORITY -1000
 
 struct pcbstruct {
   char name[11];
@@ -39,22 +41,19 @@ typedef struct {
   pcb *head, *tail;
 } pcb_queue;
 
-//modes
-#define FIFO 1
-#define PRIORITY -1
-
 //error codes
 #define SUCCESS 0
-#define NO_SUCH_MODE -1
-#define PCB_NOT_FOUND -2
-#define NOT_ENOUGH_MEM -3
-#define INVALID_PARAMS -4
+#define PCB_NOT_FOUND -1
+#define NOT_ENOUGH_MEM -2
+#define INVALID_PARAMS -3
 
 //function prototypes
 //definePCB.c
 int createPCB(int argc, char **argv);
 int deletePCB(int argc, char **argv);
-int integerCheck(char *);
+void queueInit();
+int priorityCheck(char *);
+int parseClass(char *);
 //alterPCB.c
 int blockPCB(int argc, char **argv);
 int unblockPCB(int argc, char **argv);
@@ -69,9 +68,9 @@ int showAll(int argc, char **argv);
 void printPCB(pcb *);
 void showQueue(pcb_queue *);
 //PCBProcedures.c
-pcb *allocatePCB();
+void allocatePCB(pcb *newPCB);
 int freePCB(pcb *toFree);
-pcb *setupPCB(char name[], int class, int priority);
+void setupPCB(pcb *toSetup, char name[], int class, int priority);
 int paramsGood(char name[], int class, int priority);
 pcb *findPCB(char *name);
 pcb *find(char *name, pcb_queue *queue);

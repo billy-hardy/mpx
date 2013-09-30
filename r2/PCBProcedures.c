@@ -4,7 +4,7 @@
 pcb *running;
 pcb_queue *ready, *blocked;
 
-pcb *allocatePCB(pcb *newPCB) {
+void allocatePCB(pcb *newPCB) {
   newPCB = (pcb *) sys_alloc_mem(sizeof(pcb));
   if(newPCB != NULL) {
     newPCB->name[0] = '\0';
@@ -20,7 +20,6 @@ pcb *allocatePCB(pcb *newPCB) {
     newPCB->load_address = NULL;
     newPCB->exec_address = NULL;
   }
-  return newPCB;
 }
 
 //believe it works
@@ -36,8 +35,7 @@ int freePCB(pcb *toFree) {
   return returnVal;
 }
 
-pcb *setupPCB(char name[], int class, int priority) {
-  pcb *toSetup;
+void setupPCB(pcb *toSetup, char name[], int class, int priority) {
   int errorCode;
   allocatePCB(toSetup);
   if(toSetup != NULL) {
@@ -61,7 +59,6 @@ pcb *setupPCB(char name[], int class, int priority) {
     errorCode = NOT_ENOUGH_MEM;
   }
   printError(errorCode);
-  return toSetup;
 }
 
 int paramsGood(char name[], int class, int priority) {
@@ -75,8 +72,8 @@ int paramsGood(char name[], int class, int priority) {
 //believe it works
 pcb *findPCB(char *name) {
   pcb *returnVal = NULL;
-  returnVal = (strcmp(name, running->name) == 0) ? running : find(name, &ready); //if not running, check ready queue
-  returnVal = (returnVal != NULL) ? returnVal : find(name, &blocked);   //if NULL, check blocked queue
+  returnVal = (strcmp(name, running->name) == 0) ? running : find(name, ready); //if not running, check ready queue
+  returnVal = (returnVal != NULL) ? returnVal : find(name, blocked);   //if NULL, check blocked queue
   return returnVal;
 }
 
@@ -98,7 +95,7 @@ pcb *find(char *name, pcb_queue *queue) {
 //believe it works
 //TODO: helper function for insertion?
 int insertPCB(pcb *toInsert) {
-  int returnVal;
+  int returnVal, i;
   pcb *curr;
   pcb_queue *queue;
   if(toInsert->state == BLOCKED) {
@@ -112,10 +109,20 @@ int insertPCB(pcb *toInsert) {
   } else if(toInsert->state == READY) {
     queue = ready;
     curr = queue->tail;
-    while(curr->priority < toInsert->priority) {
+	i=0;
+    while(curr != NULL && curr->priority < toInsert->priority) {
       curr = curr->next;
+	  i++;
     }
-    if(curr == NULL) {
+	if(queue->count == 0) {
+		queue->head = queue->tail = toInsert;
+		toInsert->next = toInsert->prev = NULL;
+	} else if(i==0) {
+		queue->tail->prev = toInsert;
+		toInsert->next = queue->tail;
+		queue->tail = toInsert;
+		toInsert->prev = NULL;
+	} else if(curr == NULL) {
       queue->head->next = toInsert;
       toInsert->prev = queue->head;
       queue->head = toInsert;
@@ -126,9 +133,8 @@ int insertPCB(pcb *toInsert) {
       curr->prev = toInsert;
       toInsert->next = curr;
     }
+	queue->count++;
     returnVal = SUCCESS;
-  } else {
-    returnVal = NO_SUCH_MODE;
   }
   return returnVal;
 }
@@ -153,34 +159,44 @@ int removePCB(pcb *toRemove) {
   }
   if(curr == NULL) {
     returnVal = PCB_NOT_FOUND;
-  } else if(i == queue->count) {
-    queue->head = curr->prev;
-    queue->head->next = NULL;
-    curr->next = curr->prev = NULL;
-    returnVal = SUCCESS;
-  } else if(i == 0) {
-    queue->tail = curr->next;
-    queue->tail->prev = NULL;
-    curr->next = curr->prev = NULL;
-    returnVal = SUCCESS;
   } else {
-    curr->next->prev = curr->prev;
-    curr->prev->next = curr->next;
-    curr->next = curr->prev = NULL;
-    returnVal = SUCCESS;
+	  queue->count--;
+	  if(i == queue->count) {
+		queue->head = curr->prev;
+		queue->head->next = NULL;
+		curr->next = curr->prev = NULL;
+		returnVal = SUCCESS;
+	  } else if(i == 0) {
+		queue->tail = curr->next;
+		queue->tail->prev = NULL;
+		curr->next = curr->prev = NULL;
+		returnVal = SUCCESS;
+	  } else {
+		curr->next->prev = curr->prev;
+		curr->prev->next = curr->next;
+		curr->next = curr->prev = NULL;
+		returnVal = SUCCESS;
+	}
   }
   return returnVal;
 }
 
 void printError(int errorCode) {  //This just currently prints out ERROR, not SUCCESS ... fix this.
-  char buffer[100];
-  int bufferSize;
-  if(errorCode == PCB_NOT_FOUND) {
-    strcpy(buffer, "\nProcess specified not found.\n\n");
-  }
-  if(errorCode == INVALID_PARAMS) {
-	strcpy(buffer, "\nParameters are incorrect.\n\n");
+	char buffer[256];
+	int bufferSize;
+	switch(errorCode) {
+		case PCB_NOT_FOUND:
+			strcpy(buffer, "\nProcess specified not found.\n\n");
+			break;
+		case INVALID_PARAMS:
+			strcpy(buffer, "\nParameters are incorrect.\n\n");
+			break;
+		case NOT_ENOUGH_MEM:
+			strcpy(buffer, "\nNot enough memory for system to operate. Please reboot.\n\n");
+			break;
+		default:
+			buffer[0] = '\0';
 	}
-  bufferSize = strlen(buffer);
-  sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+	bufferSize = strlen(buffer);
+	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 }
