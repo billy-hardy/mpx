@@ -84,12 +84,12 @@ void queueInit() {
 	blocked->count = 0;
 }
 
-int priorityCheck(char *in){
+int priorityCheck(char *arg){
   double checkVal;
   int returnVal;
-  checkVal = atof(in);
+  sscanf(arg, "%lf", &checkVal);
   if(fmod(checkVal,1) == 0)
-    returnVal = (int)checkVal;
+    returnVal = (int)(checkVal/1);
   else{
 	returnVal = INV_PRIORITY;
   }

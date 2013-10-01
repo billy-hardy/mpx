@@ -1,6 +1,6 @@
-#include "r1.h"
-#include "..\r2\r2.h"
-
+//#include "r1.h"
+//#include "../r2/r2.h"
+#include "r2.h"
 //Author: Billy Hardy
 //Date Created: 8/28
 //Last Modified: 8/31 by Billy

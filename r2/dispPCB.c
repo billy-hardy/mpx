@@ -63,7 +63,7 @@ int showAll(int argc, char **argv) { //Come up with a way to fix this duplicatio
 		tempPCB = ready->head;
 		while(tempPCB != NULL){
 			pcbsDisplayed++;
-			if(pcbsDisplayed%4)
+			if(!(pcbsDisplayed%4))
 				printPCB(tempPCB);
 			else
 				sys_req(READ, TERMINAL, dummy, &dummySize);

@@ -2,7 +2,8 @@
 #define R2_H
 
 #include <stdio.h>
-#include "../r1/r1.h"
+//#include "../r1/r1.h"
+#include "r1.h"
 
 #define LOOP 1 //loop as before
 #define TRUE 1
