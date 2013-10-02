@@ -92,93 +92,27 @@ pcb *find(char *name, pcb_queue *queue) {
   return returnVal;
 }
 
-//believe it works
-//TODO: helper function for insertion?
-int insertPCB(pcb *toInsert) {
-  int returnVal, i;
-  pcb *curr;
-  pcb_queue *queue;
-  if(toInsert->state == BLOCKED) {
-    queue = blocked;
-    queue->tail->prev = toInsert;
-    toInsert->next = queue->tail;
-    queue->tail = toInsert;
-    toInsert->prev = NULL;
-    queue->count++;
-    returnVal = SUCCESS;
-  } else if(toInsert->state == READY) {
-    queue = ready;
-    curr = queue->tail;
-	i=0;
-    while(curr != NULL && curr->priority < toInsert->priority) {
-      curr = curr->next;
-	  i++;
-    }
-	if(queue->count == 0) {
-		queue->head = queue->tail = toInsert;
-		toInsert->next = toInsert->prev = NULL;
-	} else if(i==0) {
-		queue->tail->prev = toInsert;
-		toInsert->next = queue->tail;
-		queue->tail = toInsert;
-		toInsert->prev = NULL;
-	} else if(curr == NULL) {
-      queue->head->next = toInsert;
-      toInsert->prev = queue->head;
-      queue->head = toInsert;
-      toInsert->next = NULL;
-    } else {
-      curr->prev->next = toInsert;
-      toInsert->prev = curr->prev;
-      curr->prev = toInsert;
-      toInsert->next = curr;
-    }
-	queue->count++;
-    returnVal = SUCCESS;
-  }
-  return returnVal;
-}
+int removePCB(pcb *toRemove){
+	pcb *temp;
+	pcb_queue *queue;
+	
+	int returnVal = NULL;
 
-//Hasn't been compiled
-int removePCB(pcb *toRemove) {
-  int returnVal, i;
-  pcb *curr;
-  pcb_queue *queue;
-  if(toRemove->state == READY) {
-    queue = ready;
-  } else {
-    queue = blocked;
-  }
-  curr = queue->tail;
-  for(i=0; i<queue->count; i++) {
-    if(curr == toRemove) {
-      break;
-    } else {
-      curr = curr->next;
-    }
-  }
-  if(curr == NULL) {
-    returnVal = PCB_NOT_FOUND;
-  } else {
-	  queue->count--;
-	  if(i == queue->count) {
-		queue->head = curr->prev;
-		queue->head->next = NULL;
-		curr->next = curr->prev = NULL;
-		returnVal = SUCCESS;
-	  } else if(i == 0) {
-		queue->tail = curr->next;
-		queue->tail->prev = NULL;
-		curr->next = curr->prev = NULL;
-		returnVal = SUCCESS;
-	  } else {
-		curr->next->prev = curr->prev;
-		curr->prev->next = curr->next;
-		curr->next = curr->prev = NULL;
-		returnVal = SUCCESS;
-	}
-  }
-  return returnVal;
+		if(toRemove->state == BLOCKED) queue = blocked;	
+			else queue = ready;
+		if(queue->head == queue-> tail){
+			queue->head = queue->tail = NULL;
+		}
+		else if(queue->head == temp){
+			queue->head = temp->prev;
+		}
+		else if(queue->tail == temp){
+			queue->tail = temp->next;
+		}
+		else{
+			temp->prev->next = temp->next;
+			temp->next->prev = temp->prev;
+		}	
 }
 
 void printError(int errorCode) {  //This just currently prints out ERROR, not SUCCESS ... fix this.
