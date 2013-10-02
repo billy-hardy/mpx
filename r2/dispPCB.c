@@ -54,20 +54,20 @@ int showAll(int argc, char **argv) { //Come up with a way to fix this duplicatio
 	char dummy[1024];
 	int dummySize;
 	int pcbsDisplayed;
-	pcb *tempPCB;
+	pcb *tempPCB; 
 	
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
     if(ready -> count >0){
-		tempPCB = ready->head;
+		tempPCB = ready->tail;
 		while(tempPCB != NULL){
 			pcbsDisplayed++;
 			if(!(pcbsDisplayed%4))
 				printPCB(tempPCB);
 			else
 				sys_req(READ, TERMINAL, dummy, &dummySize);
-			tempPCB = tempPCB->next;
+			tempPCB = tempPCB->prev;
 		}
 	}
 	else{
@@ -79,7 +79,7 @@ int showAll(int argc, char **argv) { //Come up with a way to fix this duplicatio
 		tempPCB = blocked->head;
 		while(tempPCB != NULL){
 			pcbsDisplayed++;
-			if(pcbsDisplayed%4)
+			if(!(pcbsDisplayed%4))
 				printPCB(tempPCB);
 			else
 				sys_req(READ, TERMINAL, dummy, &dummySize);
