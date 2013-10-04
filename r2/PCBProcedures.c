@@ -26,6 +26,7 @@ int freePCB(pcb *toFree) {
     returnVal = PCB_NOT_FOUND;
   } else {
     sys_free_mem(toFree->bottom);
+		toFree->top = NULL;
     sys_free_mem(toFree);
     returnVal = SUCCESS;
   }
@@ -168,32 +169,33 @@ int insertPCB(pcb *toInsert) {
 int removePCB(pcb *toRemove){
 	pcb *temp;
 	pcb_queue *queue;
-	int returnVal = NULL;
-
-		if(toRemove->state == BLOCKED) queue = blocked;	
-			else queue = ready;
-		if(queue->head == queue-> tail){
-			queue->head = queue->tail = NULL;
-			returnVal = SUCCESS;
-			queue->count--;
+	
+	if(toRemove->state == BLOCKED)
+		queue = blocked;
+	else
+		queue = ready;
+	
+	if(toRemove == queue->head && toRemove == queue->tail){
+		queue->head = NULL;
+		queue->tail = NULL;
+		queue->count--;
+	}
+	else if(toRemove == queue->head){
+		queue->head = queue->head->next;
+		queue->head->prev = NULL;
+		queue->count--;
 		}
-		else if(queue->head == temp){
-			queue->head = temp->prev;
-			returnVal = SUCCESS;
-			queue->count--;
-		}
-		else if(queue->tail == temp){
-			queue->tail = temp->next;
-			returnVal = SUCCESS;
-			queue->count--;
-		}
-		else{
-			temp->prev->next = temp->next;
-			temp->next->prev = temp->prev;
-			returnVal = SUCCESS;
-			queue->count--;
-		}	
-		return returnVal;
+	else if(toRemove == queue->tail){
+		queue->tail = queue->tail->prev;
+		queue->tail->next = NULL;
+		queue->count--;
+	}
+	else{
+		toRemove->prev->next = toRemove->next;
+		toRemove->next->prev = toRemove->prev;
+		queue->count--;		
+	}	
+	return SUCCESS;
 }
 
 void printError(int errorCode) {  //This just currently prints out ERROR, not SUCCESS ... fix this.
