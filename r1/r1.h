@@ -10,10 +10,7 @@
 #define TRUE 1
 #define LOOP 1 //If returned, repl will continue. Return !LOOP to quit
 #define NUM_COMMANDS 17
-#define VERSION 1 //version number
-#define DAY 11    //date of last change
-#define MONTH 9
-#define YEAR 2013
+#define VERSION 2 //version number
 
 //function prototypes
 void tokenize(int *, char *[], char *);

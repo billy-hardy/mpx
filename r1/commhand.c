@@ -118,12 +118,17 @@ void queueInit() {
 //Frees leftover PCBs on Exit
 //Author Billy
 void queueFree() {
+	pcb *temp;
 	while(ready->count > 0) {
-		removePCB(ready->head);
+		temp = ready->head;
+		removePCB(temp);
+		freePCB(temp);
 	}
 	sys_free_mem(ready);
 	while(blocked->count > 0) {
-		removePCB(blocked->head);
+		temp = blocked->head;
+		removePCB(temp);
+		freePCB(temp);
 	}
 	sys_free_mem(blocked);
 }
