@@ -25,7 +25,7 @@ int blockPCB(int argc, char **argv) {
 }
 
 
-//This should work RB
+
 //Parameters: name
 // calls findPCB(), changes PCB to unblocked state
 // and reinserts it to correct queue
@@ -120,4 +120,3 @@ int setPCBPriority(int argc, char **argv) {//Handle the running process
   }
   return LOOP;
 }
-//Just a test to see how this branching works

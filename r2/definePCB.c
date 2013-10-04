@@ -4,8 +4,6 @@
 //Parameters: name, class and priority
 // name must be unique
 // class and priority must be valid
-
-//THIS HAS NOT BEEN COMPILED OR TESTED YET
 int createPCB(int argc, char **argv) {
   pcb *tempPCB = (pcb *)sys_alloc_mem(sizeof(pcb));
 	//pcb tempPCB2;
@@ -26,7 +24,6 @@ int createPCB(int argc, char **argv) {
 							tempPCB->next = NULL;
 							tempPCB->prev = NULL;
 							insertPCB(tempPCB);	
-					//********************Are there error codes for these somewhere.....
 					} else {
 						//Invalid Parameters
 						printError(INVALID_PARAMS);
@@ -47,7 +44,7 @@ int createPCB(int argc, char **argv) {
   return LOOP;	
 }
 
-int deletePCB(int argc, char **argv) {  //Handle a PCB that is currently running??
+int deletePCB(int argc, char **argv) {  
 	pcb *tempPCB;
   if(argc != 2) {
     invalidArgs(argv[0]);

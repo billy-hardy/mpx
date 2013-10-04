@@ -102,9 +102,9 @@ int showAll(int argc, char **argv) { //Come up with a way to fix this duplicatio
   return LOOP;
 }
 
-void showQueue(pcb_queue *in){ //I'd really like to use this to show both queues, but It will mess up pagination of the individual queues, I'll just duplicate a little ...toolazy
+void showQueue(pcb_queue *in){ 
 	pcb *tempPCB;
-	char dummy[512]; //This may need to be either significantly larger, or dynamically allocated
+	char dummy[512]; 
 	int dummySize;
 	int loopVal = 0;
 	
@@ -117,7 +117,7 @@ void showQueue(pcb_queue *in){ //I'd really like to use this to show both queues
 			else
 				sys_req(READ, TERMINAL, dummy, &dummySize); 
 				
-			tempPCB = tempPCB->next; //I think this is correct
+			tempPCB = tempPCB->next; 
 		}		
 	}
 	else{
