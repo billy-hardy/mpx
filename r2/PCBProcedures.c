@@ -1,6 +1,5 @@
 #include "r2.h"
 
-//globals
 
 void allocatePCB(pcb *newPCB) {
   if(newPCB != NULL) {
@@ -19,7 +18,6 @@ void allocatePCB(pcb *newPCB) {
   }
 }
 
-//believe it works
 int freePCB(pcb *toFree) {
   int returnVal;
   if(toFree == NULL) {
@@ -67,7 +65,7 @@ int paramsGood(char name[], int class, int priority) {
   return returnVal;
 }
 
-//believe it works
+
 pcb *findPCB(char *name) {
   pcb *returnVal = NULL;
   returnVal = (strcmp(name, running->name) == 0) ? running : find(name, ready); //if not running, check ready queue
@@ -75,7 +73,7 @@ pcb *findPCB(char *name) {
   return returnVal;
 }
 
-//believe it works
+
 pcb *find(char *name, pcb_queue *queue) {
   int i;
   pcb *curr = queue->head, *returnVal = NULL;
@@ -225,6 +223,7 @@ void printError(int errorCode) {
 			break;
 		default:
 			buffer[0] = '\0';
+			break;
 	}
 	bufferSize = strlen(buffer);
 	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
