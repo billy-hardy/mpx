@@ -1,0 +1,5 @@
+
+DELETE
+
+delete n	Destroys the process with the corresponding name, n.
+		---n must be the name of a previously created process.

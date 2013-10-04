@@ -1,0 +1,5 @@
+
+BLOCK
+
+block n		Changes the state of the process with name n to blocked.
+		---n must be the name of a previously created process.

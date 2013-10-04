@@ -1,0 +1,4 @@
+
+SHOWBLOCKED
+
+showBlocked	Displays each process in the blocked state.

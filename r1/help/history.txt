@@ -1,0 +1,4 @@
+
+HISTORY
+
+history		Displays all previously entered commands from current session.

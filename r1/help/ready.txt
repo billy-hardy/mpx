@@ -1,0 +1,4 @@
+
+SHOWREADY	
+
+showReady	Displays each process in the ready state.

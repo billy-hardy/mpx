@@ -1,0 +1,6 @@
+
+SETPRIORITY
+
+setPriority n p		Changes the priority of the process with name n to p.
+			---n must be the name of a previously created process.
+			---p must be between -128 and 127, inclusive. Higher number = higher priority.

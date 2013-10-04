@@ -1,0 +1,5 @@
+
+RESUME
+
+resume n	Changes the status of the process with name n to not suspended.
+		---n must be the name of a previously created process.

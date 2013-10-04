@@ -1,0 +1,5 @@
+
+SHOWPCB
+
+showPCB n	Displays the name, class, state, status and priority of the process with name n.
+		---n must be the name of a previously created process.
