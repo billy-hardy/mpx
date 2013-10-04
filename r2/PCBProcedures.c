@@ -201,7 +201,7 @@ int removePCB(pcb *toRemove){
 	return SUCCESS;
 }
 
-void printError(int errorCode) {  //This just currently prints out ERROR, not SUCCESS ... fix this.
+void printError(int errorCode) {  
 	char buffer[256];
 	int bufferSize;
 	switch(errorCode) {
@@ -213,6 +213,15 @@ void printError(int errorCode) {  //This just currently prints out ERROR, not SU
 			break;
 		case NOT_ENOUGH_MEM:
 			strcpy(buffer, "\nNot enough memory for system to operate. Please reboot.\n\n");
+			break;
+		case INVALID_PRIOR:
+			strcpy(buffer, "\nInvalid Priority.  Must be between -128 and 127.\n\n");
+			break;
+		case INVALID_CLASS:
+			strcpy(buffer, "\nInvalid Class Value.  Must be sys or app.\n\n");
+			break;
+		case DUP_PCB:
+			strcpy(buffer, "\nPCB Name already exists.  Names must be unique!\n\n");
 			break;
 		default:
 			buffer[0] = '\0';

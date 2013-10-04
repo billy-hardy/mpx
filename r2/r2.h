@@ -44,9 +44,12 @@ typedef struct {
 
 //error codes
 #define SUCCESS 0
-#define PCB_NOT_FOUND -1
+#define PCB_NOT_FOUND -4
 #define NOT_ENOUGH_MEM -2
 #define INVALID_PARAMS -3
+#define DUP_PCB -5
+#define INVALID_PRIOR -6
+#define INVALID_CLASS -7
 
 //function prototypes
 //definePCB.c

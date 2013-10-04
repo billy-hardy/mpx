@@ -30,7 +30,7 @@ void tokenize(int *argc, char *argv[], char *input) {
 
 //Author: Billy Hardy
 //Date Created: 8/28
-//Last Modified: 8/29 by Billy
+//Last Modified: 10/3 by Robert
 //Pre-cond: none
 //Post-cond: command is read in from user, parsed, matched to
 //           a function, function is executed, and loop
@@ -67,14 +67,6 @@ void commhand() {
 	//functions go above here (don't forget to change NUM_COMMANDS)
 	repl = LOOP;
   queueInit();
-	//setupPCB(temp,"hellother", APP, 19);
-	//insertPCB(temp);
-	//setupPCB(temp2,"whyherro", APP, 10);
-	//insertPCB(temp2);
-	//setupPCB(temp3, "testerOne", APP, 15);
-	//insertPCB(temp3);
-	//setupPCB(temp4, "testerTwo", APP, 20);
-	//insertPCB(temp4);
 	buffer[0] = '\0';
 	strcpy(buffer, "Welcome to MPX!\n\n");
 	maxSize = strlen(buffer);
@@ -82,7 +74,6 @@ void commhand() {
 	maxSize = 129;
 	while(repl) { //Loops until exit command is given
 		buffer[0] = '\0';
-		//**argv = NULL;
 		sys_req(WRITE, TERMINAL, prompt, &promptSize);
 		sys_req(READ, TERMINAL, buffer, &maxSize);
 		if(strlen(buffer) > 1) {
@@ -112,6 +103,8 @@ void commhand() {
 	delay(750);
 }
 
+//Initializes the Queue
+//Author Billy, Last Edited, Robert
 void queueInit() {
 	ready = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
 	ready->head = NULL;
@@ -122,7 +115,8 @@ void queueInit() {
 	blocked->tail = NULL;
 	blocked->count = 0;
 }
-
+//Frees leftover PCBs on Exit
+//Author Billy
 void queueFree() {
 	while(ready->count > 0) {
 		removePCB(ready->head);
