@@ -17,7 +17,6 @@
 #define BLOCKED -1
 #define READY 0
 #define RUNNING 1
-#define INV_PRIORITY -1000
 
 struct pcbstruct {
   char name[11];

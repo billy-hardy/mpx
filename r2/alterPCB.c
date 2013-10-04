@@ -95,28 +95,33 @@ int resumePCB(int argc, char **argv) { //Handle the running process  ** Does thi
 
 //Parameters: name and priority
 // calls findPCB(), changes PCB priority
-// and removes and reinserts it (to maintain priority queue)
-int setPCBPriority(int argc, char **argv) {//Handle the running process
+// and if it's in the ready queue, 
+// removes and reinserts it (to maintain priority queue)
+// Otherwise, just changes priority
+int setPCBPriority(int argc, char **argv) {
 	pcb *tempPCB;
 	int errorCode;
 	int processVal;
   if(argc != 3) { 
     invalidArgs(argv[0]);
   } else {
-	if((tempPCB = findPCB(argv[1])) != NULL){
-		
-		if((processVal =  priorityCheck(argv[2])) != INV_PRIORITY){
-			removePCB(tempPCB);
-			tempPCB->priority = processVal;
-			insertPCB(tempPCB);
+		if((tempPCB = findPCB(argv[1])) != NULL) {
+		processVal =  priorityCheck(argv[2]);
+			if(processVal != INVALID_PRIOR) {
+				if(tempPCB->state == BLOCKED) {
+					tempPCB->priority = processVal;
+				} else {
+					removePCB(tempPCB);
+					tempPCB->priority = processVal;
+					insertPCB(tempPCB);
+				}
+			} else {
+				errorCode = INVALID_PRIOR;		
+			}
+		} else {
+			errorCode = PCB_NOT_FOUND;
 		}
-		else{
-		printError(INV_PRIORITY);		
-		}
-	}
-	else
-		errorCode = PCB_NOT_FOUND;
-	printError(errorCode);
+		printError(errorCode);
   }
   return LOOP;
 }

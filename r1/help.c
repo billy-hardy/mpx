@@ -28,28 +28,35 @@ int help(int argc, char **argv) {
  void displayHelp(int argc, char *command) {
   FILE *fptr;
   char file[48],cReturn[2], invalidCommand[30];
-  char *buffer;
-  int bufferSize, invCommandSize, cReturnSize;
+  char buffer[256];
+  int bufferSize, invCommandSize, cReturnSize, linesPrinted;
   if(argc == 1) { //General help 
     fptr = fopen("r1/help/help.txt", "r");
   } else { //Specific command help
-    sprintf(file, "r1/help/%s.txt", command);
+		if(strlen(command) > 8) {
+			if(strcmp(command, "setPriority") == 0) {
+				strcpy(command, "priority");
+			} else if(strcmp(command, "showBlocked") == 0) {
+				strcpy(command, "blocked");
+			} else if(strcmp(command, "showReady") == 0) {
+				strcpy(command, "ready");
+			}
+		}
+		sprintf(file, "r1/help/%s.txt", command);
     fptr = fopen(file, "r");
   }
   if(fptr != NULL) { // If file exists, perform writing to terminal
-	fseek(fptr, 0L, SEEK_END);
-	bufferSize = ftell(fptr);
-	fseek(fptr, 0L, SEEK_SET);
-    
-	buffer = (char *)sys_alloc_mem(bufferSize+1);
-	fread(buffer, bufferSize, 1, fptr);
-	buffer[bufferSize]=0;
-		
-	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
-
-    strcpy(cReturn, "\n");
-    cReturnSize = 1;
-    sys_req(WRITE, TERMINAL, cReturn, &cReturnSize);
+		linesPrinted = 0;
+		while(fgets(buffer, 80, fptr) != NULL) {
+			bufferSize = strlen(buffer);
+			sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+			if(linesPrinted == 22) {
+			  sys_req(READ, TERMINAL, buffer, &bufferSize);
+				linesPrinted = 0;
+			}
+			linesPrinted++;
+		}
+		fclose(fptr);
   } else { //Invalid command / file Catch.
     strcpy(invalidCommand,"No such command\n");
     invCommandSize = strlen(invalidCommand);

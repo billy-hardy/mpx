@@ -2,26 +2,24 @@
 
 int history(int argc, char *argv[]) {
   FILE *fptr;
-  char *buffer;
+  char buffer[130];
   int bufferSize;
+	int lines = 0;
   if(argc != 1) {
-    //TODO: print error
+    invalidArgs(argv[0]);
   } else {
     fptr = fopen("history.txt", "r");
-	fseek(fptr, 0L, SEEK_END);
-	bufferSize = ftell(fptr);
-	fseek(fptr, 0L, SEEK_SET);
-    
-	buffer = (char *)sys_alloc_mem(bufferSize+1);
-	fread(buffer, bufferSize, 1, fptr);
-	
-    sys_req(WRITE, TERMINAL, buffer, &bufferSize);
-  }
-	buffer[0] = '\n';
-	bufferSize = strlen(buffer);
-	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
-	fclose(fptr);
-	sys_free_mem(buffer);
+		while(fgets(buffer, 100, fptr) != NULL) {
+			bufferSize = strlen(buffer);
+			sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+			if(lines == 22) {
+			  sys_req(READ, TERMINAL, buffer, &bufferSize);
+				lines = 0;
+			}
+			lines++;
+		}
+		fclose(fptr);
+	}
   return LOOP;
 }
 

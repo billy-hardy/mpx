@@ -49,55 +49,52 @@ int showBlocked(int argc, char **argv) {
 int showAll(int argc, char **argv) { //Come up with a way to fix this duplication
 	char dummy[1024];
 	int dummySize;
-	int pcbsDisplayed = 0;
+	int pcbsDisplayed = 1;
 	pcb *tempPCB = NULL; 
 	
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
     if(ready -> count >0){
-		strcpy(dummy,"\nREADY QUEUE:\n");
-		dummySize = strlen(dummy);
-		sys_req(WRITE, TERMINAL, dummy, &dummySize);
-		tempPCB = ready->head;
-		while(tempPCB != NULL){
-			pcbsDisplayed++;
-			if((pcbsDisplayed%4))
-				printPCB(tempPCB);
-			else{
-				sys_req(READ, TERMINAL, dummy, &dummySize);
-				printPCB(tempPCB);
+			strcpy(dummy,"\nREADY QUEUE:\n");
+			dummySize = strlen(dummy);
+			sys_req(WRITE, TERMINAL, dummy, &dummySize);
+			tempPCB = ready->head;
+			while(tempPCB != NULL){
+				if((pcbsDisplayed%4))
+					printPCB(tempPCB);
+				else {
+					printPCB(tempPCB);
+					sys_req(READ, TERMINAL, dummy, &dummySize);
+				}
+				pcbsDisplayed++;
+				tempPCB = tempPCB->next;
 			}
-			tempPCB = tempPCB->next;
+		} else{
+			strcpy(dummy, "\nNothing exists in the Ready queue!\n");
+			dummySize = strlen(dummy);
+			sys_req(WRITE, TERMINAL, dummy, &dummySize);	
 		}
-	}
-	else{
-		strcpy(dummy, "\nNothing exists in the Ready queue!\n");
-		dummySize = strlen(dummy);
-		sys_req(WRITE, TERMINAL, dummy, &dummySize);	
-	}
-	if(blocked -> count > 0){
-	strcpy(dummy,"\nBLOCKED QUEUE:\n");
-	dummySize = strlen(dummy);
-	sys_req(WRITE, TERMINAL, dummy, &dummySize);
-		tempPCB = blocked->head;
-		while(tempPCB != NULL){
-			pcbsDisplayed++;
-			if((pcbsDisplayed%4))
-				printPCB(tempPCB);
-			else{
-				sys_req(READ, TERMINAL, dummy, &dummySize);
-				printPCB(tempPCB);
+		if(blocked -> count > 0){
+			strcpy(dummy,"\nBLOCKED QUEUE:\n");
+			dummySize = strlen(dummy);
+			sys_req(WRITE, TERMINAL, dummy, &dummySize);
+			tempPCB = blocked->head;
+			while(tempPCB != NULL){
+				if((pcbsDisplayed%4))
+					printPCB(tempPCB);
+				else {
+					printPCB(tempPCB);
+					sys_req(READ, TERMINAL, dummy, &dummySize);
+				}
+				pcbsDisplayed++;
+				tempPCB = tempPCB->next;
 			}
-			tempPCB = tempPCB->next; //Changed this to prev;
+		} else{
+			strcpy(dummy, "\nNothing exists in the Blocked queue!\n");
+			dummySize = strlen(dummy);
+			sys_req(WRITE, TERMINAL, dummy, &dummySize);	
 		}
-	
-	}
-	else{
-		strcpy(dummy, "\nNothing exists in the Blocked queue!\n");
-		dummySize = strlen(dummy);
-		sys_req(WRITE, TERMINAL, dummy, &dummySize);	
-	}
   }
   return LOOP;
 }
@@ -106,17 +103,17 @@ void showQueue(pcb_queue *in){
 	pcb *tempPCB;
 	char dummy[512]; 
 	int dummySize;
-	int loopVal = 0;
-	
+	int pcbsPrinted = 1;
 	if(in -> count > 0){
 		tempPCB = in -> head;
-		while(loopVal < in -> count){
-			loopVal++;
-			if(loopVal%4)
+		while(tempPCB != NULL){
+			if(pcbsPrinted%4) {
 				printPCB(tempPCB);
-			else
+			} else {
+				printPCB(tempPCB);
 				sys_req(READ, TERMINAL, dummy, &dummySize); 
-				
+			}
+			pcbsPrinted++;
 			tempPCB = tempPCB->next; 
 		}		
 	}

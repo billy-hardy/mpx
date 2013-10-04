@@ -50,13 +50,13 @@ int deletePCB(int argc, char **argv) {
     invalidArgs(argv[0]);
   }
   else {  
-	if((tempPCB = findPCB(argv[1]))!= NULL){
-		removePCB(tempPCB);
-		freePCB(tempPCB);
-	}
-	else{
-		printError(PCB_NOT_FOUND);
-	}
+		if((tempPCB = findPCB(argv[1]))!= NULL){
+			removePCB(tempPCB);
+			freePCB(tempPCB);
+		}
+		else{
+			printError(PCB_NOT_FOUND);
+		}
   }
   return LOOP;
 }

@@ -2,9 +2,21 @@
 GENERAL HELP
 For more information on a specific command, type help command-name
 
-COMMANDS
-date		Displays or modifies the current system date.
-exit		Gracefully exits MPX upon y/n confirmation.
-help		Displays general help information.
-ls		Displays a list of files and subdirectories in a directory.
-version		Displays the current version of MPX.
+COMMANDS (-)
+-date		Displays or modifies the current system date.
+-exit		Gracefully exits MPX upon y/n confirmation.
+-help		Displays general help information.
+-ls		Displays a list of files and subdirectories in a directory.
+-version	Displays the current version of MPX.
+-history	Displays every command entered from the current session.
+-create		Creates a new process and inserts it into the proper queue.
+-delete		Destroys the process after removing it from its queue.
+-block		Changes the state of the process to blocked.
+-unblock	Changes the state of the process to ready.
+-suspend	Changes the status of the process to suspended.
+-resume		Changes the status of the process to not suspended.
+-setPriority	Changes the priority of the process.
+-showPCB	Displays the process's information.
+-showReady	Displays each process in the ready state.
+-showBlocked	Displays each process in the blocked state.
+-showAll	Displays all processes currently in the system.

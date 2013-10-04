@@ -46,23 +46,23 @@ void commhand() {
 	promptSize = 2;
 	strcpy(prompt, "$>");
 	//functions go below here
-	functions[0] = &help;      strcpy(commands[0], "help");
-	functions[1] = &date;      strcpy(commands[1], "date");
-	functions[2] = &version;   strcpy(commands[2], "version");
-	functions[3] = &ls;        strcpy(commands[3], "ls");
-	functions[4] = &exitMPX;   strcpy(commands[4], "exit");
-	functions[5] = &history;   strcpy(commands[5], "history"); 
-	functions[6] = &createPCB; strcpy(commands[6], "createPCB");
-	functions[7] = &showAll;   strcpy(commands[7], "showAllPCBs");
-	functions[8] = &deletePCB; strcpy(commands[8], "deletePCB");
-	functions[9] = &blockPCB;  strcpy(commands[9], "blockPCB");
-	functions[10] = &unblockPCB;  strcpy(commands[10], "unblockPCB");
-	functions[11] = &suspendPCB;  strcpy(commands[11], "suspendPCB");
-	functions[12] = &resumePCB;  strcpy(commands[12], "resumePCB");
-	functions[13] = &setPCBPriority;  strcpy(commands[13], "setPCBPriority");
-	functions[14] = &showPCB;   strcpy(commands[14], "showPCB");
-	functions[15] = &showReady; strcpy(commands[15], "showReady");
-	functions[16] = &showBlocked; strcpy(commands[16], "showBlocked");
+	functions[0] = &help;             strcpy(commands[0], "help");
+	functions[1] = &date;             strcpy(commands[1], "date");
+	functions[2] = &version;          strcpy(commands[2], "version");
+	functions[3] = &ls;               strcpy(commands[3], "ls");
+	functions[4] = &exitMPX;          strcpy(commands[4], "exit");
+	functions[5] = &history;          strcpy(commands[5], "history"); 
+	functions[6] = &createPCB;        strcpy(commands[6], "create");
+	functions[7] = &setPCBPriority;   strcpy(commands[7], "setPriority");
+	functions[8] = &deletePCB;        strcpy(commands[8], "delete");
+	functions[9] = &blockPCB;         strcpy(commands[9], "block");
+	functions[10] = &unblockPCB;      strcpy(commands[10], "unblock");
+	functions[11] = &suspendPCB;      strcpy(commands[11], "suspend");
+	functions[12] = &resumePCB;       strcpy(commands[12], "resume");
+	functions[13] = &showAll;         strcpy(commands[13], "showAll");
+	functions[14] = &showPCB;         strcpy(commands[14], "showPCB");
+	functions[15] = &showReady;       strcpy(commands[15], "showReady");
+	functions[16] = &showBlocked;     strcpy(commands[16], "showBlocked");
 	
 	//functions go above here (don't forget to change NUM_COMMANDS)
 	repl = LOOP;
@@ -121,7 +121,9 @@ void queueFree() {
 	while(ready->count > 0) {
 		removePCB(ready->head);
 	}
+	sys_free_mem(ready);
 	while(blocked->count > 0) {
 		removePCB(blocked->head);
 	}
+	sys_free_mem(blocked);
 }
