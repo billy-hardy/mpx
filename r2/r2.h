@@ -8,7 +8,7 @@
 #define LOOP 1 //loop as before
 #define TRUE 1
 #define FALSE 0
-#define STACK_SIZE 1024
+#define STACK_SIZE 100
 
 //constants
 #define SYS 0 //system process
@@ -71,12 +71,16 @@ void showQueue(pcb_queue *);
 //PCBProcedures.c
 void allocatePCB(pcb *newPCB);
 int freePCB(pcb *toFree);
-void setupPCB(pcb *toSetup, char name[], int class, int priority);
+void setupPCB(pcb *toSetup, char *name, int class, int priority);
 int paramsGood(char name[], int class, int priority);
 pcb *findPCB(char *name);
 pcb *find(char *name, pcb_queue *queue);
 int insertPCB(pcb *toInsert);
 int removePCB(pcb *toRemove);
 void printError(int errorCode);
+
+extern pcb *running;
+extern pcb_queue *ready;
+extern pcb_queue *blocked;
 
 #endif

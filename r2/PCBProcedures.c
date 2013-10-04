@@ -1,11 +1,8 @@
 #include "r2.h"
 
 //globals
-pcb *running;
-pcb_queue *ready, *blocked;
 
 void allocatePCB(pcb *newPCB) {
-  newPCB = (pcb *) sys_alloc_mem(sizeof(pcb));
   if(newPCB != NULL) {
     newPCB->name[0] = '\0';
     newPCB->class = SYS;
@@ -35,7 +32,7 @@ int freePCB(pcb *toFree) {
   return returnVal;
 }
 
-void setupPCB(pcb *toSetup, char name[], int class, int priority) {
+void setupPCB(pcb *toSetup, char *name, int class, int priority) {
   int errorCode;
   allocatePCB(toSetup);
   if(toSetup != NULL) {
@@ -92,27 +89,111 @@ pcb *find(char *name, pcb_queue *queue) {
   return returnVal;
 }
 
+
+int insertPCB(pcb *toInsert) {
+  pcb *curr, *temp;
+	toInsert->next = NULL;
+	toInsert->prev = NULL;
+  if(toInsert->state == BLOCKED) {
+    if(blocked->tail == NULL) { //queue is empty
+      blocked->tail = blocked->head = toInsert;
+      toInsert->next = toInsert->prev = NULL;
+    } else { //insert in the tail
+      toInsert->next = blocked->tail;
+      toInsert->prev = NULL;
+      blocked->tail = toInsert;
+    }
+    blocked->count++;
+  } else if(toInsert->state == READY) {
+			if(ready->head == NULL && ready->tail == NULL){ //Queue is empty
+				ready->head = toInsert;
+				ready->tail = toInsert; //May want this to just start out NULL
+				ready->count++;
+				return SUCCESS; //Bad I know
+			}
+			else{
+				curr = ready->head;
+				temp = NULL;
+				while(curr !=NULL && curr->priority >= toInsert->priority)
+					curr = curr->next;
+					
+				if(curr == NULL){ //passed Tail, make the new Tail
+					if(ready->tail == ready->head){
+						temp = ready->head;
+						temp->next = toInsert;
+						toInsert->prev = temp;
+						ready->tail = toInsert;
+						ready->count++;	
+						return SUCCESS;
+					}
+					else{
+						ready->tail->next = toInsert;
+						toInsert->prev = ready->tail;
+						ready->tail = toInsert;
+						ready->count++;
+						return SUCCESS;
+					}
+				}
+				if(curr == ready->head){ //Make new Head
+					if(ready->tail ==ready->head){
+						temp = ready->head;
+						toInsert->next = temp;
+						temp->prev = toInsert;
+						ready->head = toInsert;
+						ready->count++;
+						return SUCCESS;
+					}
+					else{
+						toInsert->next = ready->head;
+						ready->head->prev = toInsert;
+						ready->head = toInsert;
+						ready->count++;
+						return SUCCESS;
+					}
+				}
+				else{
+					toInsert->next = curr;
+					toInsert->prev = curr->prev;
+					curr->prev->next = toInsert;
+					curr->prev = toInsert;
+					ready->count++;
+					return SUCCESS;
+				}
+			}			
+		}
+		return NULL;
+}
+
+
 int removePCB(pcb *toRemove){
 	pcb *temp;
 	pcb_queue *queue;
-	
 	int returnVal = NULL;
 
 		if(toRemove->state == BLOCKED) queue = blocked;	
 			else queue = ready;
 		if(queue->head == queue-> tail){
 			queue->head = queue->tail = NULL;
+			returnVal = SUCCESS;
+			queue->count--;
 		}
 		else if(queue->head == temp){
 			queue->head = temp->prev;
+			returnVal = SUCCESS;
+			queue->count--;
 		}
 		else if(queue->tail == temp){
 			queue->tail = temp->next;
+			returnVal = SUCCESS;
+			queue->count--;
 		}
 		else{
 			temp->prev->next = temp->next;
 			temp->next->prev = temp->prev;
+			returnVal = SUCCESS;
+			queue->count--;
 		}	
+		return returnVal;
 }
 
 void printError(int errorCode) {  //This just currently prints out ERROR, not SUCCESS ... fix this.
@@ -134,3 +215,10 @@ void printError(int errorCode) {  //This just currently prints out ERROR, not SU
 	bufferSize = strlen(buffer);
 	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 }
+
+
+
+
+
+
+

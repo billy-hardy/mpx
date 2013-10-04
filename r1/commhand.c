@@ -1,6 +1,10 @@
 //#include "r1.h"
 //#include "../r2/r2.h"
 #include "r2.h"
+
+
+pcb *running;
+pcb_queue *ready, *blocked;
 //Author: Billy Hardy
 //Date Created: 8/28
 //Last Modified: 8/31 by Billy
@@ -41,8 +45,7 @@ void commhand() {
 	int argc;
 	char *argv[5]; 
 	int repl;
-	pcb *temp;
-	maxSize = 129;
+	pcb *temp, *temp2, *temp3, *temp4; 
 	promptSize = 2;
 	strcpy(prompt, "$>");
 	//functions go below here
@@ -54,13 +57,35 @@ void commhand() {
 	functions[5] = &history;   strcpy(commands[5], "history"); 
 	functions[6] = &createPCB; strcpy(commands[6], "createPCB");
 	functions[7] = &showAll;   strcpy(commands[7], "showAllPCBs");
+	functions[8] = &deletePCB; strcpy(commands[8], "deletePCB");
+	functions[9] = &blockPCB;  strcpy(commands[9], "blockPCB");
+	functions[10] = &unblockPCB;  strcpy(commands[10], "unblockPCB");
+	functions[11] = &suspendPCB;  strcpy(commands[11], "suspendPCB");
+	functions[12] = &resumePCB;  strcpy(commands[12], "resumePCB");
+	functions[13] = &setPCBPriority;  strcpy(commands[13], "setPCBPriority");
+	functions[14] = &showPCB;   strcpy(commands[14], "showPCB");
+	functions[15] = &showReady; strcpy(commands[15], "showReady");
+	functions[16] = &showBlocked; strcpy(commands[16], "showBlocked");
+	
 	//functions go above here (don't forget to change NUM_COMMANDS)
 	repl = LOOP;
-	setupPCB(temp,"hellother", APP, 19);
-	insertPCB(temp);
+  queueInit();
+	//setupPCB(temp,"hellother", APP, 19);
+	//insertPCB(temp);
+	//setupPCB(temp2,"whyherro", APP, 10);
+	//insertPCB(temp2);
+	//setupPCB(temp3, "testerOne", APP, 15);
+	//insertPCB(temp3);
+	//setupPCB(temp4, "testerTwo", APP, 20);
+	//insertPCB(temp4);
+	buffer[0] = '\0';
+	strcpy(buffer, "Welcome to MPX!\n\n");
+	maxSize = strlen(buffer);
+	sys_req(WRITE, TERMINAL, buffer, &maxSize);
+	maxSize = 129;
 	while(repl) { //Loops until exit command is given
 		buffer[0] = '\0';
-		**argv = NULL;
+		//**argv = NULL;
 		sys_req(WRITE, TERMINAL, prompt, &promptSize);
 		sys_req(READ, TERMINAL, buffer, &maxSize);
 		if(strlen(buffer) > 1) {
@@ -86,4 +111,16 @@ void commhand() {
 	exitSize = strlen(exitMessage);
 	cleanUpHistory();
 	sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
+}
+
+void queueInit() {
+
+	ready = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
+	ready->head = NULL;
+	ready->tail = NULL;
+	ready->count = 0;
+	blocked = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
+	blocked->head = NULL;
+	blocked->tail = NULL;
+	blocked->count = 0;
 }

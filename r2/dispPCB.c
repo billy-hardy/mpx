@@ -1,9 +1,5 @@
 #include "r2.h"
 
-extern pcb *running;
-extern pcb_queue *ready;
-extern pcb_queue *blocked;
-
 //Parameters: name
 // Must display name, class, state, suspended status and priority
 // Displays error if PCB doesn't exist
@@ -54,24 +50,27 @@ int showAll(int argc, char **argv) { //Come up with a way to fix this duplicatio
 	char dummy[1024];
 	int dummySize;
 	int pcbsDisplayed;
-	pcb *tempPCB; 
+	pcb *tempPCB = NULL; 
 	
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
     if(ready -> count >0){
-		tempPCB = ready->tail;
+		pcbsDisplayed=0;
+		tempPCB = ready->head;
 		while(tempPCB != NULL){
 			pcbsDisplayed++;
-			if(!(pcbsDisplayed%4))
+			if((pcbsDisplayed%4))
 				printPCB(tempPCB);
-			else
+			else{
 				sys_req(READ, TERMINAL, dummy, &dummySize);
-			tempPCB = tempPCB->prev;
+				printPCB(tempPCB);
+			}
+			tempPCB = tempPCB->next;
 		}
 	}
 	else{
-		strcpy(dummy, "Nothing exists in the Ready queue!\n");
+		strcpy(dummy, "\nNothing exists in the Ready queue!\n");
 		dummySize = strlen(dummy);
 		sys_req(WRITE, TERMINAL, dummy, &dummySize);	
 	}
@@ -79,16 +78,18 @@ int showAll(int argc, char **argv) { //Come up with a way to fix this duplicatio
 		tempPCB = blocked->head;
 		while(tempPCB != NULL){
 			pcbsDisplayed++;
-			if(!(pcbsDisplayed%4))
+			if((pcbsDisplayed%4))
 				printPCB(tempPCB);
-			else
+			else{
 				sys_req(READ, TERMINAL, dummy, &dummySize);
-			tempPCB = tempPCB->next;
+				printPCB(tempPCB);
+			}
+			tempPCB = tempPCB->next; //Changed this to prev;
 		}
 	
 	}
 	else{
-		strcpy(dummy, "Nothing exists in the Blocked queue!\n");
+		strcpy(dummy, "\nNothing exists in the Blocked queue!\n");
 		dummySize = strlen(dummy);
 		sys_req(WRITE, TERMINAL, dummy, &dummySize);	
 	}

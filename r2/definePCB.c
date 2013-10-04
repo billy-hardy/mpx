@@ -1,8 +1,5 @@
 #include "r2.h"
 
-extern pcb *running;
-extern pcb_queue *ready;
-extern pcb_queue *blocked;
 
 //Parameters: name, class and priority
 // name must be unique
@@ -13,7 +10,7 @@ int createPCB(int argc, char **argv) {
   pcb *tempPCB;
   int classVal, priorityVal;
   int bufferSize;
-  char messageBuffer[60];
+  char messageBuffer[128];
   if(argc != 4) {
     invalidArgs(argv[0]);
   }
@@ -24,6 +21,8 @@ int createPCB(int argc, char **argv) {
 					if (paramsGood(argv[1], classVal, priorityVal)){
 						setupPCB(tempPCB, argv[1], classVal, priorityVal); 
 						if(tempPCB != NULL)
+							tempPCB->next = NULL;
+							tempPCB->prev = NULL;
 							insertPCB(tempPCB);	
 					//********************Are there error codes for these somewhere.....
 					} else {
@@ -50,7 +49,7 @@ int createPCB(int argc, char **argv) {
 		}
 		else{
 		//Duplicate Name
-			strcpy(messageBuffer, "Invalid Name! Process of this name already exists! Use \"help\" for more information.\n");
+			strcpy(messageBuffer, "Invalid Name! Process of this name already exists!\nUse \"help\" for more information.\n");
 			bufferSize = strlen(messageBuffer);
 			sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
 		}
@@ -75,14 +74,7 @@ int deletePCB(int argc, char **argv) {  //Handle a PCB that is currently running
   return LOOP;
 }
 	
-void queueInit() {
-	ready = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
-	ready->head = ready->tail = NULL;
-	ready->count = 0;
-	blocked = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
-	blocked->head = blocked->tail = NULL;
-	blocked->count = 0;
-}
+
 
 int priorityCheck(char *arg){
   double checkVal;
