@@ -7,7 +7,8 @@
 
 //THIS HAS NOT BEEN COMPILED OR TESTED YET
 int createPCB(int argc, char **argv) {
-  pcb *tempPCB;
+  pcb *tempPCB = (pcb *)sys_alloc_mem(sizeof(pcb));
+	//pcb tempPCB2;
   int classVal, priorityVal;
   int bufferSize;
   char messageBuffer[128];
@@ -20,6 +21,7 @@ int createPCB(int argc, char **argv) {
 				if((priorityVal = priorityCheck(argv[3])) != INV_PRIORITY){
 					if (paramsGood(argv[1], classVal, priorityVal)){
 						setupPCB(tempPCB, argv[1], classVal, priorityVal); 
+						//tempPCB = &tempPCB2;
 						if(tempPCB != NULL)
 							tempPCB->next = NULL;
 							tempPCB->prev = NULL;
