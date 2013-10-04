@@ -1,9 +1,5 @@
 #include "r2.h"
 
-extern pcb *running;
-extern pcb_queue *ready;
-extern pcb_queue *blocked;
-
 //Parameters: name
 // calls findPCB(), changes PCB to blocked state
 // and reinserts it to correct queue
@@ -19,7 +15,7 @@ int blockPCB(int argc, char **argv) {
 		process->state = BLOCKED;
 		insertPCB(process);
       }
-      errorCode = SUCCESS; //Move this up?********************
+      errorCode = SUCCESS; 
     } else {
       errorCode = PCB_NOT_FOUND;
     }
@@ -115,8 +111,7 @@ int setPCBPriority(int argc, char **argv) {//Handle the running process
 			insertPCB(tempPCB);
 		}
 		else{
-		//Not an integer ... ADD ERROR CODES FOR THIS
-		
+		printError(INV_PRIORITY);		
 		}
 	}
 	else

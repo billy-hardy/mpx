@@ -17,6 +17,11 @@ int history(int argc, char *argv[]) {
 	
     sys_req(WRITE, TERMINAL, buffer, &bufferSize);
   }
+	buffer[0] = '\n';
+	bufferSize = strlen(buffer);
+	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+	fclose(fptr);
+	sys_free_mem(buffer);
   return LOOP;
 }
 

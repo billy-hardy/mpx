@@ -8,7 +8,7 @@
 #define LOOP 1 //loop as before
 #define TRUE 1
 #define FALSE 0
-#define STACK_SIZE 1024
+#define STACK_SIZE 100
 
 //constants
 #define SYS 0 //system process
@@ -44,9 +44,12 @@ typedef struct {
 
 //error codes
 #define SUCCESS 0
-#define PCB_NOT_FOUND -1
+#define PCB_NOT_FOUND -4
 #define NOT_ENOUGH_MEM -2
 #define INVALID_PARAMS -3
+#define DUP_PCB -5
+#define INVALID_PRIOR -6
+#define INVALID_CLASS -7
 
 //function prototypes
 //definePCB.c
@@ -71,12 +74,16 @@ void showQueue(pcb_queue *);
 //PCBProcedures.c
 void allocatePCB(pcb *newPCB);
 int freePCB(pcb *toFree);
-void setupPCB(pcb *toSetup, char name[], int class, int priority);
+void setupPCB(pcb *toSetup, char *name, int class, int priority);
 int paramsGood(char name[], int class, int priority);
 pcb *findPCB(char *name);
 pcb *find(char *name, pcb_queue *queue);
 int insertPCB(pcb *toInsert);
 int removePCB(pcb *toRemove);
 void printError(int errorCode);
+
+extern pcb *running;
+extern pcb_queue *ready;
+extern pcb_queue *blocked;
 
 #endif

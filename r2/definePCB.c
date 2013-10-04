@@ -1,8 +1,5 @@
 #include "r2.h"
 
-extern pcb *running;
-extern pcb_queue *ready;
-extern pcb_queue *blocked;
 
 //Parameters: name, class and priority
 // name must be unique
@@ -10,49 +7,41 @@ extern pcb_queue *blocked;
 
 //THIS HAS NOT BEEN COMPILED OR TESTED YET
 int createPCB(int argc, char **argv) {
-  pcb *tempPCB;
+  pcb *tempPCB = (pcb *)sys_alloc_mem(sizeof(pcb));
+	//pcb tempPCB2;
   int classVal, priorityVal;
   int bufferSize;
-  char messageBuffer[60];
+  char messageBuffer[128];
   if(argc != 4) {
     invalidArgs(argv[0]);
   }
   else {
 		if(findPCB(argv[1]) == NULL){
 			if((classVal= parseClass(argv[2])) != INV_CLASS){
-				if((priorityVal = priorityCheck(argv[3])) != INV_PRIORITY){
+				if((priorityVal = priorityCheck(argv[3])) != INVALID_PRIOR){
 					if (paramsGood(argv[1], classVal, priorityVal)){
 						setupPCB(tempPCB, argv[1], classVal, priorityVal); 
+						//tempPCB = &tempPCB2;
 						if(tempPCB != NULL)
+							tempPCB->next = NULL;
+							tempPCB->prev = NULL;
 							insertPCB(tempPCB);	
 					//********************Are there error codes for these somewhere.....
 					} else {
-						//Parameters invalid (strlen, out of bounds ints)
-						strcpy(messageBuffer, "Invalid Parameters!  Use \"help\" for more information.\n");
-						bufferSize = strlen(messageBuffer);
-						sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
+						//Invalid Parameters
+						printError(INVALID_PARAMS);
 					}
-				}
-				else{
+				}	else{
 				//invalid Priority Value (not an int)
-					strcpy(messageBuffer, "Invalid Priority Value!  Use \"help\" for more information.\n");
-					bufferSize = strlen(messageBuffer);
-					sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
+					printError(INVALID_PRIOR);
 				}			
-			}
-			else{
+			}else{
 		//invalid Class Value (not an int)
-				strcpy(messageBuffer, "Invalid Class Value!  Use \"help\" for more information.\n");
-				bufferSize = strlen(messageBuffer);
-				sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
-				}
-		
-		}
-		else{
+				printError(INVALID_CLASS);
+				}		
+		}	else{
 		//Duplicate Name
-			strcpy(messageBuffer, "Invalid Name! Process of this name already exists! Use \"help\" for more information.\n");
-			bufferSize = strlen(messageBuffer);
-			sys_req(WRITE, TERMINAL, messageBuffer, &bufferSize);
+			printError(DUP_PCB);
 		}
 	}
   return LOOP;	
@@ -75,14 +64,7 @@ int deletePCB(int argc, char **argv) {  //Handle a PCB that is currently running
   return LOOP;
 }
 	
-void queueInit() {
-	ready = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
-	ready->head = ready->tail = NULL;
-	ready->count = 0;
-	blocked = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
-	blocked->head = blocked->tail = NULL;
-	blocked->count = 0;
-}
+
 
 int priorityCheck(char *arg){
   double checkVal;
@@ -91,8 +73,10 @@ int priorityCheck(char *arg){
   if(fmod(checkVal,1) == 0)
     returnVal = (int)(checkVal/1);
   else{
-	returnVal = INV_PRIORITY;
+	returnVal = INVALID_PRIOR;
   }
+	if(!(-128<=returnVal && returnVal <=127))
+		returnVal = INVALID_PRIOR;
   return returnVal;
 }
 
