@@ -1,7 +1,4 @@
-//#include "r1.h"
-//#include "../r2/r2.h"
 #include "r2.h"
-
 
 pcb *running;
 pcb_queue *ready, *blocked;
@@ -109,12 +106,13 @@ void commhand() {
 	}
 	strcpy(exitMessage,"Goodbye\n");
 	exitSize = strlen(exitMessage);
-	cleanUpHistory();
 	sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
+	cleanUpHistory();
+	queueFree();
+	delay(750);
 }
 
 void queueInit() {
-
 	ready = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
 	ready->head = NULL;
 	ready->tail = NULL;
@@ -123,4 +121,13 @@ void queueInit() {
 	blocked->head = NULL;
 	blocked->tail = NULL;
 	blocked->count = 0;
+}
+
+void queueFree() {
+	while(ready->count > 0) {
+		removePCB(ready->head);
+	}
+	while(blocked->count > 0) {
+		removePCB(blocked->head);
+	}
 }

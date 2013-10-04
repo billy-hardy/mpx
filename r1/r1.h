@@ -30,6 +30,7 @@ int version(int, char **);
 int history(int, char **);
 void printCommandToFile(char []);
 void cleanUpHistory();
+void queueFree();
 
 
 #endif
