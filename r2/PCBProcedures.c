@@ -96,12 +96,15 @@ int insertPCB(pcb *toInsert) {
 	toInsert->next = NULL;
 	toInsert->prev = NULL;
   if(toInsert->state == BLOCKED) {
-    if(blocked->tail == NULL) { //queue is empty
-      blocked->tail = blocked->head = toInsert;
-      toInsert->next = toInsert->prev = NULL;
+    if(blocked->head == NULL) { //queue is empty
+      blocked->tail = toInsert;
+			blocked->head = toInsert;
+      toInsert->next = NULL;
+			toInsert->prev = NULL;
     } else { //insert in the tail
-      toInsert->next = blocked->tail;
-      toInsert->prev = NULL;
+      blocked->tail->next = toInsert;
+			toInsert->prev = blocked->tail;
+      toInsert->next = NULL;
       blocked->tail = toInsert;
     }
     blocked->count++;

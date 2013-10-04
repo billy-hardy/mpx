@@ -49,14 +49,16 @@ int showBlocked(int argc, char **argv) {
 int showAll(int argc, char **argv) { //Come up with a way to fix this duplication
 	char dummy[1024];
 	int dummySize;
-	int pcbsDisplayed;
+	int pcbsDisplayed = 0;
 	pcb *tempPCB = NULL; 
 	
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
     if(ready -> count >0){
-		pcbsDisplayed=0;
+		strcpy(dummy,"\nREADY QUEUE:\n");
+		dummySize = strlen(dummy);
+		sys_req(WRITE, TERMINAL, dummy, &dummySize);
 		tempPCB = ready->head;
 		while(tempPCB != NULL){
 			pcbsDisplayed++;
@@ -75,6 +77,9 @@ int showAll(int argc, char **argv) { //Come up with a way to fix this duplicatio
 		sys_req(WRITE, TERMINAL, dummy, &dummySize);	
 	}
 	if(blocked -> count > 0){
+	strcpy(dummy,"\nBLOCKED QUEUE:\n");
+	dummySize = strlen(dummy);
+	sys_req(WRITE, TERMINAL, dummy, &dummySize);
 		tempPCB = blocked->head;
 		while(tempPCB != NULL){
 			pcbsDisplayed++;
