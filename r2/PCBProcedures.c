@@ -1,11 +1,8 @@
 #include "r2.h"
 
 //globals
-pcb *running;
-pcb_queue *ready, *blocked;
 
 void allocatePCB(pcb *newPCB) {
-  newPCB = (pcb *) sys_alloc_mem(sizeof(pcb));
   if(newPCB != NULL) {
     newPCB->name[0] = '\0';
     newPCB->class = SYS;
@@ -29,13 +26,14 @@ int freePCB(pcb *toFree) {
     returnVal = PCB_NOT_FOUND;
   } else {
     sys_free_mem(toFree->bottom);
+		toFree->top = NULL;
     sys_free_mem(toFree);
     returnVal = SUCCESS;
   }
   return returnVal;
 }
 
-void setupPCB(pcb *toSetup, char name[], int class, int priority) {
+void setupPCB(pcb *toSetup, char *name, int class, int priority) {
   int errorCode;
   allocatePCB(toSetup);
   if(toSetup != NULL) {
@@ -92,30 +90,118 @@ pcb *find(char *name, pcb_queue *queue) {
   return returnVal;
 }
 
+
+int insertPCB(pcb *toInsert) {
+  pcb *curr, *temp;
+	toInsert->next = NULL;
+	toInsert->prev = NULL;
+  if(toInsert->state == BLOCKED) {
+    if(blocked->head == NULL) { //queue is empty
+      blocked->tail = toInsert;
+			blocked->head = toInsert;
+      toInsert->next = NULL;
+			toInsert->prev = NULL;
+    } else { //insert in the tail
+      blocked->tail->next = toInsert;
+			toInsert->prev = blocked->tail;
+      toInsert->next = NULL;
+      blocked->tail = toInsert;
+    }
+    blocked->count++;
+  } else if(toInsert->state == READY) {
+			if(ready->head == NULL && ready->tail == NULL){ //Queue is empty
+				ready->head = toInsert;
+				ready->tail = toInsert; //May want this to just start out NULL
+				ready->count++;
+				return SUCCESS; //Bad I know
+			}
+			else{
+				curr = ready->head;
+				temp = NULL;
+				while(curr !=NULL && curr->priority >= toInsert->priority)
+					curr = curr->next;
+					
+				if(curr == NULL){ //passed Tail, make the new Tail
+					if(ready->tail == ready->head){
+						temp = ready->head;
+						temp->next = toInsert;
+						toInsert->prev = temp;
+						ready->tail = toInsert;
+						ready->count++;	
+						return SUCCESS;
+					}
+					else{
+						ready->tail->next = toInsert;
+						toInsert->prev = ready->tail;
+						ready->tail = toInsert;
+						ready->count++;
+						return SUCCESS;
+					}
+				}
+				if(curr == ready->head){ //Make new Head
+					if(ready->tail ==ready->head){
+						temp = ready->head;
+						toInsert->next = temp;
+						temp->prev = toInsert;
+						ready->head = toInsert;
+						ready->count++;
+						return SUCCESS;
+					}
+					else{
+						toInsert->next = ready->head;
+						ready->head->prev = toInsert;
+						ready->head = toInsert;
+						ready->count++;
+						return SUCCESS;
+					}
+				}
+				else{
+					toInsert->next = curr;
+					toInsert->prev = curr->prev;
+					curr->prev->next = toInsert;
+					curr->prev = toInsert;
+					ready->count++;
+					return SUCCESS;
+				}
+			}			
+		}
+		return NULL;
+}
+
+
 int removePCB(pcb *toRemove){
 	pcb *temp;
 	pcb_queue *queue;
 	
-	int returnVal = NULL;
-
-		if(toRemove->state == BLOCKED) queue = blocked;	
-			else queue = ready;
-		if(queue->head == queue-> tail){
-			queue->head = queue->tail = NULL;
+	if(toRemove->state == BLOCKED)
+		queue = blocked;
+	else
+		queue = ready;
+	
+	if(toRemove == queue->head && toRemove == queue->tail){
+		queue->head = NULL;
+		queue->tail = NULL;
+		queue->count--;
+	}
+	else if(toRemove == queue->head){
+		queue->head = queue->head->next;
+		queue->head->prev = NULL;
+		queue->count--;
 		}
-		else if(queue->head == temp){
-			queue->head = temp->prev;
-		}
-		else if(queue->tail == temp){
-			queue->tail = temp->next;
-		}
-		else{
-			temp->prev->next = temp->next;
-			temp->next->prev = temp->prev;
-		}	
+	else if(toRemove == queue->tail){
+		queue->tail = queue->tail->prev;
+		queue->tail->next = NULL;
+		queue->count--;
+	}
+	else{
+		toRemove->prev->next = toRemove->next;
+		toRemove->next->prev = toRemove->prev;
+		queue->count--;		
+	}	
+	return SUCCESS;
 }
 
-void printError(int errorCode) {  //This just currently prints out ERROR, not SUCCESS ... fix this.
+void printError(int errorCode) {  
 	char buffer[256];
 	int bufferSize;
 	switch(errorCode) {
@@ -128,9 +214,25 @@ void printError(int errorCode) {  //This just currently prints out ERROR, not SU
 		case NOT_ENOUGH_MEM:
 			strcpy(buffer, "\nNot enough memory for system to operate. Please reboot.\n\n");
 			break;
+		case INVALID_PRIOR:
+			strcpy(buffer, "\nInvalid Priority.  Must be between -128 and 127.\n\n");
+			break;
+		case INVALID_CLASS:
+			strcpy(buffer, "\nInvalid Class Value.  Must be sys or app.\n\n");
+			break;
+		case DUP_PCB:
+			strcpy(buffer, "\nPCB Name already exists.  Names must be unique!\n\n");
+			break;
 		default:
 			buffer[0] = '\0';
 	}
 	bufferSize = strlen(buffer);
 	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 }
+
+
+
+
+
+
+
