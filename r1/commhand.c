@@ -40,7 +40,7 @@ void commhand() {
 	int (*functions[NUM_COMMANDS]) (int, char **);
 	char commands[NUM_COMMANDS][128];
 	int argc;
-	char *argv[5]; 
+	char *argv[65]; 
 	int repl;
 	pcb *temp, *temp2, *temp3, *temp4; 
 	promptSize = 2;
@@ -90,7 +90,7 @@ void commhand() {
 				invalidCommandSize = strlen(invalidCommand);
 				sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
 			}
-			for(i = 0; i < 5; i++) {
+			for(i = 0; i < 65; i++) {
 				argv[i] = NULL;
 			}
 		}

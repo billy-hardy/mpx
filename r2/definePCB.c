@@ -60,19 +60,13 @@ int deletePCB(int argc, char **argv) {
   }
   return LOOP;
 }
-	
+
 
 
 int priorityCheck(char *arg){
-  double checkVal;
   int returnVal;
-  sscanf(arg, "%lf", &checkVal);
-  if(fmod(checkVal,1) == 0)
-    returnVal = (int)(checkVal/1);
-  else{
-	returnVal = INVALID_PRIOR;
-  }
-	if(!(-128<=returnVal && returnVal <=127))
+  sscanf(arg, "%i", &returnVal);
+	if((-128>returnVal || returnVal >127))
 		returnVal = INVALID_PRIOR;
   return returnVal;
 }
@@ -88,4 +82,3 @@ int parseClass(char *c) {
 	}
 	return returnVal;
 }
-

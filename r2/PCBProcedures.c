@@ -59,7 +59,7 @@ void setupPCB(pcb *toSetup, char *name, int class, int priority) {
 
 int paramsGood(char name[], int class, int priority) {
   int returnVal;
-  returnVal = (strlen(name) < 11 && strlen(name) > 7);
+  returnVal = strlen(name) < 11;
   returnVal = returnVal && (class == SYS || class == APP);
   returnVal = returnVal && (priority < 128 && priority > -129);
   return returnVal;

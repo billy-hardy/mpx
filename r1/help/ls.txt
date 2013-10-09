@@ -5,4 +5,3 @@ ls				Displays all files and sub-directoires
 				--- within the current directory
 ls [drive:][path]		Displays all files within 
 				--- the given directory
-				
