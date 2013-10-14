@@ -12,6 +12,8 @@ git add r1/mpx_supt.c
 git add r1/r1.h
 git add r1/version.c
 git add r1/history.c
+git add r1/clear.c
+git add r1/exec.c
 
 git add r1/help/date.txt
 git add r1/help/exit.txt
