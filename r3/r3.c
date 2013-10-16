@@ -17,8 +17,10 @@ void interrupt dispatch() {
   if(running != NULL) {
     removePCB(running);
     running->state = RUNNING;
-    _SS = FP_SEG(running->bottom);
-    _SP = FP_OFF(running->bottom) + SYS_STACK_SIZE;
+    new_ss = FP_SEG(running->top);
+    new_sp = FP_OFF(running->top) + SYS_STACK_SIZE;
+    _SS = new_ss;
+    _SP = new_sp;
   } else {
     //restore stack pointers
     _SS = ss_save;
@@ -28,10 +30,6 @@ void interrupt dispatch() {
   }
 }
 
-
-void mkFPStackTop(unsigned char *stack_top) {
-  stack_top = MK_FP(ss_save, sp_save);
-}
 
 void interrupt sys_call() {
   params *param_ptr = (params*) (MK_FP(_SS, _SP)+sizeof(context));
