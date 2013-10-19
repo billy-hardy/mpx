@@ -1,10 +1,10 @@
 #include "r2.h"
-
+#include "r3.h"
 
 
 void main() {
-
-  sys_init(MODULE_R2); //don't forget to change version
+  sys_init(MODULE_R3); //don't forget to change version
+  r3Init();
   commhand();
   sys_exit();
 }

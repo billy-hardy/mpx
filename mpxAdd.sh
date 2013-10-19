@@ -39,3 +39,6 @@ git add r2/alterPCB.c
 git add r2/definePCB.c
 git add r2/dispPCB.c
 git add r2/r2.h
+
+git add r3/r3.c
+git add r3/r3.h
