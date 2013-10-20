@@ -2,7 +2,6 @@
 #define R2_H
 
 #include <stdio.h>
-//#include "../r1/r1.h"
 #include "r1.h"
 
 #define LOOP 1 //loop as before
@@ -80,6 +79,7 @@ pcb *find(char *name, pcb_queue *queue);
 int insertPCB(pcb *toInsert);
 int removePCB(pcb *toRemove);
 void printError(int errorCode);
+pcb *getNextRunning();
 
 extern pcb *running;
 extern pcb_queue *ready;

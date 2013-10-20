@@ -40,7 +40,7 @@ void commhand() {
 	int (*functions[NUM_COMMANDS]) (int, char **);
 	char commands[NUM_COMMANDS][128];
 	int argc;
-	char *argv[65]; 
+	char *argv[65]; //This may need to be increased <-----------------
 	int repl;
 	pcb *temp, *temp2, *temp3, *temp4; 
 	promptSize = 2;
