@@ -5,18 +5,18 @@
 //REMEMBER NULCH = '\0'
 
 //Accepts program name, and optional int priority parameter
-void load(int argc, char **argv){
+int load(int argc, char **argv){
 	int priorityVal;
 	
 	//Check arguments
-	if(argc != 2 || argc !=3){
+	if(argc == 2 || argc ==3){
 		if(argc == 2)
 			priorityVal = 0;
 		else{
 			priorityVal = checkPriority(argv[2]);
 			if(priorityVal == INVALID_PRIOR){
 				printError(priorityVal);
-				return; //I think I can do this.
+				return;
 			}
 			//Call to LoadProgram here
 			loadProgram(argv, priorityVal);
@@ -24,8 +24,25 @@ void load(int argc, char **argv){
 	}
 	else
 		invalidArgs(argv[0]);
+	return LOOP;
+}
+//Accepts Program Name to be terminated.  PCBName = Program Name -.mpx
+int terminate(int argc, char **argv){
+	pcb *tempPCB;
+	//check arguments
+	if(argc == 2){
+		tempPCB = findPCB(argv[1]);
+		if(tempPCB != NULL)
+			terminateMemory(tempPCB);
+		else
+			printError(PCB_NOT_FOUND);
+	}
+	else
+		invalidArgs(argv[0]);
+	return LOOP;
 }
 
+//Loads program into PCB memory, and sets appropriate registers.
 void loadProgram(char **argv, int priorityVal){
 	int sysCheckReturnVal = 0, sysLoadProgramReturnVal = 0;
 	int programLength, programStartOffset;
@@ -69,15 +86,11 @@ void loadProgram(char **argv, int priorityVal){
 	}
 }
 
-//I believe that this should work
-void terminate(char *pcbName){
-	pcb *tempPCB;
-	tempPCB = findPCB(pcbName);
-	if(tempPCB != NULL){
-		removePCB(tempPCB);
-		sys_free_mem(tempPCB->load_address); //I think <-----****
-		freePCB(tempPCB);
-	}	
+//Frees memory associated with PCB.
+void terminateMemory(pcb *pcbName){
+	removePCB(pcbName); //Remove from Queue
+	sys_free_mem(pcbName->load_address); //Free Load Address
+	freePCB(pcbName); //Free remaining PCB memory
 }
 
 

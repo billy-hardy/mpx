@@ -9,10 +9,10 @@ void r3Init();
 
 //R4 Prototypes
 int load(int, char **);
+int terminate(int, char **);
 void loadProgram(char **, int); 
-void terminate(char *);
+void terminateMemory(char *);
 
-//DO I NEED A LOAD PROGRAM AS WELL?
 //**********************************************Don't forget to make it so SYS PCBs can't be suspended.
 
 //temp commands
