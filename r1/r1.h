@@ -9,11 +9,11 @@
 //constants
 #define TRUE 1
 #define LOOP 1 //If returned, repl will continue. Return !LOOP to quit
-#define NUM_COMMANDS 18
+#define NUM_COMMANDS 19
 #define VERSION 3 //version number
 
 //function prototypes
-void tokenize(int *, char *[], char *);
+void tokenize(int *, char *[], char *, const char *);
 void commhand();
 int eval(char *);
 void invalidArgs(char *);

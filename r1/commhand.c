@@ -15,13 +15,13 @@ pcb_queue *ready, *blocked;
 //Pre-cond: input is user input, words separated by spaces or tabs
 //Post-cond: input is split on the spaces and tabs and written to *argv
 //           and *argc contains the length of *argv
-void tokenize(int *argc, char *argv[], char *input) {
+void tokenize(int *argc, char *argv[], char *input, const char *delimeters) {
   char *token;
   int tempArgC=0;
-  token = strtok(input, " \t\n");
+  token = strtok(input, delimeters);
   while(token != NULL){
     argv[tempArgC] = token;
-    token = strtok(NULL, " \t\n");
+    token = strtok(NULL, delimeters);
     tempArgC++;
   }
   *argc = tempArgC;
@@ -35,27 +35,30 @@ void tokenize(int *argc, char *argv[], char *input) {
 //Post-cond: command is read in from user, parsed, matched to
 //           a function, function is executed, and loop
 void commhand() {
-  int maxSize, promptSize, i, invalidCommandSize, exitSize;
-  char buffer[129], prompt[60], invalidCommand[128], exitMessage[60];
+  int maxSize, promptSize, i, invalidCommandSize, exitSize, numCommands;
+  char buffer[129], prompt[60], invalidCommand[128], exitMessage[60], *commands[65];
   int repl;
   pcb *temp, *temp2, *temp3, *temp4; 
   promptSize = 2;
   strcpy(prompt, "$>");
-  repl = LOOP;
   queueInit();
   buffer[0] = '\0';
   strcpy(buffer, "Welcome to MPX!\n\n");
   maxSize = strlen(buffer);
   sys_req(WRITE, TERMINAL, buffer, &maxSize);
   maxSize = 129;
-  while(repl) { //Loops until exit command is given
+  do { //Loops until exit command is given
     buffer[0] = '\0';
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
     sys_req(READ, TERMINAL, buffer, &maxSize);
-    if(strlen(buffer) > 1) {
-      repl = eval(buffer);
-    }
-  }
+		tokenize(&numCommands, commands, buffer, ";");
+		for(i=0; i<numCommands; i++) {
+			if(strlen(commands[i]) > 1) {
+				repl = eval(commands[i]);
+			}
+			if(!repl) break;
+		}
+  } while(repl);
   strcpy(exitMessage,"Goodbye\n");
   exitSize = strlen(exitMessage);
   sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
@@ -65,8 +68,8 @@ void commhand() {
 }
 
 int eval(char *buffer) {
-  int argc, repl;
-  char *argv[65];
+  int argc, repl, i, invalidCommandSize;
+  char *argv[65], invalidCommand[100], print[129];
   int (*functions[NUM_COMMANDS]) (int, char **);
   char commands[NUM_COMMANDS][128];
   //functions go below here
@@ -75,7 +78,7 @@ int eval(char *buffer) {
   functions[2] = &version;          strcpy(commands[2], "version");
   functions[3] = &ls;               strcpy(commands[3], "ls");
   functions[4] = &exitMPX;          strcpy(commands[4], "exit");
-  functions[5] = &history;          strcpy(commands[5], "history"); 
+  functions[5] = &history;          strcpy(commands[5], "history");
   functions[6] = &createPCB;        strcpy(commands[6], "create");
   functions[7] = &setPCBPriority;   strcpy(commands[7], "setPriority");
   functions[8] = &deletePCB;        strcpy(commands[8], "delete");
@@ -89,16 +92,17 @@ int eval(char *buffer) {
   functions[16] = &showBlocked;     strcpy(commands[16], "showBlocked");
   functions[17] = &exec;            strcpy(commands[17], "exec");
   functions[18] = &clearScreen;     strcpy(commands[18], "clear");
-
+	
   //functions go above here
-  printCommandToFile(buffer);
-  tokenize(&argc, argv, buffer);
-  for(i=0; i<NUM_COMMANDS; i++) {
-    if(!strcmp(commands[i], argv[0])) {
-      repl = functions[i](argc, argv);
-      break;
-    }
-  }
+	strcpy(print, buffer);
+	tokenize(&argc, argv, buffer, " \t\n");
+	for(i=0; i<NUM_COMMANDS; i++) {
+		if(!strcmp(commands[i], argv[0])) {
+			repl = functions[i](argc, argv);
+			break;
+		}
+	}
+  printCommandToFile(print);
   if(i==NUM_COMMANDS) {  //Invalid argument catch
     strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
     invalidCommandSize = strlen(invalidCommand);

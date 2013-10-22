@@ -3,28 +3,35 @@
 int exec(int argc, char **argv) {
   int returnVal = LOOP;
   if(argc != 1) {
-    int i;
+    int i, j, numCommands, fLength;
     FILE *fptr;
-    char buffer[129], errorMessage[128];
+    char *buffer, errorMessage[128], *commands[1000];
     int errorMessageSize;
     for(i=1; i<argc; i++) {
       fptr = fopen(argv[i], "r");
-      if(fptr != NULL) {
-	while(fscanf(fptr, "%s;", buffer) != EOF) {
-	  returnVal = eval(buffer);
-	  if(returnVal != LOOP)
-	    break;
+			if(fptr != NULL) {
+				fseek(fptr, 0, SEEK_END);
+				fLength = ftell(fptr);
+				rewind(fptr);
+				buffer = (char *)sys_alloc_mem(fLength*sizeof(char));
+				fread(buffer, 1, fLength, fptr);
+				tokenize(&numCommands, commands, buffer, ";");
+				for(j=0; j<numCommands; j++) {
+					returnVal = eval(commands[i]);
+					if(!returnVal) break;
+				}
+				for(j=0; j<numCommands; j++) {
+					commands[j] = NULL;
+				}
+			} else {
+				strcpy(errorMessage, "Invalid file.\n");
+				errorMessageSize = strlen(errorMessage);
+				sys_req(WRITE, TERMINAL, errorMessage, &errorMessageSize);
+			}
+			fclose(fptr);
+		} 
+	} else {
+		invalidArgs(argv[0]);
 	}
-	if(returnVal != LOOP)
-	  break;
-      } else {
-	strcpy(errorMessage, "Invalid file.\n");
-	errorMessageSize = strlen(errorMessage);
-	sys_req(WRITE, TERMINAL, errorMessage, &errorMessageSize);
-      }
-    } 
-  } else {
-    invalidArgs(argv[0]);
-  }
-  return returnVal;
+	return returnVal;
 }

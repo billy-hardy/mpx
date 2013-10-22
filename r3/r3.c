@@ -1,4 +1,5 @@
 #include "r3.h"
+#include "r1.h"
 
 unsigned short ss_save;
 unsigned short sp_save;
@@ -32,7 +33,10 @@ void interrupt dispatch() {
 
 
 void interrupt sys_call() {
-  params *param_ptr = (params*) (MK_FP(_SS, _SP)+sizeof(context));
+  char *stack;
+  params *param_ptr;
+  stack = MK_FP(_SS, _SP);
+  param_ptr = (params*) (stack+sizeof(context));
   //save stack pointers
   ss_save = _SS;
   sp_save = _SP;
@@ -86,6 +90,7 @@ int callDispatch(int argc, char *argv[]) {
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
-    
+
   }
+  return LOOP;
 }

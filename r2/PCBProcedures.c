@@ -1,4 +1,5 @@
 #include "r2.h"
+#include "r3.h"
 
 
 void allocatePCB(pcb *newPCB) {

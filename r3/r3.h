@@ -1,4 +1,5 @@
 #include <dos.h>
+#include "r2.h"
 
 //Prototypes
 void interrupt dispatch();
