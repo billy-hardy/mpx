@@ -8,7 +8,8 @@ void load_procs(char *, int, int, void *);
 void r3Init();
 
 //R4 Prototypes
-void loadProgram(int argc, char **argv); 
+int load(int, char **);
+void loadProgram(char **, int); 
 void terminate(char *);
 
 //DO I NEED A LOAD PROGRAM AS WELL?
