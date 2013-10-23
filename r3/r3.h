@@ -27,7 +27,7 @@ int loadTestProcess(int, char **);
 
 void mkFPStackTop(unsigned char *);
 
-#define SYS_STACK_SIZE 1024
+#define SYS_STACK_SIZE 200
 
 typedef struct params {
   int op_code;

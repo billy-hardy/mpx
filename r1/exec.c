@@ -5,7 +5,7 @@ int exec(int argc, char **argv) {
   if(argc != 1) {
     int i, j, numCommands, fLength;
     FILE *fptr;
-    char *buffer, errorMessage[128], *commands[1000];
+    char *buffer, errorMessage[128], commands[100][129];
     int errorMessageSize;
     for(i=1; i<argc; i++) {
       fptr = fopen(argv[i], "r");
@@ -21,7 +21,7 @@ int exec(int argc, char **argv) {
 					if(!returnVal) break;
 				}
 				for(j=0; j<numCommands; j++) {
-					commands[j] = NULL;
+					commands[j][0] = '\0';
 				}
 			} else {
 				strcpy(errorMessage, "Invalid file.\n");

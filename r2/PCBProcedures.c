@@ -9,18 +9,8 @@ unsigned short new_sp;
 
 void allocatePCB(pcb *newPCB) {
   if(newPCB != NULL) {
-    newPCB->name[0] = '\0';
-    newPCB->class = SYS;
-    newPCB->priority = 0;
-    newPCB->state = READY;
-    newPCB->suspended = FALSE;
-    newPCB->next = NULL;
-    newPCB->prev = NULL;
-    newPCB->top = NULL;
-    newPCB->bottom = NULL;
-    newPCB->memory_size = 0;
-    newPCB->load_address = NULL;
-    newPCB->exec_address = NULL;
+		newPCB->bottom = (unsigned char *) sys_alloc_mem(STACK_SIZE*sizeof(unsigned char));
+		newPCB->top = newPCB->bottom + STACK_SIZE - sizeof(context);
   }
 }
 
@@ -47,8 +37,6 @@ void setupPCB(pcb *toSetup, char *name, int class, int priority) {
       toSetup->priority = priority;
       toSetup->state = READY;
       toSetup->suspended = FALSE;
-      toSetup->bottom = (unsigned char *) sys_alloc_mem(STACK_SIZE*sizeof(unsigned char));
-      toSetup->top = toSetup->bottom + STACK_SIZE - sizeof(context);
       toSetup->memory_size = 0;
       toSetup->load_address = NULL;
       toSetup->exec_address = NULL;
@@ -227,6 +215,9 @@ void printError(int errorCode) {
   case DUP_PCB:
     strcpy(buffer, "\nPCB Name already exists.  Names must be unique!\n\n");
     break;
+	case SUSP_SYS_PROC:
+		strcpy(buffer, "\nUnable to suspend system procedures.\n\n");
+		break;
   default:
     buffer[0] = '\0';
     break;
@@ -262,7 +253,7 @@ void interrupt dispatch() {
     removePCB(running);
     running->state = RUNNING;
     new_ss = FP_SEG(running->top);
-    new_sp = FP_OFF(running->top) + SYS_STACK_SIZE;
+    new_sp = FP_OFF(running->top);
     _SS = new_ss;
     _SP = new_sp;
   } else {
@@ -272,28 +263,38 @@ void interrupt dispatch() {
     ss_save = NULL;
     sp_save = NULL;
   }
-	iret();
 }
 
 
 void interrupt sys_call() {
-  char *stack;
-  params *param_ptr;
-  stack = MK_FP(_SS, _SP);
-  param_ptr = (params*) (stack+sizeof(context));
-  //save stack pointers
-  ss_save = _SS;
-  sp_save = _SP;
+  //char *stack;
+   static params *param_ptr;
+  running->top = MK_FP(_SS, _SP);
+  
+
   //switch to temp stack
   new_ss = FP_SEG(&sys_stack);
   new_sp = FP_OFF(&sys_stack) + SYS_STACK_SIZE;
   _SS = new_ss;
   _SP = new_sp;
+	
+	param_ptr = (params*) (running->top+sizeof(context));
 	if(running != NULL) {
 		switch(param_ptr->op_code) {
 		case(IDLE):
 			running->state = READY;
-			insertPCB(running);
+			if(ready->head == NULL) { //queue is empty
+				ready->tail = running;
+				ready->head = running;
+				running->next = NULL;
+				running->prev = NULL;
+			} else { //insert in the tail
+				ready->tail->next = running;
+				running->prev = ready->tail;
+				running->next = NULL;
+				ready->tail = running;
+			}
+			ready->count++;
 			break;
 		case(EXIT):
 			freePCB(running);
@@ -302,7 +303,6 @@ void interrupt sys_call() {
 		}
 	}
   dispatch();
-	iret();
 }
 
 void r3Init() {

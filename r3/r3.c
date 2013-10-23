@@ -26,8 +26,10 @@ int loadTestProcess(int argc, char *argv[]) {
 		functions[2] = &test3_R3; strcpy(names[2], "test3"); classes[2] = APP; priorities[2] = 0;
 		functions[3] = &test4_R3; strcpy(names[3], "test4"); classes[3] = APP; priorities[3] = 0;
 		functions[4] = &test5_R3; strcpy(names[4], "test5"); classes[4] = SYS; priorities[4] = 0;
-		for(i=0; i<3; i++) {
+		
+		for(i=0; i<5; i++) {
 			if(findPCB(names[i]) == NULL) {
+				processes[i] = sys_alloc_mem(sizeof(pcb));
 				setupPCB(processes[i], names[i], classes[i], priorities[i]);
 				contexts[i] = (context *) processes[i]->top;
 				load_procs(processes[i], contexts[i], functions[i]);
@@ -43,7 +45,7 @@ int callDispatch(int argc, char *argv[]) {
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
-		sys_call();
+		dispatch();
   }
   return LOOP;
 }

@@ -7,7 +7,7 @@
 #define LOOP 1 //loop as before
 #define TRUE 1
 #define FALSE 0
-#define STACK_SIZE 100
+#define STACK_SIZE 1024
 
 //constants
 #define SYS 0 //system process
@@ -16,8 +16,6 @@
 #define BLOCKED -1
 #define READY 0
 #define RUNNING 1
-
-#define IDLE 0
 
 struct pcbstruct {
   char name[11];
@@ -50,6 +48,7 @@ typedef struct {
 #define DUP_PCB -5
 #define INVALID_PRIOR -6
 #define INVALID_CLASS -7
+#define SUSP_SYS_PROC -8
 
 //function prototypes
 //definePCB.c
@@ -69,6 +68,7 @@ int showPCB(int argc, char **argv);
 int showReady(int argc, char **argv);
 int showBlocked(int argc, char **argv);
 int showAll(int argc, char **argv);
+void printTable();
 void printPCB(pcb *);
 void showQueue(pcb_queue *);
 //PCBProcedures.c
