@@ -1,6 +1,7 @@
 #include <dos.h>
 #include "r2.h"
 
+
 typedef struct context {
   unsigned int BP, DI, SI, DS, ES;
   unsigned int DX, CX, BX, AX;
@@ -10,21 +11,15 @@ typedef struct context {
 //Prototypes
 void interrupt dispatch();
 void interrupt sys_call();
-
-//R3 Prototypes
+//?
 void load_procs(pcb *, context *, void (*func)(void));
 void r3Init();
+
 void test1_R3();
 void test2_R3();
 void test3_R3();
 void test4_R3();
 void test5_R3();
-
-//R4 Prototypes
-int load(int, char **);
-int terminate(int, char **);
-void loadProgram(char **, int);
-void terminateMemory(pcb *);
 
 //temp commands
 int callDispatch(int, char **);
@@ -33,6 +28,13 @@ int loadTestProcess(int, char **);
 void mkFPStackTop(unsigned char *);
 
 #define SYS_STACK_SIZE 200
+
+//r4 Prototypes
+int load(int, char**);
+int terminate(int, char**);
+void loadProgram(char**, int);
+void terminateMemory(pcb *);
+
 
 typedef struct params {
   int op_code;

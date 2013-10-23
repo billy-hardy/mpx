@@ -16,8 +16,8 @@ int load(int argc, char **argv){
 				return LOOP;
 			}
 			//Call to LoadProgram here
-			loadProgram(argv, priorityVal);
 		}
+		loadProgram(argv, priorityVal);
 	}
 	else
 		invalidArgs(argv[0]);
@@ -48,8 +48,9 @@ void loadProgram(char **argv, int priorityVal){
 	
 	
 	if((findPCB(argv[1]))==NULL){ //No Duplicate Process Name
-		sysCheckReturnVal = sys_check_program(NULCH, argv[1], &programLength, &programStartOffset);
+		sysCheckReturnVal = sys_check_program("\0", argv[1], &programLength, &programStartOffset);
 		if(sysCheckReturnVal==0){ //This may need adjustments
+			programPCB = (pcb*)sys_alloc_mem(sizeof(pcb));
 			setupPCB(programPCB, argv[1], APP, priorityVal);
 			programPCB->suspended = TRUE;
 			programPCB->memory_size = programLength;
@@ -57,7 +58,7 @@ void loadProgram(char **argv, int priorityVal){
 			programPCB->exec_address = programPCB->load_address + programStartOffset;
 
 			//Load Program and check return value of function
-			sysLoadProgramReturnVal = sys_load_program(programPCB->load_address, programPCB->memory_size, NULCH, argv[1]);
+			sysLoadProgramReturnVal = sys_load_program(programPCB->load_address, programPCB->memory_size, "\0", argv[1]);
 			if(sysLoadProgramReturnVal == 0){
 				//Program is loaded.  Manually set some registers.
 				cPCB = (context *) programPCB->top;

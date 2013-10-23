@@ -1,8 +1,9 @@
 #include "r2.h"
 #include "r3.h"
 
-pcb_queue *ready, *blocked;
 
+pcb *running;
+pcb_queue *ready, *blocked;
 //Author: Billy Hardy
 //Date Created: 8/28
 //Last Modified: 8/31 by Billy
@@ -42,6 +43,7 @@ void commhand() {
   pcb *temp, *temp2, *temp3, *temp4; 
   promptSize = 2;
   strcpy(prompt, "$>");
+  queueInit();
   buffer[0] = '\0';
   strcpy(buffer, "Welcome to MPX!\n\n");
   maxSize = strlen(buffer);
@@ -92,8 +94,10 @@ int eval(char *buffer) {
   functions[16] = &showBlocked;     strcpy(commands[16], "showBlocked");
   functions[17] = &exec;            strcpy(commands[17], "exec");
   functions[18] = &clearScreen;     strcpy(commands[18], "clear");
-  functions[19] = &loadTestProcess; strcpy(commands[19], "load");
+  functions[19] = &loadTestProcess; strcpy(commands[19], "loadTests");
   functions[20] = &callDispatch;    strcpy(commands[20], "dispatch");
+  functions[21] = &load;			strcpy(commands[21], "load");
+  functions[22] = &terminate;		strcpy(commands[22], "terminate");
 	
   //functions go above here
 	strcpy(print, buffer);
