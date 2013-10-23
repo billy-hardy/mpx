@@ -60,15 +60,19 @@ int suspendPCB(int argc, char **argv) { //How to handle the running process?
     invalidArgs(argv[0]);
   } 
   else {
-	if((tempPCB = findPCB(argv[1])) != NULL){
-		tempPCB->suspended = TRUE;
-		errorCode = SUCCESS;
+		tempPCB = findPCB(argv[1]);
+		if(tempPCB != NULL) {
+			if(tempPCB->class == APP) {
+				tempPCB->suspended = TRUE;
+				errorCode = SUCCESS;
+			} else {
+				errorCode = SUSP_SYS_PROC;
+			}
+		} else{
+			errorCode = PCB_NOT_FOUND;
+		}
+		printError(errorCode);
 	}
-	else{
-		errorCode = PCB_NOT_FOUND;
-	}
-	printError(errorCode);
-  }
   return LOOP;
 }
 

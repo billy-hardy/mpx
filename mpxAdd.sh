@@ -1,5 +1,12 @@
 git add MPX.EXE
 git add mpxAdd.sh
+git add bubi.bat
+git add proc1.mpx
+git add proc2.mpx
+git add proc3.mpx
+git add proc4.mpx
+git add proc5.mpx
+git add mpx.mpx
 
 git add r1/commhand.c
 git add r1/date.c
@@ -12,6 +19,8 @@ git add r1/mpx_supt.c
 git add r1/r1.h
 git add r1/version.c
 git add r1/history.c
+git add r1/clear.c
+git add r1/exec.c
 
 git add r1/help/date.txt
 git add r1/help/exit.txt
@@ -40,3 +49,5 @@ git add r2/r2.h
 
 git add r3/r3.c
 git add r3/r3.h
+git add r3/procs-r3.c
+git add r3/r4.c

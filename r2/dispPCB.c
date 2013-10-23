@@ -4,19 +4,16 @@
 // Must display name, class, state, suspended status and priority
 // Displays error if PCB doesn't exist
 int showPCB(int argc, char **argv) { //This is a little bloated with variables....
-  	pcb *tempPCB;
-
+  pcb *tempPCB;
   if(argc != 2) {
     invalidArgs(argv[0]);
-  } else {
-    //TODO: stuff
-	if((tempPCB =findPCB(argv[1])) != NULL){
+  } else if((tempPCB =findPCB(argv[1])) != NULL) {
+		printTable();
 		printPCB(tempPCB);
-	}
-	else
+	} else {
 		printError(PCB_NOT_FOUND);
-  }
-  return LOOP;
+	}
+	return LOOP;
 }
 
 //Parameters: none
@@ -49,8 +46,6 @@ int showBlocked(int argc, char **argv) {
 int showAll(int argc, char **argv) { //Come up with a way to fix this duplication
 	char dummy[1024];
 	int dummySize;
-	int pcbsDisplayed = 1;
-	pcb *tempPCB = NULL; 
 	
   if(argc != 1) {
     invalidArgs(argv[0]);
@@ -59,39 +54,20 @@ int showAll(int argc, char **argv) { //Come up with a way to fix this duplicatio
 			strcpy(dummy,"\nREADY QUEUE:\n");
 			dummySize = strlen(dummy);
 			sys_req(WRITE, TERMINAL, dummy, &dummySize);
-			tempPCB = ready->head;
-			while(tempPCB != NULL){
-				if((pcbsDisplayed%4))
-					printPCB(tempPCB);
-				else {
-					printPCB(tempPCB);
-					sys_req(READ, TERMINAL, dummy, &dummySize);
-				}
-				pcbsDisplayed++;
-				tempPCB = tempPCB->next;
-			}
+			showQueue(ready);
 		} else{
 			strcpy(dummy, "\nNothing exists in the Ready queue!\n");
 			dummySize = strlen(dummy);
 			sys_req(WRITE, TERMINAL, dummy, &dummySize);	
 		}
+		sys_req(READ, TERMINAL, dummy, &dummySize);
 		if(blocked -> count > 0){
 			strcpy(dummy,"\nBLOCKED QUEUE:\n");
 			dummySize = strlen(dummy);
 			sys_req(WRITE, TERMINAL, dummy, &dummySize);
-			tempPCB = blocked->head;
-			while(tempPCB != NULL){
-				if((pcbsDisplayed%4))
-					printPCB(tempPCB);
-				else {
-					printPCB(tempPCB);
-					sys_req(READ, TERMINAL, dummy, &dummySize);
-				}
-				pcbsDisplayed++;
-				tempPCB = tempPCB->next;
-			}
+			showQueue(blocked);
 		} else{
-			strcpy(dummy, "\nNothing exists in the Blocked queue!\n");
+			strcpy(dummy, "Nothing exists in the Blocked queue!\n");
 			dummySize = strlen(dummy);
 			sys_req(WRITE, TERMINAL, dummy, &dummySize);	
 		}
@@ -104,14 +80,16 @@ void showQueue(pcb_queue *in){
 	char dummy[512]; 
 	int dummySize;
 	int pcbsPrinted = 1;
-	if(in -> count > 0){
+	if(in -> count > 0) {
+		printTable();
 		tempPCB = in -> head;
 		while(tempPCB != NULL){
-			if(pcbsPrinted%4) {
+			if(pcbsPrinted%15) {
 				printPCB(tempPCB);
 			} else {
 				printPCB(tempPCB);
-				sys_req(READ, TERMINAL, dummy, &dummySize); 
+				sys_req(READ, TERMINAL, dummy, &dummySize);
+				printTable();
 			}
 			pcbsPrinted++;
 			tempPCB = tempPCB->next; 
@@ -124,24 +102,32 @@ void showQueue(pcb_queue *in){
 	}
 }
 
-void printPCB(pcb* tempPCB){
+void printTable() {
+	char buffer[128];
+	int bufferSize;
+	strcpy(buffer, "\nName\tClass\t\tState\tSuspended\tPriority\n");
+	bufferSize = strlen(buffer);
+	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
+}
+
+void printPCB(pcb* tempPCB) {
 	char PCBBuffer[256];
 	char tempLine[128];
 	int bufferSize, tempInt;
 	
-	sprintf(tempLine, "Displaying PCB named: %s\n", tempPCB->name);
+	sprintf(tempLine, "%s\t", tempPCB->name);
 	strcpy(PCBBuffer, tempLine);
 	tempInt = tempPCB->class;
-	sprintf(tempLine, "Class: %s", tempInt == 1 ? "Application\n" : "System\n");
+	sprintf(tempLine, "%s\t", tempInt == 1 ? "Application" : "System\t");
 	tempInt = tempPCB->state;
 	strcat(PCBBuffer, tempLine);
-	sprintf(tempLine, "State: %s", tempInt == -1 ? "Blocked\n" : tempInt == 0 ? "Ready\n" :  "Running\n");
+	sprintf(tempLine, "%s\t", tempInt == -1 ? "Blocked" : tempInt == 0 ? "Ready" :  "Running");
 	strcat(PCBBuffer, tempLine);
 	tempInt = tempPCB->suspended;
-	sprintf(tempLine, "Suspended Status: %s", tempInt == TRUE ? "TRUE\n" : "FALSE\n");
+	sprintf(tempLine, "%s\t\t", tempInt == TRUE ? "TRUE" : "FALSE");
 	strcat(PCBBuffer, tempLine);
 	tempInt = tempPCB->priority;
-	sprintf(tempLine, "Priority: %d\n", tempInt);
+	sprintf(tempLine, "%d\n", tempInt);
 	strcat(PCBBuffer, tempLine);
 	
 	bufferSize = strlen(PCBBuffer);

@@ -1,0 +1,2 @@
+del *.dsk
+del *.obj

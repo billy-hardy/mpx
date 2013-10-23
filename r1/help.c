@@ -8,9 +8,9 @@
 //Pos-cond: contents of the corresponding file are printed to the screen
 int help(int argc, char **argv) {
   if(argc == 1) {
-	displayHelp(argc, NULL);
+		displayHelp(argc, NULL);
   } else if(argc == 2) {
-	displayHelp(argc, argv[1]);
+		displayHelp(argc, argv[1]);
   } else {
     invalidArgs(argv[0]);
   }
@@ -63,5 +63,4 @@ int help(int argc, char **argv) {
     sys_req(WRITE, TERMINAL, invalidCommand, &invCommandSize);
   }
   fclose(fptr);
-  sys_free_mem(buffer);
 }

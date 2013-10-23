@@ -4,8 +4,8 @@
 
 void main() {
   sys_init(MODULE_R3); //don't forget to change version
-  //r3Init();
-  //sys_set_vec(void interrupt (*handler()));//System call handler
+  queueInit();
+  r3Init();
   commhand();
   sys_exit();
 }

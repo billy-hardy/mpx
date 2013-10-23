@@ -5,7 +5,7 @@
 // name must be unique
 // class and priority must be valid
 int createPCB(int argc, char **argv) {
-  pcb *tempPCB = (pcb *)sys_alloc_mem(sizeof(pcb));
+  pcb *tempPCB;
 	//pcb tempPCB2;
   int classVal, priorityVal;
   int bufferSize;

@@ -1,65 +1,6 @@
 #include "r3.h"
 
-unsigned short ss_save;
-unsigned short sp_save;
-unsigned short new_ss;
-unsigned short new_sp;
-
-char sys_stack[SYS_STACK_SIZE];
-pcb * running;
-void interrupt dispatch() {
-  if(ss_save == NULL) {
-    //save stack pointers
-    ss_save = _SS;
-    sp_save = _SP;
-  }
-  running = getNextRunning();
-  if(running != NULL) {
-    removePCB(running);
-    running->state = RUNNING;
-    new_ss = FP_SEG(running->top);
-    new_sp = FP_OFF(running->top) + SYS_STACK_SIZE;
-    _SS = new_ss;
-    _SP = new_sp;
-  } else {
-    //restore stack pointers
-    _SS = ss_save;
-    _SP = sp_save;
-    ss_save = NULL;
-    sp_save = NULL;
-  }
-}
-
-
-void interrupt sys_call() {
-  unsigned char* MK_FP(unsigned int SEGMENT, unsigned int OFFSET);
-  params *param_ptr = (params*) (MK_FP(_SS, _SP)+sizeof(context));
-  //save stack pointers
-  ss_save = _SS;
-  sp_save = _SP;
-  //switch to temp stack
-  new_ss = FP_SEG(&sys_stack);
-  new_sp = FP_OFF(&sys_stack) + SYS_STACK_SIZE;
-  _SS = new_ss;
-  _SP = new_sp;
-  switch(param_ptr->op_code) {
-  case(IDLE):
-    running->state = READY;
-    insertPCB(running);
-    break;
-  case(EXIT):
-    freePCB(running);
-    running = NULL;
-    break;
-  }
-  dispatch();
-}
-
-void load_procs(char *name, int class, int priority, void *func) {
-  pcb *np;
-  context *npc;
-  setupPCB(np, name, class, priority);
-  npc = (context *) np->top;
+void load_procs(pcb *np, context *npc, void (*func) (void)) {
   npc->IP = FP_OFF(func);
   npc->CS = FP_SEG(func);
   npc->FLAGS = 0x200;
@@ -68,17 +9,34 @@ void load_procs(char *name, int class, int priority, void *func) {
   insertPCB(np);
 }
 
-void r3Init() {
-  sys_set_vec(sys_call);
-  ss_save = NULL;
-  sp_save = NULL;
-}
 
 int loadTestProcess(int argc, char *argv[]) {
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
-    //TODO: load processes 1-5
+		pcb *processes[5];
+		context *contexts[5];
+		void (*functions[5]) (void);
+		char names[5][20];
+		int classes[5];
+		int priorities[5];
+		int i;
+		functions[0] = &test1_R3; strcpy(names[0], "test1"); classes[0] = APP; priorities[0] = 0;
+		functions[1] = &test2_R3; strcpy(names[1], "test2"); classes[1] = SYS; priorities[1] = 8;
+		functions[2] = &test3_R3; strcpy(names[2], "test3"); classes[2] = APP; priorities[2] = 0;
+		functions[3] = &test4_R3; strcpy(names[3], "test4"); classes[3] = APP; priorities[3] = 0;
+		functions[4] = &test5_R3; strcpy(names[4], "test5"); classes[4] = SYS; priorities[4] = 0;
+		
+		for(i=0; i<5; i++) {
+			if(findPCB(names[i]) == NULL) {
+				processes[i] = sys_alloc_mem(sizeof(pcb));
+				setupPCB(processes[i], names[i], classes[i], priorities[i]);
+				contexts[i] = (context *) processes[i]->top;
+				load_procs(processes[i], contexts[i], functions[i]);
+			} else {
+				printError(DUP_PCB);
+			}
+		}
   }
   return LOOP;
 }
@@ -87,7 +45,7 @@ int callDispatch(int argc, char *argv[]) {
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
-    
+		dispatch();
   }
-  return 1; //This is temporary
+  return LOOP;
 }
