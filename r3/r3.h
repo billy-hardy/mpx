@@ -1,5 +1,6 @@
 #include <dos.h>
-
+#include "r2.h"
+#include "r1.h"
 //Prototypes
 void interrupt dispatch();
 void interrupt sys_call();
@@ -11,7 +12,7 @@ void r3Init();
 int load(int, char **);
 int terminate(int, char **);
 void loadProgram(char **, int); 
-void terminateMemory(char *);
+void terminateMemory(pcb *);
 
 //**********************************************Don't forget to make it so SYS PCBs can't be suspended.
 
@@ -36,4 +37,4 @@ typedef struct context {
   unsigned int IP, CS, FLAGS;
 } context;
 
-extern pcb *running;
+

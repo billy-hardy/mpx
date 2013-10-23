@@ -1,6 +1,6 @@
 #include "r2.h"
 
-pcb *running;
+
 pcb_queue *ready, *blocked;
 //Author: Billy Hardy
 //Date Created: 8/28

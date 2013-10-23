@@ -1,5 +1,8 @@
 #include "r2.h"
+#include "r3.h"//added this because of context on line 46
+ 
 
+pcb * running;
 
 void allocatePCB(pcb *newPCB) {
   if(newPCB != NULL) {
@@ -230,7 +233,7 @@ void printError(int errorCode) {
   case ERR_SUP_FILINV: //-118
 	strcpy(buffer, "\nInvalid File Type!\n\n");
 	break;
-  case ERR_SUP_PROGSZ; //-119
+  case ERR_SUP_PROGSZ: //-119
 	strcpy(buffer, "\nProgram Size Error!\n\n");
 	break;
   case ERR_SUP_LDADDR: //-120

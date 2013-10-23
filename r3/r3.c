@@ -6,7 +6,7 @@ unsigned short new_ss;
 unsigned short new_sp;
 
 char sys_stack[SYS_STACK_SIZE];
-
+pcb * running;
 void interrupt dispatch() {
   if(ss_save == NULL) {
     //save stack pointers
@@ -32,6 +32,7 @@ void interrupt dispatch() {
 
 
 void interrupt sys_call() {
+  unsigned char* MK_FP(unsigned int SEGMENT, unsigned int OFFSET);
   params *param_ptr = (params*) (MK_FP(_SS, _SP)+sizeof(context));
   //save stack pointers
   ss_save = _SS;
@@ -88,4 +89,5 @@ int callDispatch(int argc, char *argv[]) {
   } else {
     
   }
+  return 1; //This is temporary
 }

@@ -1,9 +1,6 @@
 #include "r3.h"
 #include "r2.h"
-//None of this has been compiled or tested at the moment
-
 //REMEMBER NULCH = '\0'
-
 //Accepts program name, and optional int priority parameter
 int load(int argc, char **argv){
 	int priorityVal;
@@ -13,10 +10,10 @@ int load(int argc, char **argv){
 		if(argc == 2)
 			priorityVal = 0;
 		else{
-			priorityVal = checkPriority(argv[2]);
+			priorityVal = priorityCheck(argv[2]);
 			if(priorityVal == INVALID_PRIOR){
 				printError(priorityVal);
-				return;
+				return LOOP;
 			}
 			//Call to LoadProgram here
 			loadProgram(argv, priorityVal);
@@ -49,20 +46,21 @@ void loadProgram(char **argv, int priorityVal){
 	pcb *programPCB;
 	context *cPCB;
 	
-	if(findPCB(argv[1]==NULL){ //No Duplicate Process Name
+	
+	if((findPCB(argv[1]))==NULL){ //No Duplicate Process Name
 		sysCheckReturnVal = sys_check_program(NULCH, argv[1], &programLength, &programStartOffset);
 		if(sysCheckReturnVal==0){ //This may need adjustments
 			setupPCB(programPCB, argv[1], APP, priorityVal);
 			programPCB->suspended = TRUE;
 			programPCB->memory_size = programLength;
-			programPCB->load_address = (unsigned char*)sys_allocmem(programLength); //Or should this include PCB size
-			programPCB->exec_address = programPCB->load_address + programStartOffset);
+			programPCB->load_address = (unsigned char*)sys_alloc_mem(programLength); //Or should this include PCB size
+			programPCB->exec_address = programPCB->load_address + programStartOffset;
 
 			//Load Program and check return value of function
 			sysLoadProgramReturnVal = sys_load_program(programPCB->load_address, programPCB->memory_size, NULCH, argv[1]);
 			if(sysLoadProgramReturnVal == 0){
 				//Program is loaded.  Manually set some registers.
-				cPCB = (context *) programPCB->stack_top;
+				cPCB = (context *) programPCB->top;
 				cPCB->IP = FP_OFF(programPCB->exec_address);
 				cPCB->CS = FP_SEG(programPCB->exec_address);
 				cPCB->FLAGS = 0x200;
