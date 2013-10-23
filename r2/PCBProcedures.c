@@ -1,6 +1,11 @@
 #include "r2.h"
 #include "r3.h"
 
+char sys_stack[SYS_STACK_SIZE];
+unsigned short ss_save;
+unsigned short sp_save;
+unsigned short new_ss;
+unsigned short new_sp;
 
 void allocatePCB(pcb *newPCB) {
   if(newPCB != NULL) {
@@ -246,4 +251,63 @@ pcb *getNextRunning() {
   return returnVal;
 }
 
+void interrupt dispatch() {
+  if(ss_save == NULL) {
+    //save stack pointers
+    ss_save = _SS;
+    sp_save = _SP;
+  }
+  running = getNextRunning();
+  if(running != NULL) {
+    removePCB(running);
+    running->state = RUNNING;
+    new_ss = FP_SEG(running->top);
+    new_sp = FP_OFF(running->top) + SYS_STACK_SIZE;
+    _SS = new_ss;
+    _SP = new_sp;
+  } else {
+    //restore stack pointers
+    _SS = ss_save;
+    _SP = sp_save;
+    ss_save = NULL;
+    sp_save = NULL;
+  }
+	iret();
+}
+
+
+void interrupt sys_call() {
+  char *stack;
+  params *param_ptr;
+  stack = MK_FP(_SS, _SP);
+  param_ptr = (params*) (stack+sizeof(context));
+  //save stack pointers
+  ss_save = _SS;
+  sp_save = _SP;
+  //switch to temp stack
+  new_ss = FP_SEG(&sys_stack);
+  new_sp = FP_OFF(&sys_stack) + SYS_STACK_SIZE;
+  _SS = new_ss;
+  _SP = new_sp;
+	if(running != NULL) {
+		switch(param_ptr->op_code) {
+		case(IDLE):
+			running->state = READY;
+			insertPCB(running);
+			break;
+		case(EXIT):
+			freePCB(running);
+			running = NULL;
+			break;
+		}
+	}
+  dispatch();
+	iret();
+}
+
+void r3Init() {
+  sys_set_vec(sys_call);
+  ss_save = NULL;
+  sp_save = NULL;
+}
 

@@ -17,6 +17,8 @@
 #define READY 0
 #define RUNNING 1
 
+#define IDLE 0
+
 struct pcbstruct {
   char name[11];
   int class;      //This name may need to be changed(I think class is reserved)

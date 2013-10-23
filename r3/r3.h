@@ -1,12 +1,25 @@
 #include <dos.h>
 #include "r2.h"
 
+
+typedef struct context {
+  unsigned int BP, DI, SI, DS, ES;
+  unsigned int DX, CX, BX, AX;
+  unsigned int IP, CS, FLAGS;
+} context;
+
 //Prototypes
 void interrupt dispatch();
 void interrupt sys_call();
 //?
-void load_procs(char *, int, int, void *);
+void load_procs(pcb *, context *, void (*func)(void));
 void r3Init();
+
+void test1_R3();
+void test2_R3();
+void test3_R3();
+void test4_R3();
+void test5_R3();
 
 //temp commands
 int callDispatch(int, char **);
@@ -23,10 +36,3 @@ typedef struct params {
   int *count_addr;
 } params;
 
-typedef struct context {
-  unsigned int BP, DI, SI, DS, ES;
-  unsigned int DX, CX, BX, AX;
-  unsigned int IP, CS, FLAGS;
-} context;
-
-extern pcb *running;

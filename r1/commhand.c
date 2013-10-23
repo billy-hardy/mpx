@@ -1,4 +1,6 @@
 #include "r2.h"
+#include "r3.h"
+
 
 pcb *running;
 pcb_queue *ready, *blocked;
@@ -92,6 +94,8 @@ int eval(char *buffer) {
   functions[16] = &showBlocked;     strcpy(commands[16], "showBlocked");
   functions[17] = &exec;            strcpy(commands[17], "exec");
   functions[18] = &clearScreen;     strcpy(commands[18], "clear");
+  functions[19] = &loadTestProcess; strcpy(commands[19], "load");
+  functions[20] = &callDispatch;    strcpy(commands[20], "dispatch");
 	
   //functions go above here
 	strcpy(print, buffer);
