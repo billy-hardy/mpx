@@ -2,7 +2,7 @@
 
 int exec(int argc, char **argv) {
   int returnVal = LOOP;
-  const char *delims = ";";
+  const char *delims = ";\n";
   if(argc != 1) {
     int i, j, numCommands=0, fLength;
     FILE *fptr;
