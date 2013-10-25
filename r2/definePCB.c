@@ -5,8 +5,7 @@
 // name must be unique
 // class and priority must be valid
 int createPCB(int argc, char **argv) {
-  pcb *tempPCB;
-	//pcb tempPCB2;
+  pcb *tempPCB = sys_alloc_mem(sizeof(pcb));
   int classVal, priorityVal;
   int bufferSize;
   char messageBuffer[128];
@@ -19,11 +18,11 @@ int createPCB(int argc, char **argv) {
 				if((priorityVal = priorityCheck(argv[3])) != INVALID_PRIOR){
 					if (paramsGood(argv[1], classVal, priorityVal)){
 						setupPCB(tempPCB, argv[1], classVal, priorityVal); 
-						//tempPCB = &tempPCB2;
-						if(tempPCB != NULL)
+						if(tempPCB != NULL){
 							tempPCB->next = NULL;
 							tempPCB->prev = NULL;
-							insertPCB(tempPCB);	
+							insertPCB(tempPCB);
+						}							
 					} else {
 						//Invalid Parameters
 						printError(INVALID_PARAMS);
@@ -52,6 +51,7 @@ int deletePCB(int argc, char **argv) {
   else {  
 		if((tempPCB = findPCB(argv[1]))!= NULL){
 			removePCB(tempPCB);
+			sys_free_mem(tempPCB->load_address);
 			freePCB(tempPCB);
 		}
 		else{

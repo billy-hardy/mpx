@@ -1,0 +1,3 @@
+load proc1; load proc2;
+load proc3; resume proc1; resume proc2; resume proc3;
+dispatch;

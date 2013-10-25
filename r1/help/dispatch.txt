@@ -1,0 +1,6 @@
+
+DISPATCH
+
+dispatch	Loads processes from ready queue into
+		running states in a round robin fashion.
+

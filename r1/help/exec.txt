@@ -1,0 +1,9 @@
+
+EXEC
+
+exec n [n]	Executes a set of commands from a file.
+	n - file name (Must be in current dir)
+	Multiple files must be separted by spaces.
+	The files must be sets of commands
+	and parameters separated by semicolons.
+

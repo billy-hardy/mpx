@@ -20,3 +20,9 @@ COMMANDS (-)
 -showReady	Displays each process in the ready state.
 -showBlocked	Displays each process in the blocked state.
 -showAll	Displays all processes currently in the system.
+-load		Loads a program from file.
+-termin		Removes a process from queue and memory.
+-clear		Clears the screen of all information.
+-exec		Execute a set of commands from a file.
+-dispatch	Runs the PCB's in the ready queue.
+-loadTests	Loads all the test processes into the ready queue.

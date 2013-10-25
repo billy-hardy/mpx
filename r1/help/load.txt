@@ -1,0 +1,8 @@
+
+LOAD
+
+load n [p]	Loads a process from file.  
+		n - process name
+		p - optional priority
+		  - defaults to 0
+

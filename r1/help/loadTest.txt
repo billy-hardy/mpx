@@ -1,0 +1,6 @@
+
+LOADTEST
+
+loadTest	oads test processes into ready queue
+		(execution ready) at once.
+

@@ -1,0 +1,6 @@
+
+TERMIN
+
+termin n	Removes a process from queue and memory.
+		n - process name (does not include .mpx)
+

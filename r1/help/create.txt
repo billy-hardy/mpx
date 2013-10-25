@@ -2,6 +2,7 @@
 CREATE
 
 create n c p	Creates a new process with name n, class c and priority p.
-		---n has to be between 8 and 11 characters, inclusive, and be unique
+		---n has to be less than 11 characters, inclusive, and unique
 		---c has to be either sys or app (for system and application)
-		---p has to be between -128 and 127, inclusive. Higher number = higher priority
+		---p has to be between -128 and 127, inclusive.
+		     Higher number = higher priority
