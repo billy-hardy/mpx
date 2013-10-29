@@ -51,3 +51,6 @@ git add r3/r3.c
 git add r3/r3.h
 git add r3/procs-r3.c
 git add r3/r4.c
+
+git add r5/r5.c
+git add r5/r5.h
