@@ -35,8 +35,12 @@ struct dcbStruct {
 	int ring_buffer_in;//index to write next character
 	int ring_buffer_out;//index where the next character will be removed
 	int ring_buffer_count; //count of # characters stored but not read from buffer
+	
+	
 };
 typedef struct dcbStruct dcb;
+
+#define calcBaudRate(x) (115200 / (long) x)
 
 //Symbolic Constants
 #define INV_E_FLAG_POINTER -101

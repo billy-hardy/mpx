@@ -3,7 +3,7 @@
 
 int com_open(int *eflag_p, int baud_rate) {
 	//baud_rate_div = 115200 / (long) baud_rate
-  int returnVal = 0;
+  int returnVal = 0; //This may need to be allocated
   dcb serialPort;
   //Check Parameters
   if(eflag_p != NULL){
