@@ -20,8 +20,9 @@ void interrupt shit2();
 #define WRITING 1
 
 struct dcbStruct {
-	int status; //OPENED or CLOSED
-	int *event_flag; //IDLE, READING, WRITING
+	int flag; //OPENED or CLOSED
+	int *event_flag; 
+	int status;//IDLE, READING, WRITING
 	char *in_buff; //pointer to the requestor's buffer
 	int *in_count; //counter of max num chars that can be in buffer
 	int in_done; //counter for how many characters have been placed in buffer
@@ -41,6 +42,20 @@ typedef struct dcbStruct dcb;
 #define INV_E_FLAG_POINTER -101
 #define INV_B_RATE_DIVISOR -102
 #define PORT_OPEN -102
+
+#define COM1_INT_ID 0x0c
+#define COM1_BASE 0x3F8
+#define COM1_INT_EN COM1_BASE+1
+#define COM1_BRD_LSB COM1_BASE
+#define COM1_BRD_MSB COM1_BASE+1
+#define COM1_INT_ID_REG COM1_BASE+2
+#define COM1_LC COM1_BASE+3
+#define COM1_MC COM1_BASE+4
+#define COM1_LS COM1_BASE+5
+#define COM1_MS COM1_BASE+6
+#define PIC_MASK 0x21
+#define PIC_CMD 0x20
+#define EOI 0x20
 
 #endif
 
