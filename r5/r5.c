@@ -2,7 +2,13 @@
 
 
 int com_open(int *eflag_p, int baud_rate) {
+  int returnVal = 0;
+  //Check Parameters
+  if(eflag_p != NULL){
+	if(
+  } else returnVal = INV_E_FLAG_POINTER;
   
+ return returnVal; 
 }
 
 int com_close() {

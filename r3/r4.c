@@ -88,7 +88,7 @@ void loadProgram(char **argv, int priorityVal){
 //Frees memory associated with PCB.
 void terminateMemory(pcb *pcbName){
 	removePCB(pcbName); //Remove from Queue
-	sys_free_mem(pcbName->load_address); //Free Load Address
+	//sys_free_mem(pcbName->load_address); //Free Load Address
 	freePCB(pcbName); //Free remaining PCB memory
 }
 

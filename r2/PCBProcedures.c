@@ -21,6 +21,7 @@ int freePCB(pcb *toFree) {
   } else {
     sys_free_mem(toFree->bottom);
     toFree->top = NULL;
+	sys_free_mem(toFree->load_address);
     sys_free_mem(toFree);
     returnVal = SUCCESS;
   }
