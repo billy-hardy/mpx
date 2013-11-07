@@ -203,7 +203,14 @@ void interrupt LVL2_INT_OUTPUT(){ //Write
 			//Finished so...
 			serialPort->status = IDLE;
 			serialPort->event_flag = 1;
+			//This might be incorrect
 			serialPort->in_count = serialPort->in_done;
+			//Disable write interrupts (clear bit 1 in IE Register)
+			disable();
+			picMask = inportb(COM1_INT_EN);
+			picMask &= IE_BIT_ONE;
+			outportb(COM1_INT_EN, picMask);
+			enable();
 		}		
 	}
 }
