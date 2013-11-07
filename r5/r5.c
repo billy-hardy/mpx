@@ -93,6 +93,7 @@ int com_read(char *buf_p, int *count_p) {
 					//Set the event flag
 					serialPort->event_flag = 1;
 					//Return the actual count to the requester's variable
+					serialPort->in_count = serialPort->in_done;  //I think
 					count_p = serialPort->in_done;
 				}else returnVal = R_INVALID_COUNT_ADDRESS;			
 			}else returnVal = R_INVALID_BUFFER_ADDRESS;
@@ -103,7 +104,36 @@ int com_read(char *buf_p, int *count_p) {
 
 int com_write(char * buf_p, int *count_p) {
 	int returnVal = 0;
-	
+	unsigned char picMask;
+	//Check Parameters
+	if(serialPort->flag == OPEN){
+		if(serialPort->status == IDLE){
+			if(buf_p != NULL){
+				if(count_p != NULL){
+					//Everything checks out ... Install the buffer pointers
+					serialPort->out_buff = buf_p;
+					serialPort->out_count = count_p;
+					serialPort->out_done = 0;
+					serialPort->status = WRITING;
+					//Clear the event Flag
+					serialPort->event_flag = 0;
+					//Get first character from requester's buffer and store in the output register
+					outportb(COM1_BASE, serialPort->out_buff);
+					serialPort->out_buff++;
+					serialPort->out_done++;
+					//Enable write interrupts by setting bit 1 of the IE register
+					//Logical or of contents and 0x02 (bit 1)
+					disable();
+					picMask = inportb(COM1_INT_EN);
+					picMask |= IE_BIT_ONE;
+					//reset value
+					outportb(COM1_INT_EN, picMask);
+					enable();
+				}else returnVal = W_INVALID_COUNT_ADDRESS;
+			}else returnVal = W_INVALID_BUFFER_ADDRESS;
+		}else returnVal = W_DEVICE_BUSY;
+	}else returnVal = W_PORT_NOT_OPEN;
+	return returnVal;
 }
 
 void interrupt LVL1_INT_HANDLER() {
@@ -132,11 +162,50 @@ void interrupt LVL1_INT_HANDLER() {
 }
 
 void interrupt LVL2_INT_INPUT() { //Read
-  
+	char input;
+	input = inportb(COM1_BASE); //read a character from the input register
+	//check DCB status
+	if(serialPort->status == READING){
+		//Store character in requester's buffer
+		serialPort->in_buff[serialPort->in_done] = input;
+		serialPort->in_done ++;
+		//Check for completion
+		if((serialPort->in_done < serialPort->in_count) && (input != '\n'))
+			return
+		else{
+			serialPort->status = IDLE;
+			serialPort->event_flag = 1;
+			serialPort->in_count = serialPort->in_done;
+		}
+	}else{
+		//Check for Ring Buffer Storage
+		if(serialPort->ring_buffer_count >= RING_BUFFER_SIZE)
+			return;
+		//Store character in ring buffer
+		serialPort->ring_buffer[serialPort->ring_buffer_in] = input;
+		serialPort->ring_buffer_in ++;
+		//Check for loop around
+		if(serialPort->ring_buffer_in > RING_BUFFER_SIZE)
+			serialPort->ring_buffer_in = 0;
+		serialPort->ring_buffer_count ++;		
+	}
 }
 
 void interrupt LVL2_INT_OUTPUT(){ //Write
-
+	unsigned char picMask
+	if(serialPort->flag == WRITE){
+		//check for completion
+		if(serialPort->in_done < serialPort->out_count){
+			outportb(COM1_BASE, serialPort->out_buff);
+			serialPort->out_done ++;
+			serialPort->out_buff ++;
+		}else{
+			//Finished so...
+			serialPort->status = IDLE;
+			serialPort->event_flag = 1;
+			serialPort->in_count = serialPort->in_done;
+		}		
+	}
 }
 
 void interrupt LVL2_INT_LS(){ //Shouldn't happen, but just in case

@@ -81,6 +81,7 @@ typedef struct dcbStruct dcb;
 #define PIC_MASK 0x21
 #define INT_OVERALL_SERIAL 0x08
 #define INT_INPUT_READY 0x01
+#define IE_BIT_ONE 0x02
 
 #endif
 
