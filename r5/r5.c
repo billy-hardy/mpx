@@ -22,7 +22,7 @@ int com_open(int *eflag_p, int baud_rate) {
 			//Save Address of current interrupt handler
 			oldfunc = getvect(COM1_INT_ID);
 			//Install new handler into the interrupt vector
-			
+			setvect(COM1_INT_ID, &LVL1_INT_HANDLER);
 			//Calculate Baud Rate Divisior
 			bRateVal = calcBaudRate(baud_rate);
 			//Store 0x80 in LC Register
