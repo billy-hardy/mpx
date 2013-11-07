@@ -21,6 +21,8 @@ int com_open(int *eflag_p, int baud_rate) {
 			serialPort->ring_buffer_count = 0;
 			//Save Address of current interrupt handler
 			oldfunc = getvect(COM1_INT_ID);
+			//Install new handler into the interrupt vector
+			
 			//Calculate Baud Rate Divisior
 			bRateVal = calcBaudRate(baud_rate);
 			//Store 0x80 in LC Register
@@ -60,10 +62,45 @@ int com_write(char * buf_p, int *count_p) {
   
 }
 
-void interrupt shit() {
+void interrupt LVL1_INT_HANDLER() {
+  unsigned char value;
+  if (serialPort->flag == OPEN){
+	//Read Interrupt ID Register
+	value = inportb(COM1_INT_ID_REG);
+	switch (value){
+		case 0: //Modem Status Interrupt(Not sure if this is needed)
+			LVL2_INT_MS();
+			break;
+		case 2: //Output Interrupt
+			LVL2_INT_OUTPUT();
+			break;
+		case 4: //Input Interrupt
+			LVL2_INT_INPUT();
+			break;
+		case 6: //Line Status Interrupt (Not sure if this is needed)
+			LVL2_INT_LS();
+			break;
+		default:
+			break;
+	}
+  }
+  outportb(PIC_CMD, EOI);
+}
+
+void interrupt LVL2_INT_INPUT() {
   
 }
 
-void interrupt shit2() {
-  
+void interrupt LVL2_INT_OUTPUT(){
+
+}
+
+void interrupt LVL2_INT_LS(){
+	unsigned char garbage;
+	garbage = inportb(COM1_LS);
+}
+
+void interrupt LVL2_INT_MS(){
+	unsigned char garbage;
+	garbage = inportb(COM1_MS);
 }

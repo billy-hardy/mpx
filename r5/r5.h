@@ -6,8 +6,11 @@ int com_open(int *, int);
 int com_close();
 int com_read(char *, int *);
 int com_write(char *, int *);
-void interrupt shit();
-void interrupt shit2();
+void interrupt LVL1_INT_HANDLER();
+void interrupt LVL2_INT_INPUT();
+void interrupt LVL2_INT_OUTPUT();
+void interrupt LVL2_INT_MS();
+void interrupt LVL2_INT_LS();
 
 #define RING_BUFFER_SIZE 2048 //This may need to be changed (I'm unsure of the size)
 
