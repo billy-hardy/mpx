@@ -60,6 +60,11 @@ typedef struct dcbStruct dcb;
 #define PIC_MASK 0x21
 #define PIC_CMD 0x20
 #define EOI 0x20
+#define LNCTRLVAL 0x80
+#define LNCTRLVAL2 0x03
+#define PIC_MASK 0x21
+#define INT_OVERALL_SERIAL 0x08
+#define INT_INPUT_READY 0x01
 
 #endif
 
