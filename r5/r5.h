@@ -46,9 +46,22 @@ typedef struct dcbStruct dcb;
 #define calcBaudRate(x) (115200 / (long) x)
 
 //Symbolic Constants
-#define INV_E_FLAG_POINTER -101
-#define INV_B_RATE_DIVISOR -102
-#define PORT_OPEN -102
+//Open Stuff
+#define O_INV_E_FLAG_POINTER -101
+#define O_INV_B_RATE_DIVISOR -102
+#define O_PORT_OPEN -103
+//Close Stuff
+#define C_SERIAL_PORT_NOT_OPEN -201
+//Read Stuff
+#define R_PORT_NOT_OPEN -301
+#define R_INVALID_BUFFER_ADDRESS -302
+#define R_INVALID_COUNT_ADDRESS -303
+#define R_DEVICE_BUSY -304
+//Write Stuff
+#define W_SERIAL_PORT_NOT_OPEN -401
+#define W_INVALID_BUFFER_ADDRESS -402
+#define W_INVALID_COUNT_ADDRESS -403
+#define W_DEVICE_BUSY -404 
 
 #define COM1_INT_ID 0x0c
 #define COM1_BASE 0x3F8
