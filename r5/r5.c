@@ -1,18 +1,20 @@
 #include "r5.h"
+#include "mpx_supt.h"
 void interrupt (*oldfunc)(void);
 dcb *serialPort;
 
 int com_open(int *eflag_p, int baud_rate) {
 	//baud_rate_div = 115200 / (long) baud_rate
-	serialPort = (dcb *)sys_alloc_mem(sizeof(dcb));
 	int bRateVal = 0;
 	int returnVal = 0; 
 	int picMaskVal;
+	serialPort = (dcb *)sys_alloc_mem(sizeof(dcb));
+	
 	//Check Parameters
-	if(eflag_p != NULL){
+	if(!(eflag_p == NULL)){
 		if(baud_rate > 0){
-			if(serialPort->flag != OPEN){
-				serialPort->flag = OPEN;
+			if(serialPort->flag == OPENED){
+				serialPort->flag = OPENED;
 				//Save the event flag
 				serialPort->event_flag = eflag_p;
 				serialPort->status = IDLE;
@@ -44,9 +46,9 @@ int com_open(int *eflag_p, int baud_rate) {
 				outportb(COM1_MC, INT_OVERALL_SERIAL);
 				//Enable input ready interrupts only (0x01 in IE Register)
 				outportb(COM1_INT_EN, INT_INPUT_READY);			
-			} else returnVal = PORT_OPEN;
-		} else returnVal = INV_B_RATE_DIVISOR;
-	} else returnVal = INV_E_FLAG_POINTER;  
+			} else returnVal = O_PORT_OPEN;
+		} else returnVal = O_INV_B_RATE_DIVISOR;
+	} else returnVal = O_INV_E_FLAG_POINTER;  
 	return returnVal; 
 }
 
@@ -57,14 +59,14 @@ int com_close() {
 int com_read(char *buf_p, int *count_p) {
 	int returnVal = 0;
 	//Check Parameters (I don't really like this arrow of Ifs)
-	if(serialPort->flag == OPEN){
+	if(serialPort->flag == OPENED){
 		if(serialPort->status == IDLE){
 			if(buf_p != NULL){
 				if(count_p != NULL){
 					//Initialize input buffer variables
 					serialPort->in_buff = buf_p;
 					serialPort->in_count = count_p;
-					com_port->in_done = 0;
+					serialPort->in_done = 0;
 					serialPort->status = READING;
 					//Clear Event Flag
 					serialPort->event_flag = 0;

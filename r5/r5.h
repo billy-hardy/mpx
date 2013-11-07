@@ -34,7 +34,7 @@ struct dcbStruct {
 	int *out_count;
 	int out_done;
 	
-	char[RING_BUFFER_SIZE] ring_buffer;
+	char ring_buffer[RING_BUFFER_SIZE];
 	int ring_buffer_in;//index to write next character
 	int ring_buffer_out;//index where the next character will be removed
 	int ring_buffer_count; //count of # characters stored but not read from buffer
