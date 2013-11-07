@@ -1,21 +1,20 @@
 #include "r5.h"
 void interrupt (*oldfunc)(void);
-dcb serialPort;
+dcb *serialPort;
 
 int com_open(int *eflag_p, int baud_rate) {
-	//baud_rate_div = 115200 / (long) baud_rate
 	int bRateVal = 0;
 	int returnVal = 0; 
 	int picMaskVal;
-		
+	serialPort = (dcb *)sys_alloc_mem(sizeof(dcb));
 	//Check Parameters
-	if(!(eflag_p == NULL)){
+	if(eflag_p != NULL){
 		if(baud_rate > 0){
-			if(serialPort->flag == OPENED){
+			if(serialPort->flag != OPENED){
 				serialPort->flag = OPENED;
 				//Save the event flag
 				serialPort->event_flag = eflag_p;
-				serialPort->status = IDLE;
+				serialPort->status = IDLING;
 				//Set Ring Buffer
 				serialPort->ring_buffer_in = 0;
 				serialPort->ring_buffer_out = 0;
@@ -24,7 +23,7 @@ int com_open(int *eflag_p, int baud_rate) {
 				oldfunc = getvect(COM1_INT_ID);
 				//Install new handler into the interrupt vector
 				setvect(COM1_INT_ID, &LVL1_INT_HANDLER);
-				//Calculate Baud Rate Divisior
+				//Calculate Baud Rate Divisor
 				bRateVal = calcBaudRate(baud_rate);
 				//Store 0x80 in LC Register
 				outportb(COM1_LC, LNCTRLVAL);
@@ -37,7 +36,7 @@ int com_open(int *eflag_p, int baud_rate) {
 				//Enable appropriate level in PIC mask Register (level 4 for COM1)
 				disable(); //Disable maskables
 				picMaskVal = inportb(PIC_MASK); //0x21 ... This may also need to be cast to int as it is unsigned char
-				picMaskVal &= ~0x10; //(enables level 4)
+				picMaskVal = picMaskVal & ~0x10; //(enables level 4)
 				outportb(PIC_MASK, picMaskVal);
 				enable(); //Enable maskables
 				//Enable overall serial port interrupts (0x08 in MC Register)
@@ -58,7 +57,7 @@ int com_read(char *buf_p, int *count_p) {
 	int returnVal = 0;
 	//Check Parameters (I don't really like this arrow of Ifs)
 	if(serialPort->flag == OPENED){
-		if(serialPort->status == IDLE){
+		if(serialPort->status == IDLING){
 			if(buf_p != NULL){
 				if(count_p != NULL){
 					//Initialize input buffer variables
@@ -67,31 +66,34 @@ int com_read(char *buf_p, int *count_p) {
 					serialPort->in_done = 0;
 					serialPort->status = READING;
 					//Clear Event Flag
-					serialPort->event_flag = 0;
+					*serialPort->event_flag = 0;
 					//Disable interrupts, and copy from ring buffer
 					disable();
 					//Stuff exists in ring buffer, the required amount has not yet been placed in buffer, and not a linefeed
-					while((serialPort-> ring_buffer_count > 0) && (serialPort->in_done < *serialPort->in_count) && (serialPort->ring_buffer[serialPort->ring_buffer_in] != '\n')){
+					if((serialPort-> ring_buffer_count) > 0){
+					while((serialPort->in_done < *(serialPort->in_count)) && ((serialPort->ring_buffer[serialPort->ring_buffer_out]) != '\r')){
 						//Copy to requester's buffer from ring buffer
-						serialPort->in_buff[serialPort->in_done] = serialPort->ring_buffer[serialPort->ring_buffer_in];
+						serialPort->in_buff[serialPort->in_done] = serialPort->ring_buffer[serialPort->ring_buffer_out];
 						serialPort->ring_buffer_in++;
 						//Check if loop around is needed
-						if(serialPort->ring_buffer_in > RING_BUFFER_SIZE){
+						if(serialPort->ring_buffer_in >= RING_BUFFER_SIZE){
 							serialPort->ring_buffer_in = 0;
 						}
 						serialPort->in_done++;
 						serialPort->ring_buffer_count--;
 					}
+					}
 					enable();
 					//If more characters are needed, return
-					if((serialPort ->in_done) < *(serialPort-> in_count)){
+					if(((serialPort ->in_done) < *(serialPort-> in_count))&&((serialPort->ring_buffer[serialPort->ring_buffer_out]) != '\r')){
 						return returnVal; //Need to find a way to move this ... I don't like the multiple return				
 					}
 					//If here, we're done ...
 					//Set DCB status to idle
-					serialPort->status = IDLE;
+					serialPort->status = IDLING;
 					//Set the event flag
 					*serialPort->event_flag = 1;
+					serialPort->in_buff[serialPort->in_done] = '\0';
 					//Return the actual count to the requester's variable
 					*serialPort->in_count = serialPort->in_done;  //I think
 					*count_p = serialPort->in_done;
@@ -107,7 +109,7 @@ int com_write(char * buf_p, int *count_p) {
 	unsigned char picMask;
 	//Check Parameters
 	if(serialPort->flag == OPENED){
-		if(serialPort->status == IDLE){
+		if(serialPort->status == IDLING){
 			if(buf_p != NULL){
 				if(count_p != NULL){
 					//Everything checks out ... Install the buffer pointers
@@ -116,16 +118,16 @@ int com_write(char * buf_p, int *count_p) {
 					serialPort->out_done = 0;
 					serialPort->status = WRITING;
 					//Clear the event Flag
-					serialPort->event_flag = 0;
+					*(serialPort->event_flag) = 0;
 					//Get first character from requester's buffer and store in the output register
-					outportb(COM1_BASE, *serialPort->out_buff);
+					outportb(COM1_BASE, *(serialPort->out_buff));
 					serialPort->out_buff++;
 					serialPort->out_done++;
 					//Enable write interrupts by setting bit 1 of the IE register
 					//Logical or of contents and 0x02 (bit 1)
 					disable();
 					picMask = inportb(COM1_INT_EN);
-					picMask |= IE_BIT_ONE;
+					picMask = picMask | IE_BIT_ONE;
 					//reset value
 					outportb(COM1_INT_EN, picMask);
 					enable();
@@ -162,7 +164,7 @@ void interrupt LVL1_INT_HANDLER() {
 }
 
 void interrupt LVL2_INT_INPUT() { //Read
-	char input;
+	unsigned char input;
 	input = inportb(COM1_BASE); //read a character from the input register
 	//check DCB status
 	if(serialPort->status == READING){
@@ -170,10 +172,11 @@ void interrupt LVL2_INT_INPUT() { //Read
 		serialPort->in_buff[serialPort->in_done] = input;
 		serialPort->in_done ++;
 		//Check for completion
-		if((serialPort->in_done < *serialPort->in_count) && (input != '\n'))
+		if((serialPort->in_done < *serialPort->in_count) && (input != '\r'))
 			return;
 		else{
-			serialPort->status = IDLE;
+			serialPort->in_buff[serialPort->in_done] = '\0';
+			serialPort->status = IDLING;
 			*serialPort->event_flag = 1;
 			*serialPort->in_count = serialPort->in_done;
 		}
@@ -185,14 +188,14 @@ void interrupt LVL2_INT_INPUT() { //Read
 		serialPort->ring_buffer[serialPort->ring_buffer_in] = input;
 		serialPort->ring_buffer_in ++;
 		//Check for loop around
-		if(serialPort->ring_buffer_in > RING_BUFFER_SIZE)
+		if(serialPort->ring_buffer_in >= RING_BUFFER_SIZE)
 			serialPort->ring_buffer_in = 0;
 		serialPort->ring_buffer_count ++;		
 	}
 }
 
 void interrupt LVL2_INT_OUTPUT(){ //Write
-	unsigned char picMask;
+	int picMask;
 	if(serialPort->status == WRITING){
 		//check for completion
 		if(serialPort->in_done < *(serialPort->out_count)){
@@ -201,10 +204,10 @@ void interrupt LVL2_INT_OUTPUT(){ //Write
 			serialPort->out_buff ++;
 		}else{
 			//Finished so...
-			serialPort->status = IDLE;
+			serialPort->status = IDLING;
 			*serialPort->event_flag = 1;
 			//This might be incorrect
-			*serialPort->in_count = serialPort->in_done;
+			*serialPort->out_count = serialPort->out_done;
 			//Disable write interrupts (clear bit 1 in IE Register)
 			disable();
 			picMask = inportb(COM1_INT_EN);

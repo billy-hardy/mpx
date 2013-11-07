@@ -2,6 +2,8 @@
 #define R5_H
 
 #include <dos.h>
+#include "mpx_supt.h"
+
 int com_open(int *, int);
 int com_close();
 int com_read(char *, int *);
@@ -12,15 +14,15 @@ void interrupt LVL2_INT_OUTPUT();
 void interrupt LVL2_INT_MS();
 void interrupt LVL2_INT_LS();
 
-#define RING_BUFFER_SIZE 2048 //This may need to be changed (I'm unsure of the size)
+#define RING_BUFFER_SIZE 5120 //This may need to be changed (I'm unsure of the size)
 
 //DCB STATUSES
-#define OPENED 0
-#define CLOSED 1
+#define OPENED -9999
+#define CLOSED -9998
 
-#define IDLE 0
-#define READING -1
-#define WRITING 1
+#define IDLING -9997
+#define READING -9996
+#define WRITING -9995
 
 struct dcbStruct {
 	int flag; //OPENED or CLOSED
