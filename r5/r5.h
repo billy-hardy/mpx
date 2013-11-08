@@ -14,7 +14,7 @@ void interrupt LVL2_INT_OUTPUT();
 void interrupt LVL2_INT_MS();
 void interrupt LVL2_INT_LS();
 
-#define RING_BUFFER_SIZE 5120 //This may need to be changed (I'm unsure of the size)
+#define RING_BUFFER_SIZE 100 //This may need to be changed (I'm unsure of the size)
 
 //DCB STATUSES
 #define OPENED -9999

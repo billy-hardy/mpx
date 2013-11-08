@@ -121,8 +121,8 @@ int com_write(char * buf_p, int *count_p) {
 					*(serialPort->event_flag) = 0;
 					//Get first character from requester's buffer and store in the output register
 					outportb(COM1_BASE, *(serialPort->out_buff));
-					serialPort->out_buff++;
-					serialPort->out_done++;
+					(serialPort->out_buff)++;
+					(serialPort->out_done)++;
 					//Enable write interrupts by setting bit 1 of the IE register
 					//Logical or of contents and 0x02 (bit 1)
 					disable();
@@ -172,7 +172,7 @@ void interrupt LVL2_INT_INPUT() { //Read
 		serialPort->in_buff[serialPort->in_done] = input;
 		serialPort->in_done ++;
 		//Check for completion
-		if((serialPort->in_done < *serialPort->in_count) && (input != '\r'))
+		if(((serialPort->in_done) < *(serialPort->in_count)) && (input != '\r'))
 			return;
 		else{
 			serialPort->in_buff[serialPort->in_done] = '\0';
@@ -198,10 +198,10 @@ void interrupt LVL2_INT_OUTPUT(){ //Write
 	int picMask;
 	if(serialPort->status == WRITING){
 		//check for completion
-		if(serialPort->in_done < *(serialPort->out_count)){
+		if(serialPort->out_done < *(serialPort->out_count)){
 			outportb(COM1_BASE, *serialPort->out_buff);
-			serialPort->out_done ++;
-			serialPort->out_buff ++;
+			(serialPort->out_done) ++;
+			(serialPort->out_buff) ++;
 		}else{
 			//Finished so...
 			serialPort->status = IDLING;
