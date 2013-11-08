@@ -211,7 +211,7 @@ void interrupt LVL2_INT_OUTPUT(){ //Write
 			//Disable write interrupts (clear bit 1 in IE Register)
 			disable();
 			picMask = inportb(COM1_INT_EN);
-			picMask &= IE_BIT_ONE;
+			picMask &= ~IE_BIT_ONE;
 			outportb(COM1_INT_EN, picMask);
 			enable();
 		}		
