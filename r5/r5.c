@@ -70,8 +70,8 @@ int com_read(char *buf_p, int *count_p) {
 					//Disable interrupts, and copy from ring buffer
 					disable();
 					//Stuff exists in ring buffer, the required amount has not yet been placed in buffer, and not a linefeed
-					if((serialPort-> ring_buffer_count) > 0){
-					while((serialPort->in_done < *(serialPort->in_count)) && ((serialPort->ring_buffer[serialPort->ring_buffer_out]) != '\r')){
+					if((serialPort-> ring_buffer_count) != 0){
+					while((serialPort->in_done != *(serialPort->in_count)) && ((serialPort->ring_buffer[serialPort->ring_buffer_out]) != '\r')){
 						//Copy to requester's buffer from ring buffer
 						serialPort->in_buff[serialPort->in_done] = serialPort->ring_buffer[serialPort->ring_buffer_out];
 						serialPort->ring_buffer_in++;
@@ -170,7 +170,7 @@ void interrupt LVL2_INT_INPUT() { //Read
 	if(serialPort->status == READING){
 		//Store character in requester's buffer
 		serialPort->in_buff[serialPort->in_done] = input;
-		serialPort->in_done ++;
+		(serialPort->in_done) ++;
 		//Check for completion
 		if(((serialPort->in_done) < *(serialPort->in_count)) && (input != '\r'))
 			return;
