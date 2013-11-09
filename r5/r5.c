@@ -50,7 +50,23 @@ int com_open(int *eflag_p, int baud_rate) {
 }
 
 int com_close() {
-	return 0;
+  int returnVal;
+  if(serialPort->flag == OPENED) {
+    serialPort->flag = CLOSED;
+
+    disable();
+    picMaskVal = inportb(PIC_MASK);
+    picMaskVal = picMaskVal | 0x10; //what should this be???
+    enable();
+
+    outportb(COM1_MS, 0x00); //load 0's into modem status register
+    outportb(COM1_INT_EN, 0x00); //load 0's into interrupt enable register
+    setvect(COM1_INT_ID, oldfunc);
+    returnVal = 0;
+  } else {
+    returnVal = C_SERIAL_PORT_NOT_OPEN;
+  }
+  return returnVal;
 }
 
 int com_read(char *buf_p, int *count_p) {
