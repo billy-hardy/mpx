@@ -51,6 +51,7 @@ int com_open(int *eflag_p, int baud_rate) {
 
 int com_close() {
   int returnVal;
+  int picMaskVal;
   if(serialPort->flag == OPENED) {
     serialPort->flag = CLOSED;
 
@@ -80,39 +81,42 @@ int com_read(char *buf_p, int *count_p) {
 					serialPort->in_buff = buf_p;
 					serialPort->in_count = count_p;
 					serialPort->in_done = 0;
-					serialPort->status = READING;
 					//Clear Event Flag
-					*serialPort->event_flag = 0;
+					*(serialPort->event_flag) = 0;
+					serialPort->status = READING;
+					
 					//Disable interrupts, and copy from ring buffer
 					disable();
 					//Stuff exists in ring buffer, the required amount has not yet been placed in buffer, and not a linefeed
-					if((serialPort-> ring_buffer_count) != 0){
-					while((serialPort->in_done != *(serialPort->in_count)) && ((serialPort->ring_buffer[serialPort->ring_buffer_out]) != '\r')){
+				
+					while(((serialPort->ring_buffer_count) > 0) && ((serialPort->in_done) < *(serialPort->in_count)) && ((serialPort->ring_buffer[serialPort->ring_buffer_out]) != '\r')){						
+						
 						//Copy to requester's buffer from ring buffer
 						serialPort->in_buff[serialPort->in_done] = serialPort->ring_buffer[serialPort->ring_buffer_out];
-						serialPort->ring_buffer_in++;
+						serialPort->ring_buffer[serialPort->ring_buffer_out] = '\0'; //remove char
+						serialPort->ring_buffer_out++;
 						//Check if loop around is needed
-						if(serialPort->ring_buffer_in >= RING_BUFFER_SIZE){
-							serialPort->ring_buffer_in = 0;
+						if(serialPort->ring_buffer_out >= RING_BUFFER_SIZE){
+							serialPort->ring_buffer_out = 0;
 						}
 						serialPort->in_done++;
 						serialPort->ring_buffer_count--;
-					}
+					
 					}
 					enable();
 					//If more characters are needed, return
-					if(((serialPort ->in_done) < *(serialPort-> in_count))&&((serialPort->ring_buffer[serialPort->ring_buffer_out]) != '\r')){
+					if(((serialPort->in_done) < *(serialPort-> in_count))){
 						return returnVal; //Need to find a way to move this ... I don't like the multiple return				
 					}
+					serialPort->in_buff[serialPort->in_done] = '\0';
 					//If here, we're done ...
 					//Set DCB status to idle
 					serialPort->status = IDLING;
 					//Set the event flag
 					*serialPort->event_flag = 1;
-					serialPort->in_buff[serialPort->in_done] = '\0';
+					
 					//Return the actual count to the requester's variable
-					*serialPort->in_count = serialPort->in_done;  //I think
-					*count_p = serialPort->in_done;
+					*serialPort->in_count = serialPort->in_done;
 				}else returnVal = R_INVALID_COUNT_ADDRESS;			
 			}else returnVal = R_INVALID_BUFFER_ADDRESS;
 		}else returnVal = R_DEVICE_BUSY;	
@@ -136,7 +140,7 @@ int com_write(char * buf_p, int *count_p) {
 					//Clear the event Flag
 					*(serialPort->event_flag) = 0;
 					//Get first character from requester's buffer and store in the output register
-					outportb(COM1_BASE, *(serialPort->out_buff));
+					outportb(COM1_BASE, (serialPort->out_buff[serialPort->out_done]));
 					(serialPort->out_buff)++;
 					(serialPort->out_done)++;
 					//Enable write interrupts by setting bit 1 of the IE register
@@ -184,17 +188,17 @@ void interrupt LVL2_INT_INPUT() { //Read
 	input = inportb(COM1_BASE); //read a character from the input register
 	//check DCB status
 	if(serialPort->status == READING){
-		//Store character in requester's buffer
-		serialPort->in_buff[serialPort->in_done] = input;
-		(serialPort->in_done) ++;
+		
 		//Check for completion
-		if(((serialPort->in_done) < *(serialPort->in_count)) && (input != '\r'))
-			return;
-		else{
+		if(((serialPort->in_done) == *(serialPort->in_count)) || (input == '\r')){
 			serialPort->in_buff[serialPort->in_done] = '\0';
 			serialPort->status = IDLING;
 			*serialPort->event_flag = 1;
 			*serialPort->in_count = serialPort->in_done;
+		}else{
+		//Store character in requester's buffer
+		serialPort->in_buff[serialPort->in_done] = input;
+		(serialPort->in_done)++;
 		}
 	}else{
 		//Check for Ring Buffer Storage
@@ -202,7 +206,7 @@ void interrupt LVL2_INT_INPUT() { //Read
 			return;
 		//Store character in ring buffer
 		serialPort->ring_buffer[serialPort->ring_buffer_in] = input;
-		serialPort->ring_buffer_in ++;
+		(serialPort->ring_buffer_in)++;
 		//Check for loop around
 		if(serialPort->ring_buffer_in >= RING_BUFFER_SIZE)
 			serialPort->ring_buffer_in = 0;
@@ -215,9 +219,9 @@ void interrupt LVL2_INT_OUTPUT(){ //Write
 	if(serialPort->status == WRITING){
 		//check for completion
 		if(serialPort->out_done < *(serialPort->out_count)){
-			outportb(COM1_BASE, *serialPort->out_buff);
-			(serialPort->out_done) ++;
-			(serialPort->out_buff) ++;
+			outportb(COM1_BASE, *(serialPort->out_buff));
+			(serialPort->out_done)++;
+			(serialPort->out_buff)++;
 		}else{
 			//Finished so...
 			serialPort->status = IDLING;
