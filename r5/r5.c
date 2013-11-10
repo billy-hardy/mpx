@@ -100,16 +100,15 @@ int com_read(char *buf_p, int *count_p) {
 							serialPort->ring_buffer_out = 0;
 						}
 						serialPort->in_done++;
-						serialPort->ring_buffer_count--;
-					
+						serialPort->ring_buffer_count--;					
 					}
 					enable();
 					//If more characters are needed, return
 					if(((serialPort->in_done) < *(serialPort-> in_count))){
-						return returnVal; //Need to find a way to move this ... I don't like the multiple return				
+						return returnVal; 		
 					}
-					serialPort->in_buff[serialPort->in_done] = '\0';
 					//If here, we're done ...
+					serialPort->in_buff[serialPort->in_done] = '\0';
 					//Set DCB status to idle
 					serialPort->status = IDLING;
 					//Set the event flag
@@ -187,8 +186,7 @@ void interrupt LVL2_INT_INPUT() { //Read
 	unsigned char input;
 	input = inportb(COM1_BASE); //read a character from the input register
 	//check DCB status
-	if(serialPort->status == READING){
-		
+	if(serialPort->status == READING){		
 		//Check for completion
 		if(((serialPort->in_done) == *(serialPort->in_count)) || (input == '\r')){
 			serialPort->in_buff[serialPort->in_done] = '\0';
@@ -196,14 +194,15 @@ void interrupt LVL2_INT_INPUT() { //Read
 			*serialPort->event_flag = 1;
 			*serialPort->in_count = serialPort->in_done;
 		}else{
-		//Store character in requester's buffer
-		serialPort->in_buff[serialPort->in_done] = input;
-		(serialPort->in_done)++;
+			//Store character in requester's buffer
+			serialPort->in_buff[serialPort->in_done] = input;
+			(serialPort->in_done)++;
 		}
 	}else{
 		//Check for Ring Buffer Storage
 		if(serialPort->ring_buffer_count >= RING_BUFFER_SIZE)
 			return;
+			
 		//Store character in ring buffer
 		serialPort->ring_buffer[serialPort->ring_buffer_in] = input;
 		(serialPort->ring_buffer_in)++;
