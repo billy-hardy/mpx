@@ -21,6 +21,7 @@ int freePCB(pcb *toFree) {
   } else {
     sys_free_mem(toFree->bottom);
     toFree->top = NULL;
+	sys_free_mem(toFree->load_address);
     sys_free_mem(toFree);
     returnVal = SUCCESS;
   }
@@ -296,30 +297,19 @@ void interrupt sys_call() {
   _SS = new_ss;
   _SP = new_sp;
 	
-	param_ptr = (params*) (running->top+sizeof(context));
-	if(running != NULL) {
-		switch(param_ptr->op_code) {
-		case(IDLE):
-			running->state = READY;
-			if(ready->head == NULL) { //queue is empty
-				ready->tail = running;
-				ready->head = running;
-				running->next = NULL;
-				running->prev = NULL;
-			} else { //insert in the tail
-				ready->tail->next = running;
-				running->prev = ready->tail;
-				running->next = NULL;
-				ready->tail = running;
-			}
-			ready->count++;
-			break;
-		case(EXIT):
-			freePCB(running);
-			running = NULL;
-			break;
-		}
-	}
+  param_ptr = (params*) (running->top+sizeof(context));
+  if(running != NULL) {
+    switch(param_ptr->op_code) {
+    case(IDLE):
+      running->state = READY;
+      insertPCB(running);
+      break;
+    case(EXIT):
+      freePCB(running);
+      running = NULL;
+      break;
+    }
+  }
   dispatch();
 }
 

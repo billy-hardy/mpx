@@ -21,13 +21,12 @@ void tokenize(int *argc, char *argv[], char *input, const char *delimeters) {
   char *token;
   int tempArgC=0;
   token = strtok(input, delimeters);
-  while(token != NULL){
+  while(token != NULL) {
     argv[tempArgC] = token;
     token = strtok(NULL, delimeters);
     tempArgC++;
   }
   *argc = tempArgC;
-
 }
 
 //Author: Billy Hardy
