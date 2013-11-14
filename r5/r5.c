@@ -214,7 +214,7 @@ void interrupt LVL2_INT_INPUT() { //Read
 		serialPort->ring_buffer_count ++;		
 	}
 }
-
+ 
 void interrupt LVL2_INT_OUTPUT(){ //Write
 	int picMask;
 	if(serialPort->status == WRITING){
