@@ -23,5 +23,8 @@ int exitMPX(int argc, char **argv) {
     invalidArgs(argv[0]); //argv[0] has the name of the command
     returnVal = LOOP;
   }
+  if(returnVal == !LOOP) {
+    queueFree();
+  }
   return returnVal;
 }

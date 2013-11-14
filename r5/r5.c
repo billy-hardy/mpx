@@ -4,6 +4,7 @@ dcb *serialPort;
 
 int com_open(int *eflag_p, int baud_rate) {
 	int bRateVal = 0;
+
 	int returnVal = 0; 
 	int picMaskVal;
 	serialPort = (dcb *)sys_alloc_mem(sizeof(dcb));

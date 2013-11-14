@@ -20,12 +20,6 @@ void main() {
   load_procs(commhan, con_commhan, &commhand);
   load_procs(idle, con_idle, &IDLE);
   dispatch();
-  //remove and free commhand
-  remove(commhan);
-  freePCB(commhan);
-  //remove and free idle
-  remove(idle);
-  freePCB(idle);
   queueFree();
   printf("Goodbye\n");
   delay(750);
