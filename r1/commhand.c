@@ -2,8 +2,6 @@
 #include "r3.h"
 
 
-pcb *running;
-pcb_queue *ready, *blocked;
 //Author: Billy Hardy
 //Date Created: 8/28
 //Last Modified: 8/31 by Billy
@@ -42,7 +40,6 @@ void commhand() {
   pcb *temp, *temp2, *temp3, *temp4; 
   promptSize = 2;
   strcpy(prompt, "$>");
-  queueInit();
   buffer[0] = '\0';
   strcpy(buffer, "Welcome to MPX!\n\n");
   maxSize = strlen(buffer);
@@ -52,20 +49,18 @@ void commhand() {
     buffer[0] = '\0';
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
     sys_req(READ, TERMINAL, buffer, &maxSize);
-		tokenize(&numCommands, commands, buffer, ";");
-		for(i=0; i<numCommands; i++) {
-			if(strlen(commands[i]) > 1) {
-				repl = eval(commands[i]);
-			}
-			if(!repl) break;
-		}
+    tokenize(&numCommands, commands, buffer, ";");
+    for(i=0; i<numCommands; i++) {
+      if(strlen(commands[i]) > 1) {
+	repl = eval(commands[i]);
+      }
+      if(!repl) break;
+    }
   } while(repl);
   strcpy(exitMessage,"Goodbye\n");
   exitSize = strlen(exitMessage);
   sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
   cleanUpHistory();
-  queueFree();
-  delay(750);
 }
 
 int eval(char *buffer) {
@@ -95,18 +90,18 @@ int eval(char *buffer) {
   functions[18] = &clearScreen;     strcpy(commands[18], "clear");
   functions[19] = &loadTestProcess; strcpy(commands[19], "loadTests");
   functions[20] = &callDispatch;    strcpy(commands[20], "dispatch");
-  functions[21] = &load;			strcpy(commands[21], "load");
-  functions[22] = &terminate;		strcpy(commands[22], "terminate");
+  functions[21] = &load;	    strcpy(commands[21], "load");
+  functions[22] = &terminate;	     strcpy(commands[22], "terminate");
 	
   //functions go above here
-	strcpy(print, buffer);
-	tokenize(&argc, argv, buffer, " \t\n");
-	for(i=0; i<NUM_COMMANDS; i++) {
-		if(!strcmp(commands[i], argv[0])) {
-			repl = functions[i](argc, argv);
-			break;
-		}
-	}
+  strcpy(print, buffer);
+  tokenize(&argc, argv, buffer, " \t\n");
+  for(i=0; i<NUM_COMMANDS; i++) {
+    if(!strcmp(commands[i], argv[0])) {
+      repl = functions[i](argc, argv);
+      break;
+    }
+  }
   printCommandToFile(print);
   if(i==NUM_COMMANDS) {  //Invalid argument catch
     strcpy(invalidCommand, "\nThat is not a valid command.\nType \"help\" for more information!\n\n");
@@ -114,34 +109,4 @@ int eval(char *buffer) {
     sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
   }
   return repl;
-}
-
-//Initializes the Queue
-//Author Billy, Last Edited, Robert
-void queueInit() {
-  ready = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
-  ready->head = NULL;
-  ready->tail = NULL;
-  ready->count = 0;
-  blocked = (pcb_queue *) sys_alloc_mem(sizeof(pcb_queue));
-  blocked->head = NULL;
-  blocked->tail = NULL;
-  blocked->count = 0;
-}
-//Frees leftover PCBs on Exit
-//Author Billy
-void queueFree() {
-  pcb *temp;
-  while(ready->count > 0) {
-    temp = ready->head;
-    removePCB(temp);
-    freePCB(temp);
-  }
-  sys_free_mem(ready);
-  while(blocked->count > 0) {
-    temp = blocked->head;
-    removePCB(temp);
-    freePCB(temp);
-  }
-  sys_free_mem(blocked);
 }

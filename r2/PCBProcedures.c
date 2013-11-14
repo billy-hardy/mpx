@@ -9,8 +9,8 @@ unsigned short new_sp;
 
 void allocatePCB(pcb *newPCB) {
   if(newPCB != NULL) {
-		newPCB->bottom = (unsigned char *) sys_alloc_mem(STACK_SIZE*sizeof(unsigned char));
-		newPCB->top = newPCB->bottom + STACK_SIZE - sizeof(context);
+    newPCB->bottom = (unsigned char *) sys_alloc_mem(STACK_SIZE*sizeof(unsigned char));
+    newPCB->top = newPCB->bottom + STACK_SIZE - sizeof(context);
   }
 }
 
@@ -21,7 +21,7 @@ int freePCB(pcb *toFree) {
   } else {
     sys_free_mem(toFree->bottom);
     toFree->top = NULL;
-	sys_free_mem(toFree->load_address);
+    sys_free_mem(toFree->load_address);
     sys_free_mem(toFree);
     returnVal = SUCCESS;
   }
@@ -102,19 +102,18 @@ int insertPCB(pcb *toInsert) {
     }
     blocked->count++;
   } else if(toInsert->state == READY) {
-    if(ready->head == NULL && ready->tail == NULL){ //Queue is empty
+    if(ready->head == NULL && ready->tail == NULL) { //Queue is empty
       ready->head = toInsert;
       ready->tail = toInsert; //May want this to just start out NULL
       ready->count++;
       return SUCCESS; //Bad I know
-    }
-    else{
+    } else {
       curr = ready->head;
       temp = NULL;
-      while(curr !=NULL && curr->priority >= toInsert->priority)
+      while(curr !=NULL && curr->priority >= toInsert->priority) {
 	curr = curr->next;
-					
-      if(curr == NULL){ //passed Tail, make the new Tail
+      }
+      if(curr == NULL) { //passed Tail, make the new Tail
 	if(ready->tail == ready->head){
 	  temp = ready->head;
 	  temp->next = toInsert;
@@ -122,8 +121,7 @@ int insertPCB(pcb *toInsert) {
 	  ready->tail = toInsert;
 	  ready->count++;	
 	  return SUCCESS;
-	}
-	else{
+	} else {
 	  ready->tail->next = toInsert;
 	  toInsert->prev = ready->tail;
 	  ready->tail = toInsert;
@@ -132,23 +130,21 @@ int insertPCB(pcb *toInsert) {
 	}
       }
       if(curr == ready->head){ //Make new Head
-	if(ready->tail ==ready->head){
+	if(ready->tail ==ready->head) {
 	  temp = ready->head;
 	  toInsert->next = temp;
 	  temp->prev = toInsert;
 	  ready->head = toInsert;
 	  ready->count++;
 	  return SUCCESS;
-	}
-	else{
+	} else {
 	  toInsert->next = ready->head;
 	  ready->head->prev = toInsert;
 	  ready->head = toInsert;
 	  ready->count++;
 	  return SUCCESS;
 	}
-      }
-      else{
+      }  else{
 	toInsert->next = curr;
 	toInsert->prev = curr->prev;
 	curr->prev->next = toInsert;
@@ -166,27 +162,24 @@ int removePCB(pcb *toRemove){
   pcb *temp;
   pcb_queue *queue;
 	
-  if(toRemove->state == BLOCKED)
+  if(toRemove->state == BLOCKED) {
     queue = blocked;
-  else
+  } else {
     queue = ready;
-	
+  }
   if(toRemove == queue->head && toRemove == queue->tail){
     queue->head = NULL;
     queue->tail = NULL;
     queue->count--;
-  }
-  else if(toRemove == queue->head){
+  } else if(toRemove == queue->head){
     queue->head = queue->head->next;
     queue->head->prev = NULL;
     queue->count--;
-  }
-  else if(toRemove == queue->tail){
+  } else if(toRemove == queue->tail){
     queue->tail = queue->tail->prev;
     queue->tail->next = NULL;
     queue->count--;
-  }
-  else{
+  } else{
     toRemove->prev->next = toRemove->next;
     toRemove->next->prev = toRemove->prev;
     queue->count--;		
@@ -289,14 +282,12 @@ void interrupt sys_call() {
   //char *stack;
    static params *param_ptr;
   running->top = MK_FP(_SS, _SP);
-  
-
   //switch to temp stack
   new_ss = FP_SEG(&sys_stack);
   new_sp = FP_OFF(&sys_stack) + SYS_STACK_SIZE;
   _SS = new_ss;
   _SP = new_sp;
-	
+  
   param_ptr = (params*) (running->top+sizeof(context));
   if(running != NULL) {
     switch(param_ptr->op_code) {
