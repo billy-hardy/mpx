@@ -1,6 +1,8 @@
 #include "r2.h"
 #include "r3.h"
 
+char prompt[60];
+int promptSize;
 
 //Author: Billy Hardy
 //Date Created: 8/28
@@ -34,12 +36,13 @@ void tokenize(int *argc, char *argv[], char *input, const char *delimeters) {
 //Post-cond: command is read in from user, parsed, matched to
 //           a function, function is executed, and loop
 void commhand() {
-  int maxSize, promptSize, i, invalidCommandSize, exitSize, numCommands;
-  char buffer[129], prompt[60], invalidCommand[128], exitMessage[60], *commands[65];
+  int maxSize, i, invalidCommandSize, exitSize, numCommands;
+  char buffer[129], invalidCommand[128], exitMessage[60], *commands[65];
   int repl;
   pcb *temp, *temp2, *temp3, *temp4; 
-  promptSize = 2;
-  strcpy(prompt, "$>");
+  char t[1][7];
+  strcpy(t[1], "prompt");
+  changePrompt(1, t)
   buffer[0] = '\0';
   strcpy(buffer, "Welcome to MPX!\n\n");
   maxSize = strlen(buffer);
@@ -91,8 +94,9 @@ int eval(char *buffer) {
   functions[19] = &loadTestProcess; strcpy(commands[19], "loadTests");
   functions[20] = &callDispatch;    strcpy(commands[20], "dispatch");
   functions[21] = &load;	    strcpy(commands[21], "load");
-  functions[22] = &terminate;	     strcpy(commands[22], "terminate");
-	
+  functions[22] = &terminate;	    strcpy(commands[22], "terminate");
+  functions[23] = &changePrompt;    strcpy(commands[23], "prompt");
+
   //functions go above here
   strcpy(print, buffer);
   tokenize(&argc, argv, buffer, " \t\n");
@@ -109,4 +113,24 @@ int eval(char *buffer) {
     sys_req(WRITE, TERMINAL, invalidCommand, &invalidCommandSize);
   }
   return repl;
+}
+
+
+int changePrompt(int argc, char **argv) {
+  int len;
+  char inv[100];
+  if(argc == 1) {
+    strcpy(prompt, "$>");
+  } else if(argc == 2) {
+    if(strlen(argv[1]) < 11) {
+      strcpy(prompt, argv[1]);
+    } else {
+      strcpy(inv, "\nThe max size of the prompt is 10.\n\n");
+      len = strlen(inv);
+      sys_req(WRITE, TERMINAL, inv, &len);
+    }
+  } else {
+    invalidArgs(argv[0]);
+  }
+  return LOOP;
 }

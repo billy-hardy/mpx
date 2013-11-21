@@ -9,7 +9,7 @@
 //constants
 #define TRUE 1
 #define LOOP 1 //If returned, repl will continue. Return !LOOP to quit
-#define NUM_COMMANDS 23
+#define NUM_COMMANDS 24
 #define VERSION 3 //version number
 
 //function prototypes
@@ -31,5 +31,6 @@ void cleanUpHistory();
 void queueFree();
 int exec(int, char **);
 int clearScreen(int, char **);
+int changePrompt(int, char **);
 
 #endif
