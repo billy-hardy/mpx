@@ -39,10 +39,9 @@ void commhand() {
   int maxSize, i, invalidCommandSize, exitSize, numCommands;
   char buffer[129], invalidCommand[128], exitMessage[60], *commands[65];
   int repl;
-  pcb *temp, *temp2, *temp3, *temp4; 
-  char t[1][7];
-  strcpy(t[1], "prompt");
-  changePrompt(1, t)
+  pcb *temp, *temp2, *temp3, *temp4;
+  strcpy(prompt, "$>");
+  promptSize = strlen(prompt);
   buffer[0] = '\0';
   strcpy(buffer, "Welcome to MPX!\n\n");
   maxSize = strlen(buffer);
@@ -132,5 +131,6 @@ int changePrompt(int argc, char **argv) {
   } else {
     invalidArgs(argv[0]);
   }
+	promptSize = strlen(prompt);
   return LOOP;
 }

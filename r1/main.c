@@ -5,22 +5,18 @@ pcb *running;
 pcb_queue *ready, *blocked;
 
 void main() {
-  pcb *commhan, *idle;
-  context *con_commhan, *con_idle;
+  pcb *commhan;
+  context *con_commhan;
   sys_init(MODULE_R3); //don't forget to change version
   r3Init();
   queueInit();
   //create commhand and idle processes
   commhan = sys_alloc_mem(sizeof(pcb));
-  idle = sys_alloc_mem(sizeof(pcb));
   setupPCB(commhan, "TERMINAL", SYS, 127);
-  setupPCB(idle, "IDLE", SYS, -128);
   con_commhan = (context *) commhan->top;
-  con_idle = (context *) idle->top;
   load_procs(commhan, con_commhan, &commhand);
-  load_procs(idle, con_idle, &IDLE);
+	loadProgram("IDLE", -128);
   dispatch();
-  queueFree();
   printf("Goodbye\n");
   delay(750);
   sys_exit();

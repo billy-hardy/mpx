@@ -282,12 +282,14 @@ void interrupt sys_call() {
   //char *stack;
    static params *param_ptr;
   running->top = MK_FP(_SS, _SP);
+  
+
   //switch to temp stack
   new_ss = FP_SEG(&sys_stack);
   new_sp = FP_OFF(&sys_stack) + SYS_STACK_SIZE;
   _SS = new_ss;
   _SP = new_sp;
-  
+	
   param_ptr = (params*) (running->top+sizeof(context));
   if(running != NULL) {
     switch(param_ptr->op_code) {

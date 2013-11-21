@@ -32,7 +32,7 @@ void mkFPStackTop(unsigned char *);
 //r4 Prototypes
 int load(int, char**);
 int terminate(int, char**);
-void loadProgram(char**, int);
+void loadProgram(char*, int);
 void terminateMemory(pcb *);
 
 
