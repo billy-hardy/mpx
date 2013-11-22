@@ -160,7 +160,7 @@ int com_write(char * buf_p, int *count_p) {
 }
 
 void interrupt LVL1_INT_HANDLER() {
-  unsigned char value;
+  static unsigned char value;
   if (serialPort->flag == OPENED){
 	//Read Interrupt ID Register
 	value = inportb(COM1_INT_ID_REG);
@@ -185,7 +185,7 @@ void interrupt LVL1_INT_HANDLER() {
 }
 
 void interrupt LVL2_INT_INPUT() { //Read
-	unsigned char input;
+	static unsigned char input;
 	input = inportb(COM1_BASE); //read a character from the input register
 	//check DCB status
 	if(serialPort->status == READING){
@@ -216,7 +216,7 @@ void interrupt LVL2_INT_INPUT() { //Read
 }
  
 void interrupt LVL2_INT_OUTPUT(){ //Write
-	int picMask;
+	static int picMask;
 	if(serialPort->status == WRITING){
 		//check for completion
 		if(serialPort->out_done < *(serialPort->out_count)){
@@ -240,11 +240,11 @@ void interrupt LVL2_INT_OUTPUT(){ //Write
 }
 
 void interrupt LVL2_INT_LS(){ //Shouldn't happen, but just in case
-	unsigned char garbage;
+	static unsigned char garbage;
 	garbage = inportb(COM1_LS);
 }
 
 void interrupt LVL2_INT_MS(){ //Shouldn't happen, but just in case
-	unsigned char garbage;
+	static unsigned char garbage;
 	garbage = inportb(COM1_MS);
 }
