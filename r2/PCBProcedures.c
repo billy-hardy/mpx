@@ -7,9 +7,9 @@ unsigned short sp_save;
 unsigned short new_ss;
 unsigned short new_sp;
 
-void allocatePCB(pcb *newPCB) {
+void allocatePCB(pcb *newPCB, int stack_size) {
   if(newPCB != NULL) {
-    newPCB->bottom = (unsigned char *) sys_alloc_mem(STACK_SIZE*sizeof(unsigned char));
+    newPCB->bottom = (unsigned char *) sys_alloc_mem(stack_size*sizeof(unsigned char));
     newPCB->top = newPCB->bottom + STACK_SIZE - sizeof(context);
   }
 }
@@ -30,7 +30,11 @@ int freePCB(pcb *toFree) {
 
 void setupPCB(pcb *toSetup, char *name, int class, int priority) {
   int errorCode;
-  allocatePCB(toSetup);
+  if(strcpy(name, "TERMINAL")==0) {
+    allocatePCB(toSetup, COM_STACK_SIZE);
+  } else {
+    allocatePCB(toSetup, STACK_SIZE);
+  }
   if(toSetup != NULL) {
     if(paramsGood(name, class, priority)) {
       strcpy(toSetup->name, name);

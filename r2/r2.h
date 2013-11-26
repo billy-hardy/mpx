@@ -8,6 +8,7 @@
 #define TRUE 1
 #define FALSE 0
 #define STACK_SIZE 1024
+#define COM_STACK_SIZE 4*STACK_SIZE
 
 //constants
 #define SYS 0 //system process
@@ -72,7 +73,7 @@ void printTable();
 void printPCB(pcb *);
 void showQueue(pcb_queue *);
 //PCBProcedures.c
-void allocatePCB(pcb *newPCB);
+void allocatePCB(pcb *newPCB, int);
 int freePCB(pcb *toFree);
 void setupPCB(pcb *toSetup, char *name, int class, int priority);
 int paramsGood(char name[], int class, int priority);

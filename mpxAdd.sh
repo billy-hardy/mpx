@@ -65,4 +65,5 @@ git add r3/r4.c
 git add r5/r5.c
 git add r5/r5.h
 
+git add r6/r6.c
 git add r6/r6.h

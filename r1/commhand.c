@@ -60,8 +60,9 @@ void commhand() {
     }
   } while(repl);
   strcpy(exitMessage,"Goodbye\n");
-  exitSize = strlen(exitMessage);
-  sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
+  //exitSize = strlen(exitMessage);
+  //sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
+  printMPX(exitMessage, exitSize);
   cleanUpHistory();
 }
 
