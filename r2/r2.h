@@ -18,13 +18,13 @@
 #define READY 0
 #define RUNNING 1
 
-struct pcbstruct {
+typedef struct pcb {
   char name[11];
   int class;      //This name may need to be changed(I think class is reserved)
   int priority;
   int state;      //running, ready or blocked
   int suspended;  //suspended or not
-  struct pcbstruct *next, *prev;
+  struct pcb *next, *prev;
   //stack
   unsigned char *top; 
   unsigned char *bottom;
@@ -32,9 +32,7 @@ struct pcbstruct {
   int memory_size;
   unsigned char *load_address;
   unsigned char *exec_address;
-};
-
-typedef struct pcbstruct pcb;
+} pcb;
 
 typedef struct {
   int count;

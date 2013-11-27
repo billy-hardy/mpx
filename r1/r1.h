@@ -34,6 +34,8 @@ void queueFree();
 int exec(int, char **);
 int clearScreen(int, char **);
 int changePrompt(int, char **);
+void r5Init();
 void r6Init();
+void empty_pcb_queue(pcb_queue *);
 
 #endif

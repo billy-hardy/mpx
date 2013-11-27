@@ -61,5 +61,9 @@ typedef struct {
 } iocb;
 
 int io_scheduler();
+void insertIOD(iocb *, iod *);
+void io_init();
+void io_tear_down();
+void empty_iocb(iocb *);
 
 #endif

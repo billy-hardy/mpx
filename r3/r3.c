@@ -1,6 +1,7 @@
 #include "r3.h"
 
 params *param_ptr;
+iocb *trm_iocb, *com_iocb;
 
 void load_procs(pcb *np, context *npc, void (*func) (void)) {
   npc->IP = FP_OFF(func);
@@ -107,6 +108,93 @@ void r3Init() {
   sp_save = NULL;
 }
 
-int io_scheduler() {  
-  
+int io_scheduler() {
+  iod *new_iod;
+  iocb *device;
+  switch(param_ptr->device_id) {
+  case(TERMINAL):
+    device = trm_iocb;
+    break;
+  case(COM_PORT):
+    device = com_iocb;
+    break;
+  }
+  new_iod = (iod *)sys_alloc_mem(sizeof(iod));
+  new_iod->curr = running;
+  strcpy(new_iod->name, running->name);
+  new_iod->trans_buff = param_ptr->buff_addr;
+  new_iod->count = param_ptr->count_addr;
+  new_iod->request = param_ptr->op_code;
+  insertIOD(device, new_iod);
+  if(device->count == 0) {
+    switch(param_ptr->device_id) {
+    case(TERMINAL):
+      switch(new_iod->request) {
+      case(READ):
+	trm_read();//TODO: parameters
+	break;
+      case(WRITE):
+	trm_write();//TODO: parameters
+	break;
+      case(CLEAR):
+	trm_clear();//TODO: parameters
+	break;
+      case(GOTOXY):
+	trm_gotoxy();//TODO: parameters
+	break;
+      }
+      break;
+    case(COM_PORT):
+      switch(new_iod->request) {
+      case(READ):
+	com_read();//TODO: parameters
+	break;
+      case(WRITE):
+	com_write();//TODO: parameters
+	break;
+      case(CLEAR):
+      case(GOTOXY):
+	//error state
+	break;
+      }
+      break;
+    }
+  }
+  running->state = BLOCKED;
+}
+
+void insertIOD(iocb *device, iod *to_insert) {
+  if(device->count == 0) {
+    device->head = device->tail = to_insert;
+  } else {
+    device->tail->next = to_insert;
+    device->tail = to_insert;
+  }
+  device->count++;
+}
+
+void io_init() {
+  trm_iocb = (iocb *) sys_alloc_mem(sizeof(iocb));
+  com_iocb = (iocb *) sys_alloc_mem(sizeof(iocb));
+  trm_open(&(trm_iocb->event_flag));
+  com_open(&(com_iocb->event_flag), 1200);
+}
+
+void io_tear_down() {
+  trm_close();
+  com_close();
+  empty_iocb(trm_iocb);
+  empty_iocb(com_iocb);
+  sys_free_mem(trm_iocb);
+  sys_free_mem(com_iocb);
+}
+
+void empty_iocb(iocb *to_clear) {
+  iod *curr;
+  while(to_clear->count > 0) {
+    curr = to_clear->head;
+    to_clear->head = curr->next;
+    (to_clear->count)--;
+    sys_free_mem(curr);
+  }
 }

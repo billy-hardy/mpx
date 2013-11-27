@@ -5,14 +5,20 @@ pcb *running;
 pcb_queue *ready, *blocked;
 
 void main() {
-  sys_init(MODULE_R3); //don't forget to change version
-  r3Init();
+  sys_init(MODULE_F); //don't forget to change version
   queueInit();
+  r3Init();
+  r5Init();
   r6Init();
+  io_init();
   dispatch();
-  printf("Goodbye\n");
-  delay(750);
+  queueFree();
+  io_tear_down();
   sys_exit();
+}
+
+void r5Init() {
+  //TODO
 }
 
 void r6Init() {
@@ -44,17 +50,15 @@ void queueInit() {
 //Frees leftover PCBs on Exit
 //Author Billy
 void queueFree() {
-  pcb *temp;
-  while(ready->count > 0) {
-    temp = ready->head;
-    removePCB(temp);
-    freePCB(temp);
-  }
   sys_free_mem(ready);
-  while(blocked->count > 0) {
-    temp = blocked->head;
+  sys_free_mem(blocked);
+}
+
+void empty_pcb_queue(pcb_queue *queue) {
+  pcb *temp;
+  while(queue->count > 0) {
+    temp = queue->head;
     removePCB(temp);
     freePCB(temp);
   }
-  sys_free_mem(blocked);
 }

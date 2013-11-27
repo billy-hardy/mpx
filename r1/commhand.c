@@ -63,6 +63,9 @@ void commhand() {
   //exitSize = strlen(exitMessage);
   //sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
   printMPX(exitMessage, exitSize);
+  delay(800);
+  empty_pcb_queue(ready);
+  empty_pcb_queue(blocked);
   cleanUpHistory();
 }
 
