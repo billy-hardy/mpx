@@ -1,4 +1,5 @@
 #include <dos.h>
+#include <time.h>
 #include "r2.h"
 
 
@@ -44,6 +45,9 @@ typedef struct params {
 } params;
 
 //r6 stuff
+#define WR_TIME_LIMIT 5
+#define RD_TIME_LIMIT 50
+
 typedef struct iod {
   char name[20];
   pcb *curr;

@@ -127,6 +127,8 @@ int io_scheduler() {
   new_iod->request = param_ptr->op_code;
   insertIOD(device, new_iod);
   if(device->count == 0) {
+    char buffer[102];
+    int err_code, time_limit, tstart, length = 101;
     switch(param_ptr->device_id) {
     case(TERMINAL):
       switch(new_iod->request) {
@@ -147,10 +149,20 @@ int io_scheduler() {
     case(COM_PORT):
       switch(new_iod->request) {
       case(READ):
-	com_read();//TODO: parameters
+	err_code = com_read(buffer, &length);
+	time_limit = RD_TIME_LIMIT;
+	if(err_code != 0) {
+	  printf("error reading!\n");
+	  printf("error code = %d\n", err_code);
+	}
 	break;
       case(WRITE):
-	com_write();//TODO: parameters
+	err_code = com_write(buffer, &length);
+	time_limit = WR_TIME_LIMIT;
+	if(err_code != 0) {
+	  printf("error writing!\n");
+	  printf("error code = %d\n", err_code);
+	}
 	break;
       case(CLEAR):
       case(GOTOXY):
@@ -158,6 +170,13 @@ int io_scheduler() {
 	break;
       }
       break;
+    }
+    device->event_flag = 0;
+    tstart = time(NULL);
+    while(device->event_flag == 0) {
+      if((time(NULL)-tstart) > time_limit) {
+	printf("TIMEOUT: event flag not set\n");
+      }
     }
   }
   running->state = BLOCKED;
