@@ -7,6 +7,11 @@ unsigned short sp_save;
 unsigned short new_ss;
 unsigned short new_sp;
 
+//ALLOCATEPCB
+//Author: Billy Hardy
+//Input: pcb to be allocated, int stack_size of PCB
+//Output: void
+//Allocates memory for the passed PCB structure
 void allocatePCB(pcb *newPCB, int stack_size) {
   if(newPCB != NULL) {
     newPCB->bottom = (unsigned char *) sys_alloc_mem(stack_size*sizeof(unsigned char));
@@ -14,6 +19,11 @@ void allocatePCB(pcb *newPCB, int stack_size) {
   }
 }
 
+//FREEPCB
+//Author: Billy Hardy
+//Input: PCB to be freed
+//Output: Success Code, or PCB_NOT_FOUND Error
+//Frees a PCB structure's allocated memory
 int freePCB(pcb *toFree) {
   int returnVal;
   if(toFree == NULL) {
@@ -28,6 +38,14 @@ int freePCB(pcb *toFree) {
   return returnVal;
 }
 
+//SETUPPCB
+//Author: Billy Hardy
+//Input: PCB (the PCB to be setup)
+//       Name (Character pointer to the PCB name)
+//       Class (The integer code for the respective PCB class)
+//       Priority (the integer priority value of the PCB)
+//Output: void
+//Sets up the inner values for a PCB structure
 void setupPCB(pcb *toSetup, char *name, int class, int priority) {
   int errorCode;
   if(strcpy(name, "TERMINAL")==0) {
@@ -56,6 +74,13 @@ void setupPCB(pcb *toSetup, char *name, int class, int priority) {
   printError(errorCode);
 }
 
+//PARMSGOOD
+//Author: Billy Hardy
+//Input: Name (char array)
+//       Class (the integer class value)
+//       Priority (the integet priority value)
+//Output: False !=0, True 0
+//Checks if the parameters for a PCB are of or within the correct restraints
 int paramsGood(char name[], int class, int priority) {
   int returnVal;
   returnVal = strlen(name) < 11;
@@ -64,7 +89,11 @@ int paramsGood(char name[], int class, int priority) {
   return returnVal;
 }
 
-
+//FINDPCB 
+//Author: Billy Hardy
+//Input: Name (character pointer the the PCB name to be searched for)
+//Output: PCB matching the passed name, or NULL
+//Searches for the PCB with the passed name, and returns the PCB, or NULL if not found
 pcb *findPCB(char *name) {
   pcb *returnVal = NULL;
   returnVal = (strcmp(name, running->name) == 0) ? running : find(name, ready); //if not running, check ready queue
@@ -72,7 +101,12 @@ pcb *findPCB(char *name) {
   return returnVal;
 }
 
-
+//FIND
+//Author: Billy Hardy
+//Input: Name, character pointer to a name to be found
+//       pcb_queue, the queue to be searched
+//Output: The PCB if found, NULL otherwise
+//Helper function to findpcb.  Performs the actual searching of the queue.
 pcb *find(char *name, pcb_queue *queue) {
   int i;
   pcb *curr = queue->head, *returnVal = NULL;
@@ -87,7 +121,11 @@ pcb *find(char *name, pcb_queue *queue) {
   return returnVal;
 }
 
-
+//Authors:  Billy & Robert
+//This was rewritten probably 10 times.  It's a joint effort at this point
+//Input: PCB(the PCB to be inserted into queue)
+//Output: LOOP (1)
+//Inserts the passed PCB into the appropriate position in the PCBs respective queue.
 int insertPCB(pcb *toInsert) {
   pcb *curr, *temp;
   toInsert->next = NULL;
@@ -161,7 +199,10 @@ int insertPCB(pcb *toInsert) {
   return NULL;
 }
 
-
+//Author: Robert Brown
+//Input: PCB (the PCB to be removed from queue)
+//Output: SUCCESS (1)
+//Removes the passed PCB from its queue.
 int removePCB(pcb *toRemove){
   pcb *temp;
   pcb_queue *queue;
@@ -191,6 +232,11 @@ int removePCB(pcb *toRemove){
   return SUCCESS;
 }
 
+//Authors:  Robert Brown, Billy Hardy
+//Input: Respective Error Code
+//Output: void
+//Displays the error information for a passed Error Code
+//This is used to avoid duplication with all the error handling messages.
 void printError(int errorCode) {  
   char buffer[256];
   int bufferSize;
@@ -242,6 +288,10 @@ void printError(int errorCode) {
   sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 }
 
+//Author: Billy Hardy
+//Input: void
+//Output: PCB(the next running)
+//Gets the next PCB in queue to be 'ran'
 pcb *getNextRunning() {
   pcb *returnVal, *temp;
   returnVal = NULL;

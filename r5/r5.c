@@ -2,6 +2,14 @@
 void interrupt (*oldfunc)(void);
 dcb *serialPort;
 
+//COM_OPEN
+//Author: Robert Brown
+//Input: eflag_p (Integer Pointer)
+//       baud_rate (Integer)
+//Output: True (0), or appropriate error code
+//Initializes the DCB, sets the interrupt vector to the new handler address
+//Computes and stores the Baud Rate Divisor (BRD), sets other characteristics
+//and enables all necessary interrupts
 int com_open(int *eflag_p, int baud_rate) {
 	int bRateVal = 0;
 
@@ -50,6 +58,12 @@ int com_open(int *eflag_p, int baud_rate) {
 	return returnVal; 
 }
 
+//COM_CLOSE
+//Author: Robert Brown
+//Input: void
+//Output: True(0), or appropriate Error Code
+//Checks if port is open, closes the DCB, disables the PIC mask register
+//Disables serial interrupts though 0's in MSR, and IER, restores the original Interrupt vector
 int com_close() {
   int returnVal;
   int picMaskVal;
@@ -71,6 +85,15 @@ int com_close() {
   return returnVal;
 }
 
+//COM_READ
+//Author: Robert Brown
+//Input: buf_p (char pointer)
+//       count_p (integer pointer)
+//Output: True (0), or appropriate Error Code
+//Initializes the reading of received data on the serial port.
+//Checks ring buffer, if it contains data, it is copied to the requesters buffer
+//until the buffer is either full, or the RBuffer exhausted.  If the RB does not contain
+//enough data, the device's status remains at READING
 int com_read(char *buf_p, int *count_p) {
 	int returnVal = 0;
 	//Check Parameters (I don't really like this arrow of Ifs)
@@ -125,6 +148,14 @@ int com_read(char *buf_p, int *count_p) {
 	return returnVal;
 }
 
+//COM_WRITE
+//Author: Robert Brown
+//Input: buf_p (char pointer)
+//       count_p (integer pointer)
+//Output: True (0), or appropriate Error Code
+//Copies data from a buffer (buf_p) to the com_port.
+//Writes a single character to the port, and generates an interrupt to the write handler
+//which will continue to generate interrupts until all the buffer characters have been written
 int com_write(char * buf_p, int *count_p) {
 	int returnVal = 0;
 	unsigned char picMask;
@@ -159,6 +190,12 @@ int com_write(char * buf_p, int *count_p) {
 	return returnVal;
 }
 
+//LVL1_INT_HANDLER
+//Author: Robert Brown
+//Input: void (interrupt)
+//Output: void
+//Determines the cause of an interrupt (either read or write are important)
+//Calls the appropriate LVL2 Interrupt.
 void interrupt LVL1_INT_HANDLER() {
   static unsigned char value;
   if (serialPort->flag == OPENED){
@@ -184,6 +221,14 @@ void interrupt LVL1_INT_HANDLER() {
   outportb(PIC_CMD, EOI);
 }
 
+//LVL2_INT_INPUT (READ)
+//Author: Robert Brown
+//Input: void (interrupt)
+//Output: void
+//This is the interrupt that is called when a read interrupt is generated
+//(ie a single character has been placed in the register)
+//If the device status is READING, data is placed in the requester's input buffer,
+//otherwise the data is stored in the ring buffer.
 void interrupt LVL2_INT_INPUT() { //Read
 	static unsigned char input;
 	input = inportb(COM1_BASE); //read a character from the input register
@@ -215,6 +260,14 @@ void interrupt LVL2_INT_INPUT() { //Read
 	}
 }
  
+ //LVL2_INT_OUTPUT
+ //Author: Robert Brown
+ //Input: void (interrupt)
+ //Output: void
+ //This is the interrupt generated after a character has been successfully written to the com port
+ //If the output buffer in the DCB has been completely copied, cleanup operates are performed
+ //Otherwise, if data remains to be copied, the next character is copied to the output register
+ //which continues to generate these interrupts until all data has been written.
 void interrupt LVL2_INT_OUTPUT(){ //Write
 	static int picMask;
 	if(serialPort->status == WRITING){
@@ -239,11 +292,17 @@ void interrupt LVL2_INT_OUTPUT(){ //Write
 	}
 }
 
+//LVL2_INT_LS
+//Author: Robert Brown
+//This is a just in case function to handle LS interrupts
 void interrupt LVL2_INT_LS(){ //Shouldn't happen, but just in case
 	static unsigned char garbage;
 	garbage = inportb(COM1_LS);
 }
 
+//LVL2_INT_MS
+//Author: Robert Brown
+//This is a just in case function to handle MS interrupts
 void interrupt LVL2_INT_MS(){ //Shouldn't happen, but just in case
 	static unsigned char garbage;
 	garbage = inportb(COM1_MS);

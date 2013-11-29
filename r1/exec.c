@@ -1,5 +1,10 @@
 #include "r1.h"
 
+/* Author: Billy Hardy
+   Last Edited : 11/29/2013 -- Robert (added comments)
+   Input: argc(number of command tokens) argv (string of tokens)
+   Output: LOOP (1)
+   Used for execution of commands within a file (extra credit) */
 int exec(int argc, char **argv) {
   int returnVal = LOOP;
   const char *delims = ";\n";

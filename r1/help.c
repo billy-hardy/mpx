@@ -21,10 +21,6 @@ int help(int argc, char **argv) {
 //Author: Robert Brown
 //Date Created: 9/6
 //Last Modified: 9/7 by Robert:  Fixed print output to match file format.
- 
-//TODO:	CREATE LOOPING STRUCTURE FOR PAGINATION
-//Pre-cond: help has matched the value of argc to a specific argument number of arguments
-//			 and argv contains a valid command.  Takes number of args: argc, and arguments pointer: command
 void displayHelp(int argc, char *command) {
   FILE *fptr;
   char file[48],cReturn[2], invalidCommand[30];

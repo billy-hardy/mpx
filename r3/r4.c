@@ -1,6 +1,13 @@
 #include "r3.h"
 #include "r2.h"
 //REMEMBER NULCH = '\0'
+
+//LOAD
+//Author: Robert Brown
+//Input: argc, and argv (the number of tokens, and the tokens themselves)
+//Output: LOOP(1) (and possible error message)
+//Performs the load operations by passing arguments to the loadProgram function
+
 //Accepts program name, and optional int priority parameter
 int load(int argc, char **argv){
 	int priorityVal;
@@ -23,6 +30,12 @@ int load(int argc, char **argv){
 		invalidArgs(argv[0]);
 	return LOOP;
 }
+
+//TERMINATE
+//Author: Robert Brown
+//Input: argc, and argv (the usual number of tokens, and the tokens themselves)
+//Output: LOOP (1), and possible Error Message
+//Removes a process from queues, and frees the memory associated with it.
 //Accepts Program Name to be terminated.  PCBName = Program Name -.mpx
 int terminate(int argc, char **argv){
 	pcb *tempPCB;
@@ -39,6 +52,14 @@ int terminate(int argc, char **argv){
 	return LOOP;
 }
 
+//LOADPROGRAM
+//Author: Robert Brown
+//Input: Process Name (char pointer)
+//       Priority (int)
+//Ouput: void (Possible error messages)
+//Checks the arguments passed, checks that the program is valid, creates and sets up
+//a PCB (allocating memory for the program), and then loads the program.
+//Otherwise returns the appropriate error code.
 //Loads program into PCB memory, and sets appropriate registers.
 void loadProgram(char *processName, int priorityVal){
 	int sysCheckReturnVal = 0, sysLoadProgramReturnVal = 0;
@@ -85,6 +106,10 @@ void loadProgram(char *processName, int priorityVal){
 	}
 }
 
+//TERMINATEMEMORY
+//Author: Robert Brown
+//Input: PCB to be freed
+//Output: void (possible error messages)
 //Frees memory associated with PCB.
 void terminateMemory(pcb *pcbName){
 	removePCB(pcbName); //Remove from Queue

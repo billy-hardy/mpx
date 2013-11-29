@@ -1,5 +1,10 @@
 #include "r1.h"
-
+/* HISTORY
+   Author: Billy Hardy
+   Input: argc (number of args), argv (actual command)
+   Output: 1 (LOOP)
+   Command to display recent history of commands executed
+   Accepts only a valid history command, or returns invalid args */
 int history(int argc, char *argv[]) {
   FILE *fptr;
   char buffer[130];
@@ -27,14 +32,22 @@ int history(int argc, char *argv[]) {
 	}
   return LOOP;
 }
-
+/* PRINTCOMMANDTOFILE
+   Author: Billy Hardy
+   Input: char[] (actual command executed)
+   Output: void
+   Writes command to history file to be referenced on history command */
 void printCommandToFile(char command[]) {
   FILE *fptr;
   fptr = fopen("history.txt", "a");
   fprintf(fptr, command);
   fclose(fptr);
 }
-
+/* CLEANUPHISTORY
+   Author: Billy Hardy
+   Input: void
+   Output: void
+   Removes the 'history.txt' file upon exit of MPX */
 void cleanUpHistory() {
   remove("history.txt");
 }

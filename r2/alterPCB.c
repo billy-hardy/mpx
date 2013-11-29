@@ -1,8 +1,12 @@
 #include "r2.h"
 
-//Parameters: name
-// calls findPCB(), changes PCB to blocked state
-// and reinserts it to correct queue
+//BLOCKPCB
+//Author: Robert Brown
+//Input: argc(int number of token arguments),
+//       argv(the token containing the name of the PCB to block
+//Output: LOOP (1)
+//Calls findPCB(), changes PCB to blocked state
+//and reinserts it to correct queue
 int blockPCB(int argc, char **argv) {
   pcb *process;
   int errorCode;
@@ -26,9 +30,13 @@ int blockPCB(int argc, char **argv) {
 
 
 
-//Parameters: name
-// calls findPCB(), changes PCB to unblocked state
-// and reinserts it to correct queue
+//UNBLOCKPCB
+//Author: Robert Brown
+//Input: argc(int number of argument tokens),
+//       argv(the character array containing the argument tokens)
+//Output: LOOP (1)
+//Calls findPCB(), changes PCB to unblocked state
+//and reinserts it to correct queue
 int unblockPCB(int argc, char **argv) {
 	pcb *tempPCB;
 	int errorCode;
@@ -50,8 +58,12 @@ int unblockPCB(int argc, char **argv) {
   return LOOP;
 }
 
-//Parameters: name
-// calls findPCB(), changes PCB to suspended state
+//SUSPENDPCB
+//Author: Robert Brown
+//Input: argc(int number of token arguments),
+//       argv(the character arrays of tokens)
+//Output: LOOP(1)
+// Calls findPCB(), changes PCB to suspended state
 // and reinserts it to correct queue
 int suspendPCB(int argc, char **argv) { //How to handle the running process?
 	pcb *tempPCB;
@@ -76,8 +88,12 @@ int suspendPCB(int argc, char **argv) { //How to handle the running process?
   return LOOP;
 }
 
-//Parameters: name
-// calls findPCB(), changes PCB to not suspended state
+//RESUMEPCB
+//Author: Robert Brown
+//Input: argc(int number of token arguments),
+//       argv(character arrays of tokens)
+//Output: LOOP (1)
+// Calls findPCB(), changes PCB to not suspended state
 // and reinserts it to correct queue
 int resumePCB(int argc, char **argv) { //Handle the running process  ** Does this need to be removed and inserted
 	pcb *tempPCB;
@@ -97,8 +113,12 @@ int resumePCB(int argc, char **argv) { //Handle the running process  ** Does thi
   return LOOP;
 }
 
+//SETPCBPRIORITY
+//Author: Robert Brown
+//Input: argc(int number of token arguments)
+//       argv(the char arrays of tokens)
 //Parameters: name and priority
-// calls findPCB(), changes PCB priority
+// Calls findPCB(), changes PCB priority
 // and if it's in the ready queue, 
 // removes and reinserts it (to maintain priority queue)
 // Otherwise, just changes priority

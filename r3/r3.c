@@ -2,7 +2,12 @@
 
 params *param_ptr;
 iocb *trm_iocb, *com_iocb;
-
+//LOAD_PROCS
+//Author: Billy Hardy
+//Input: PCB : The PCB to be inserted
+//       Context: The context structure of the PCB
+//       Function: The function 'program' the PCB is to run
+//Sets the registers and flags for the individual processes that will be loaded into the MPX system
 void load_procs(pcb *np, context *npc, void (*func) (void)) {
   npc->IP = FP_OFF(func);
   npc->CS = FP_SEG(func);
@@ -12,7 +17,12 @@ void load_procs(pcb *np, context *npc, void (*func) (void)) {
   insertPCB(np);
 }
 
-
+//LOADTESTPROCESS
+//Author: Billy Hardy
+//Input: argc (the number of token arguments passed)
+//       argv (the char pointers to the argument tokens)
+//Output: LOOP (1)
+//Places the test procedures into the MPX system.
 int loadTestProcess(int argc, char *argv[]) {
   if(argc != 1) {
     invalidArgs(argv[0]);
@@ -44,6 +54,11 @@ int loadTestProcess(int argc, char *argv[]) {
   return LOOP;
 }
 
+//CALLDISPATCH
+//Author: Billy Hardy
+//Input: argc, argv (the usual number of args, and arguments themselves)
+//Output: LOOP (1)
+//Calls the dispatch function the number of arguments is correct
 int callDispatch(int argc, char *argv[]) {
   if(argc != 1) {
     invalidArgs(argv[0]);
@@ -53,6 +68,13 @@ int callDispatch(int argc, char *argv[]) {
   return LOOP;
 }
 
+//DISPATCH
+//Author: Billy Hardy
+//Input: void (this is an interrupt)
+//Output: void
+//Checks if stack pointes have been saved, if not, it saves them.
+//Gets the next process to run, or restores the MPX state
+//If a PCB is found, a context switch occurs, allowing that process to run
 void interrupt dispatch() {
   if(ss_save == NULL) {
     //save stack pointers
@@ -76,6 +98,11 @@ void interrupt dispatch() {
   }
 }
 
+//SYS_CALL
+//Author: Billy Hardy
+//Input: void (interrupt)
+//Output: void
+//Accesses the parameters placed on the stack by sys_req, and determines the interrupt reason
 void interrupt sys_call() {
   running->top = MK_FP(_SS, _SP);
 
@@ -101,13 +128,18 @@ void interrupt sys_call() {
   dispatch();
 }
 
-
+//R3INIT
+//Author: Billy Hardy
+//Program to initialize the stack pointers to NULL
 void r3Init() {
   sys_set_vec(sys_call);
   ss_save = NULL;
   sp_save = NULL;
 }
 
+//IO_SCHEDULER
+//Author: Billy Hardy
+// TODO: Finish Comment
 int io_scheduler() {
   iod *new_iod;
   iocb *device;
@@ -182,6 +214,9 @@ int io_scheduler() {
   running->state = BLOCKED;
 }
 
+//INSERTIOD
+//Author: Billy Hardy
+//TODO: FINISH COMMENT
 void insertIOD(iocb *device, iod *to_insert) {
   if(device->count == 0) {
     device->head = device->tail = to_insert;
@@ -192,6 +227,9 @@ void insertIOD(iocb *device, iod *to_insert) {
   device->count++;
 }
 
+//IO_INIT
+//Author: Billy Hardy
+//TODO: FINISH COMMENT
 void io_init() {
   trm_iocb = (iocb *) sys_alloc_mem(sizeof(iocb));
   com_iocb = (iocb *) sys_alloc_mem(sizeof(iocb));
@@ -199,6 +237,9 @@ void io_init() {
   com_open(&(com_iocb->event_flag), 1200);
 }
 
+//IO_TEAR_DOWN
+//Author: Billy Hardy
+//TODO: FINISH COMMENT
 void io_tear_down() {
   trm_close();
   com_close();
@@ -208,6 +249,9 @@ void io_tear_down() {
   sys_free_mem(com_iocb);
 }
 
+//EMPTY_IOCB
+//Author: Billy Hardy
+//TODO: FINISH COMMENT
 void empty_iocb(iocb *to_clear) {
   iod *curr;
   while(to_clear->count > 0) {

@@ -1,7 +1,7 @@
 /* -- Name:			ls.c																					*
  * -- Author:		Trent Roling																			*
  * -- Created:		September 8 2013																		*
- * -- Last Edited: 	September 8, 2013																		*
+ * -- Last Edited: 	September 23, 2013 -- Robert Brown (fixed errors)																		*
  * -- Pre Cond:		commhand.c matches on ls and argc == 1 | 2 --> if 2, argv[1] contains a valid directory *										*
  * -- Post Cond: 	directory listing is printed to screen													*/
  

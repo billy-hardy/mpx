@@ -1,9 +1,10 @@
 #include "r2.h"
 
-//Parameters: name
+// Author: Robert Brown
+// Parameters: name
 // Must display name, class, state, suspended status and priority
 // Displays error if PCB doesn't exist
-int showPCB(int argc, char **argv) { //This is a little bloated with variables....
+int showPCB(int argc, char **argv) { 
   pcb *tempPCB;
   if(argc != 2) {
     invalidArgs(argv[0]);
@@ -16,10 +17,10 @@ int showPCB(int argc, char **argv) { //This is a little bloated with variables..
 	return LOOP;
 }
 
+//Author: Robert Brown
 //Parameters: none
 //shows all info for all PCBs in ready queue
-//requires PAGINATION
-int showReady(int argc, char **argv) { // I think this should work.
+int showReady(int argc, char **argv) { 
   if(argc != 1) {
     invalidArgs(argv[0]);
   } else {
@@ -28,9 +29,10 @@ int showReady(int argc, char **argv) { // I think this should work.
   return LOOP;
 }
 
-//Parameters: none
+//Author: Robert Brown
+//Parameters: argc, number of token args, argv, the arguments
+//Returns: LOOP (1)
 //shows all info for all PCBs in blocked queue
-//requires PAGINATION
 int showBlocked(int argc, char **argv) {
   if(argc != 1) {
     invalidArgs(argv[0]);
@@ -40,9 +42,10 @@ int showBlocked(int argc, char **argv) {
   return LOOP;
 }
 
-//Parameters: none
+//Author: Robert Brown
+//Parameters: argc, number of token args, argv, the arguments
+//Returns: LOOP (1)
 //shows all info for all PCBs in all queues
-//requires PAGINATION
 int showAll(int argc, char **argv) { //Come up with a way to fix this duplication
 	char dummy[1024];
 	int dummySize;
@@ -75,6 +78,10 @@ int showAll(int argc, char **argv) { //Come up with a way to fix this duplicatio
   return LOOP;
 }
 
+//Author: Robert Brown
+//Input: pcb_queue in (a valid pcb queue structure)
+//Output: void
+//Displays with pagination all of the PCBs in the passed queue
 void showQueue(pcb_queue *in){ 
 	pcb *tempPCB;
 	char dummy[512]; 
@@ -102,6 +109,10 @@ void showQueue(pcb_queue *in){
 	}
 }
 
+//Author: Billy Hardy
+//Input: void
+//Output: void
+//Neatly prints out PCB queue information
 void printTable() {
 	char buffer[128];
 	int bufferSize;
@@ -110,6 +121,10 @@ void printTable() {
 	sys_req(WRITE, TERMINAL, buffer, &bufferSize);
 }
 
+//Author: Robert Brown
+//Input: PCB (the PCB to be printed)
+//Output: void
+//Displays the information about the passed PCB
 void printPCB(pcb* tempPCB) {
 	char PCBBuffer[256];
 	char tempLine[128];

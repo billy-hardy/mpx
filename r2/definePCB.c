@@ -1,9 +1,15 @@
 #include "r2.h"
 
-
+//CREATEPCB
+//Author: Robert Brown
+//Input: argc (the int number of argument tokens passed)
+//       argv (the char pointers to the argument tokens)
+//Output: LOOP (1)
 //Parameters: name, class and priority
 // name must be unique
 // class and priority must be valid
+//Provided the paremeters are correct, creates a PCB structure 
+//using setupPCB, and all the functions called down this chain.
 int createPCB(int argc, char **argv) {
   pcb *tempPCB = sys_alloc_mem(sizeof(pcb));
   int classVal, priorityVal;
@@ -43,6 +49,12 @@ int createPCB(int argc, char **argv) {
   return LOOP;	
 }
 
+//DELETEPCB
+//Author: Robert Brown
+//Input: argc, argv (the number of tokens, and tokens themselves)
+//Output: LOOP (1)
+//Finds the PCB with the passed name (via argv) or returns an error
+//Removes the PCB from its queue, and frees the memory associated with the PCB
 int deletePCB(int argc, char **argv) {  
 	pcb *tempPCB;
   if(argc != 2) {
@@ -62,7 +74,11 @@ int deletePCB(int argc, char **argv) {
 }
 
 
-
+//PRIORITYCHECK
+//Author: Robert Brown
+//Input: priority (character pointer to the string value indicating priority value)
+//Output: 0 (Priority correct), INVALID_PRIOR error code otherwise.
+//Checks that the priority is between -128 and 127, and returns true if so, and Error code otherwise
 int priorityCheck(char *arg){
   int returnVal;
   sscanf(arg, "%i", &returnVal);
@@ -71,6 +87,11 @@ int priorityCheck(char *arg){
   return returnVal;
 }
 
+//PARSECLASS
+//Author: Billy Hardy
+//Input: Class (char pointer)
+//Ouput: Integer value representation of SYS or APP, or INV_CLASS error code otherwise
+//Checks if the passed character pointer resolves to sys or app, or neither.
 int parseClass(char *c) {
 	int returnVal;
 	if(strcmp(c, "sys") == 0) {
