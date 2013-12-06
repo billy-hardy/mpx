@@ -13,8 +13,6 @@
 #define NUM_COMMANDS 24
 #define VERSION 6 //version number
 
-#define printMPX(x,y) do { y = strlen(x); sys_req(WRITE, TERMINAL, x, &y); } while(0)
-
 //function prototypes
 void tokenize(int *, char *[], char *, const char *);
 void commhand();

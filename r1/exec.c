@@ -10,12 +10,11 @@
 int exec(int argc, char **argv) {
   int returnVal = LOOP;
   const char *delims = ";\n";
-  if(argc != 1) {
+  if(argc == 2) {
     int i, j, fLength;
     FILE *fptr;
     char *buffer, errorMessage[128], *command;
     int errorMessageSize;
-    for(i=1; i<argc; i++) {
       fptr = fopen(argv[i], "r");
       if(fptr != NULL) {
 				fseek(fptr, 0L, SEEK_END);
@@ -38,7 +37,6 @@ int exec(int argc, char **argv) {
       }
       sys_free_mem(buffer);
       fclose(fptr);
-    } 
   } else {
     invalidArgs(argv[0]);
   }

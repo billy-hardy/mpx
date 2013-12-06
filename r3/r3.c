@@ -162,8 +162,6 @@ void interrupt sys_call() {
 
 //R3INIT
 //Author: Billy Hardy
-//Input: N/A
-//Output: N/A
 //Program to initialize the stack pointers to NULL
 void r3Init() {
   sys_set_vec(sys_call);
@@ -173,11 +171,8 @@ void r3Init() {
 
 //IO_SCHEDULER
 //Author: Billy Hardy
-//Input: N/A
-//Output: N/A
-//Determines if the IOD is a terminal or COM_PORT communication
-//param_ptr OptCode determines if the functionality is read write clear or gotoxy
-void io_scheduler() {
+// TODO: Finish Comment
+int io_scheduler() {
   static iod *new_iod;
   static iocb *device;
   switch(param_ptr->device_id) {
@@ -253,10 +248,7 @@ void io_scheduler() {
 
 //INSERTIOD
 //Author: Billy Hardy
-//Input: IOCB *device: The queue in which to insert an IODevice
-//       IOD: *to_insert: The device to be inserted into the queue
-//Output: N/A
-//
+//TODO: FINISH COMMENT
 void insertIOD(iocb *device, iod *to_insert) {
   if(device->count == 0) {
     device->head = device->tail = to_insert;
@@ -269,10 +261,7 @@ void insertIOD(iocb *device, iod *to_insert) {
 
 //IO_INIT
 //Author: Billy Hardy
-//Input: N/A
-//Output: N/A
-//Allocates memory for the terminal and com queues
-//sets the terminal event flag, and com port baud rate to 1200
+//TODO: FINISH COMMENT
 void io_init() {
   trm_iocb = (iocb *) sys_alloc_mem(sizeof(iocb));
   com_iocb = (iocb *) sys_alloc_mem(sizeof(iocb));
@@ -282,9 +271,7 @@ void io_init() {
 
 //IO_TEAR_DOWN
 //Author: Billy Hardy
-//Input: N/A
-//Output: N/A
-//Closes communications ports, empties queues, and frees allocated queue memory
+//TODO: FINISH COMMENT
 void io_tear_down() {
   trm_close();
   com_close();
@@ -296,9 +283,7 @@ void io_tear_down() {
 
 //EMPTY_IOCB
 //Author: Billy Hardy
-//Input: IOCB *to_clear: The queue to be cleared
-//Output: N/A
-//Removes all of the IODevices from the passed queue
+//TODO: FINISH COMMENT
 void empty_iocb(iocb *to_clear) {
   iod *curr;
   while(to_clear->count > 0) {

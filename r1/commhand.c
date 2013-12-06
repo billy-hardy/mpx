@@ -54,15 +54,14 @@ void commhand() {
     tokenize(&numCommands, commands, buffer, ";");
     for(i=0; i<numCommands; i++) {
       if(strlen(commands[i]) > 1) {
-	repl = eval(commands[i]);
+				repl = eval(commands[i]);
       }
       if(!repl) break;
     }
   } while(repl);
   strcpy(exitMessage,"Goodbye\n");
-  //exitSize = strlen(exitMessage);
-  //sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
-  printMPX(exitMessage, exitSize);
+  exitSize = strlen(exitMessage);
+  sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
   delay(800);
   empty_queue(ready);
   empty_queue(blocked);
@@ -94,8 +93,8 @@ int eval(char *buffer) {
   functions[16] = &exec;            strcpy(commands[17], "exec");
   functions[17] = &clearScreen;     strcpy(commands[18], "clear");
   functions[18] = &callDispatch;    strcpy(commands[20], "dispatch");
-  functions[19] = &load;	    strcpy(commands[21], "load");
-  functions[20] = &terminate;	    strcpy(commands[22], "terminate");
+  functions[19] = &load;	    			strcpy(commands[21], "load");
+  functions[20] = &terminate;	    	strcpy(commands[22], "terminate");
   functions[21] = &changePrompt;    strcpy(commands[23], "prompt");
 
   //functions go above here
