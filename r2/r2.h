@@ -81,6 +81,7 @@ int insertPCB(pcb *toInsert);
 int removePCB(pcb *toRemove);
 void printError(int errorCode);
 pcb *getNextRunning();
+void unblockPCB(pcb *toUnblock);
 
 extern pcb *running;
 extern pcb_queue *ready;

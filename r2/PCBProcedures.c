@@ -1,12 +1,6 @@
 #include "r2.h"
 #include "r3.h"
 
-char sys_stack[SYS_STACK_SIZE];
-unsigned short ss_save;
-unsigned short sp_save;
-unsigned short new_ss;
-unsigned short new_sp;
-
 //ALLOCATEPCB
 //Author: Billy Hardy
 //Input: pcb to be allocated, int stack_size of PCB
@@ -306,5 +300,11 @@ pcb *getNextRunning() {
     }
   }
   return returnVal;
+}
+
+void unblockPCB(pcb *toUnblock) {
+  removePCB(toUnblock);
+  toUnblock->state = READY;
+  insertPCB(toUnblock);
 }
 
