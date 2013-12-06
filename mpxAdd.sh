@@ -7,16 +7,6 @@ git add proc3.mpx
 git add proc4.mpx
 git add proc5.mpx
 git add mpx.mpx
-git add TRMDRIVE.h
-git add TRMDRIVE.c
-git add IOMULTI.MPX
-git add IOCOM25.MPX
-git add IOTRM25.MPX
-git add IOCOM.MPX
-git add IOTERM.MPX
-git add CPUCOM.MPX
-git add CPUTERM.MPX
-git add IDLE.MPX
 
 git add r1/commhand.c
 git add r1/date.c

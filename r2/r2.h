@@ -58,7 +58,6 @@ int priorityCheck(char *);
 int parseClass(char *);
 //alterPCB.c
 int blockPCB(int argc, char **argv);
-int unblockPCB(int argc, char **argv);
 int suspendPCB(int argc, char **argv);
 int resumePCB(int argc, char **argv);
 int setPCBPriority(int argc, char **argv);
@@ -82,6 +81,7 @@ int removePCB(pcb *toRemove);
 void printError(int errorCode);
 pcb *getNextRunning();
 void unblockPCB(pcb *toUnblock);
+void empty_queue(pcb_queue *);
 
 extern pcb *running;
 extern pcb_queue *ready;

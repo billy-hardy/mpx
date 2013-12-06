@@ -30,34 +30,6 @@ int blockPCB(int argc, char **argv) {
 
 
 
-//UNBLOCKPCB
-//Author: Robert Brown
-//Input: argc(int number of argument tokens),
-//       argv(the character array containing the argument tokens)
-//Output: LOOP (1)
-//Calls findPCB(), changes PCB to unblocked state
-//and reinserts it to correct queue
-int unblockPCB(int argc, char **argv) {
-	pcb *tempPCB;
-	int errorCode;
-  if(argc != 2) {
-    invalidArgs(argv[0]);
-  } else {
-    if((tempPCB = findPCB(argv[1])) != NULL){
-		if(removePCB(tempPCB) == SUCCESS){
-			tempPCB->state = READY;
-			insertPCB(tempPCB);
-			errorCode = SUCCESS;
-		}
-	}
-	else{
-		errorCode = PCB_NOT_FOUND;
-	}
-	printError(errorCode);
-  }
-  return LOOP;
-}
-
 //SUSPENDPCB
 //Author: Robert Brown
 //Input: argc(int number of token arguments),

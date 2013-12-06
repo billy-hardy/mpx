@@ -16,12 +16,6 @@ void interrupt sys_call();
 void load_procs(pcb *, context *, void (*func)(void));
 void r3Init();
 
-void test1_R3();
-void test2_R3();
-void test3_R3();
-void test4_R3();
-void test5_R3();
-
 //temp commands
 int callDispatch(int, char **);
 int loadTestProcess(int, char **);
@@ -70,4 +64,3 @@ void io_init();
 void io_tear_down();
 void empty_iocb(iocb *);
 
-#endif

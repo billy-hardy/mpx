@@ -1,3 +1,4 @@
+#include "r1.h"
 #include "r2.h"
 #include "r3.h"
 
@@ -54,7 +55,7 @@ void queueFree() {
   sys_free_mem(blocked);
 }
 
-void empty_pcb_queue(pcb_queue *queue) {
+void empty_queue(pcb_queue *queue) {
   pcb *temp;
   while(queue->count > 0) {
     temp = queue->head;

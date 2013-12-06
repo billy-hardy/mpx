@@ -1,10 +1,12 @@
 #include "r1.h"
+#include <string.h>
 
 /* Author: Billy Hardy
    Last Edited : 11/29/2013 -- Robert (added comments)
    Input: argc(number of command tokens) argv (string of tokens)
    Output: LOOP (1)
    Used for execution of commands within a file (extra credit) */
+	 
 int exec(int argc, char **argv) {
   int returnVal = LOOP;
   const char *delims = ";\n";
@@ -21,13 +23,14 @@ int exec(int argc, char **argv) {
 				fseek(fptr, 0L, SEEK_SET);
 				buffer = (char *)sys_alloc_mem(fLength*sizeof(char));
 				fread(buffer, 1, fLength, fptr);
-				command = strtok(buffer, delims);
+				strncpy(command, strtok(buffer, delims), 127);
 				do {
 					if(strlen(command) < 127) {
 						returnVal = eval(command);
 						if(!returnVal) break;
 					}
-				} while(command = strtok(NULL, delims) != NULL);
+					strncpy(command, strtok(NULL, delims), 127);
+				} while(command != NULL);
       } else {
 				strcpy(errorMessage, "Invalid file.\n");
 				errorMessageSize = strlen(errorMessage);

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "mpx_supt.h"
+#include "r2.h"
 
 //constants
 #define TRUE 1
@@ -36,6 +37,5 @@ int clearScreen(int, char **);
 int changePrompt(int, char **);
 void r5Init();
 void r6Init();
-void empty_pcb_queue(pcb_queue *);
 
 #endif
