@@ -75,7 +75,7 @@ void interrupt dispatch() {
 //Output: void
 //Accesses the parameters placed on the stack by sys_req, and determines the interrupt reason
 void interrupt sys_call() {
-  static iocb *device;
+  //static iocb *device;
   static iod *temp_iod;
   cop_ss = _SS;
   cop_sp = _SP;
@@ -93,8 +93,8 @@ void interrupt sys_call() {
       com_iocb->head = com_iocb->head->next;
       com_iocb->count--;
       if(param_ptr->op_code == READ 
-	 || param_ptr->op_code == WRITE) {
-	io_scheduler();
+				 || param_ptr->op_code == WRITE) {
+				io_scheduler();
       }
     } else {
       com_iocb->head = com_iocb->tail = NULL;
@@ -137,8 +137,8 @@ void interrupt sys_call() {
 	trm_write(temp_iod->trans_buff, temp_iod->count);
 	break;
       case(CLEAR):
-	trm_clear();
-	break;
+				trm_clear();
+				break;
       case(GOTOXY):
 	trm_gotoxy(0, 0);
 	break;
@@ -172,7 +172,7 @@ void r3Init() {
 //IO_SCHEDULER
 //Author: Billy Hardy
 // TODO: Finish Comment
-int io_scheduler() {
+void io_scheduler() {
   static iod *new_iod;
   static iocb *device;
   switch(param_ptr->device_id) {
@@ -191,47 +191,42 @@ int io_scheduler() {
   new_iod->request = param_ptr->op_code;
   insertIOD(device, new_iod);
   if(device->count == 0) {
-    char buffer[102];
-    int err_code, time_limit, tstart, length = 101;
+    int err_code, time_limit, tstart;
     switch(param_ptr->device_id) {
     case(TERMINAL):
       switch(new_iod->request) {
       case(READ):
-	trm_read(new_iod->trans_buff, new_iod->count);
-	break;
+				trm_read(new_iod->trans_buff, new_iod->count);
+				break;
       case(WRITE):
-	trm_write(new_iod->trans_buff, new_iod->count);
-	break;
+				trm_write(new_iod->trans_buff, new_iod->count);
+				break;
       case(CLEAR):
-	trm_clear();
-	break;
+				trm_clear();
+				break;
       case(GOTOXY):
-	trm_gotoxy(0, 0);
-	break;
+				trm_gotoxy(0, 0);
+				break;
       }
       break;
     case(COM_PORT):
       switch(new_iod->request) {
       case(READ):
-	err_code = com_read(new_iod->trans_buff, new_iod->count);
-	time_limit = RD_TIME_LIMIT;
-	if(err_code != 0) {
-	  printf("error reading!\n");
-	  printf("error code = %d\n", err_code);
-	}
-	break;
+				err_code = com_read(new_iod->trans_buff, new_iod->count);
+				time_limit = RD_TIME_LIMIT;
+				if(err_code != 0) {
+					printf("error reading!\n");
+					printf("error code = %d\n", err_code);
+				}
+				break;
       case(WRITE):
-	err_code = com_write(new_iod->trans_buff, new_iod->count);
-	time_limit = WR_TIME_LIMIT;
-	if(err_code != 0) {
-	  printf("error writing!\n");
-	  printf("error code = %d\n", err_code);
-	}
-	break;
-      case(CLEAR):
-      case(GOTOXY):
-	//error state
-	break;
+				err_code = com_write(new_iod->trans_buff, new_iod->count);
+				time_limit = WR_TIME_LIMIT;
+				if(err_code != 0) {
+					printf("error writing!\n");
+					printf("error code = %d\n", err_code);
+				}
+				break;
       }
       break;
     }
@@ -239,7 +234,7 @@ int io_scheduler() {
     tstart = time(NULL);
     while(device->event_flag == 0) {
       if((time(NULL)-tstart) > time_limit) {
-	printf("TIMEOUT: event flag not set\n");
+				printf("TIMEOUT: event flag not set\n");
       }
     }
   }

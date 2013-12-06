@@ -11,7 +11,6 @@
 //Accepts program name, and optional int priority parameter
 int load(int argc, char **argv){
 	int priorityVal;
-	
 	//Check arguments
 	if(argc == 2 || argc ==3){
 		if(argc == 2)
@@ -22,7 +21,6 @@ int load(int argc, char **argv){
 				printError(priorityVal);
 				return LOOP;
 			}
-			//Call to LoadProgram here
 		}
 		loadProgram(argv[1], priorityVal);
 	}
@@ -66,7 +64,6 @@ void loadProgram(char *processName, int priorityVal){
 	int programLength, programStartOffset;
 	pcb *programPCB;
 	context *cPCB;
-	
 	
 	if((findPCB(processName))==NULL){ //No Duplicate Process Name
 		sysCheckReturnVal = sys_check_program("\0", processName, &programLength, &programStartOffset);

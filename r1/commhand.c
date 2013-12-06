@@ -80,22 +80,18 @@ int eval(char *buffer) {
   functions[3] = &ls;               strcpy(commands[3], "ls");
   functions[4] = &exitMPX;          strcpy(commands[4], "exit");
   functions[5] = &history;          strcpy(commands[5], "history");
-  functions[6] = &createPCB;        strcpy(commands[6], "create");
-  functions[7] = &setPCBPriority;   strcpy(commands[7], "setPriority");
-  functions[8] = &deletePCB;        strcpy(commands[8], "delete");
-  functions[9] = &blockPCB;         strcpy(commands[9], "block");
-  functions[10] = &suspendPCB;      strcpy(commands[11], "suspend");
-  functions[11] = &resumePCB;       strcpy(commands[12], "resume");
-  functions[12] = &showAll;         strcpy(commands[13], "showAll");
-  functions[13] = &showPCB;         strcpy(commands[14], "showPCB");
-  functions[14] = &showReady;       strcpy(commands[15], "showReady");
-  functions[15] = &showBlocked;     strcpy(commands[16], "showBlocked");
-  functions[16] = &exec;            strcpy(commands[17], "exec");
-  functions[17] = &clearScreen;     strcpy(commands[18], "clear");
-  functions[18] = &callDispatch;    strcpy(commands[20], "dispatch");
-  functions[19] = &load;	    			strcpy(commands[21], "load");
-  functions[20] = &terminate;	    	strcpy(commands[22], "terminate");
-  functions[21] = &changePrompt;    strcpy(commands[23], "prompt");
+  functions[6] = &setPCBPriority;   strcpy(commands[6], "setPriority");
+  functions[7] = &suspendPCB;       strcpy(commands[7], "suspend");
+  functions[8] = &resumePCB;        strcpy(commands[8], "resume");
+  functions[9] = &showAll;          strcpy(commands[9], "showAll");
+  functions[10] = &showPCB;         strcpy(commands[10], "showPCB");
+  functions[11] = &showReady;       strcpy(commands[11], "showReady");
+  functions[12] = &showBlocked;     strcpy(commands[12], "showBlocked");
+  functions[13] = &exec;            strcpy(commands[13], "exec");
+  functions[14] = &clearScreen;     strcpy(commands[14], "clear");
+  functions[15] = &load;	    			strcpy(commands[15], "load");
+  functions[16] = &terminate;	    	strcpy(commands[16], "terminate");
+  functions[17] = &changePrompt;    strcpy(commands[17], "prompt");
 
   //functions go above here
   strcpy(print, buffer);

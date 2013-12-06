@@ -11,32 +11,32 @@ int exec(int argc, char **argv) {
   int returnVal = LOOP;
   const char *delims = ";\n";
   if(argc == 2) {
-    int i, j, fLength;
+    int fLength;
     FILE *fptr;
     char *buffer, errorMessage[128], *command;
     int errorMessageSize;
-      fptr = fopen(argv[i], "r");
-      if(fptr != NULL) {
-				fseek(fptr, 0L, SEEK_END);
-				fLength = ftell(fptr);
-				fseek(fptr, 0L, SEEK_SET);
-				buffer = (char *)sys_alloc_mem(fLength*sizeof(char));
-				fread(buffer, 1, fLength, fptr);
-				strncpy(command, strtok(buffer, delims), 127);
-				do {
-					if(strlen(command) < 127) {
-						returnVal = eval(command);
-						if(!returnVal) break;
-					}
-					strncpy(command, strtok(NULL, delims), 127);
-				} while(command != NULL);
-      } else {
-				strcpy(errorMessage, "Invalid file.\n");
-				errorMessageSize = strlen(errorMessage);
-				sys_req(WRITE, TERMINAL, errorMessage, &errorMessageSize);
-      }
-      sys_free_mem(buffer);
-      fclose(fptr);
+		fptr = fopen(argv[1], "r");
+		if(fptr != NULL) {
+			fseek(fptr, 0L, SEEK_END);
+			fLength = ftell(fptr);
+			fseek(fptr, 0L, SEEK_SET);
+			buffer = (char *)sys_alloc_mem(fLength*sizeof(char));
+			fread(buffer, 1, fLength, fptr);
+			strncpy(command, strtok(buffer, delims), 127);
+			do {
+				if(strlen(command) < 128) {
+					returnVal = eval(command);
+					if(!returnVal) break;
+				}
+				strncpy(command, strtok(NULL, delims), 127);
+			} while(command != NULL);
+		} else {
+			strcpy(errorMessage, "Invalid file.\n");
+			errorMessageSize = strlen(errorMessage);
+			sys_req(WRITE, TERMINAL, errorMessage, &errorMessageSize);
+		}
+		sys_free_mem(buffer);
+		fclose(fptr);
   } else {
     invalidArgs(argv[0]);
   }

@@ -58,7 +58,7 @@ typedef struct {
   iod *tail; //end of IOD queue
 } iocb;
 
-int io_scheduler();
+void io_scheduler();
 void insertIOD(iocb *, iod *);
 void io_init();
 void io_tear_down();

@@ -9,17 +9,12 @@ void main() {
   sys_init(MODULE_R4); //don't forget to change version
   queueInit();
   r3Init();
-  r5Init();
   r6Init();
   io_init();
   dispatch();
   queueFree();
   io_tear_down();
   sys_exit();
-}
-
-void r5Init() {
-  //TODO
 }
 
 void r6Init() {
