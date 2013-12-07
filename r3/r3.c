@@ -86,7 +86,7 @@ void interrupt sys_call() {
   _SP = new_sp;
   trm_getc();
   param_ptr = (params *) (running->top+sizeof(context));
-  if(com_iocb->event_flag) {
+  if(com_iocb->event_flag == 1) {
     com_iocb->event_flag = 0;
     temp_iod = com_iocb->head;
     if(com_iocb->count > 1) {
@@ -96,7 +96,7 @@ void interrupt sys_call() {
 				 || param_ptr->op_code == WRITE) {
 				io_scheduler();
       }
-    } else {
+    } else if(com_iocb->count == 1) {
       com_iocb->head = com_iocb->tail = NULL;
       com_iocb->count--;
     }
@@ -111,19 +111,20 @@ void interrupt sys_call() {
       com_write(temp_iod->trans_buff, temp_iod->count);
       break;
     }
-  } else if(trm_iocb->event_flag) {
+  }
+	if(trm_iocb->event_flag) {
     trm_iocb->event_flag = 0;
     temp_iod = trm_iocb->head;
     if(trm_iocb->count > 1) {
       trm_iocb->head = trm_iocb->head->next;
       trm_iocb->count--;
       if(param_ptr->op_code == READ 
-	 || param_ptr->op_code == WRITE 
-	 || param_ptr->op_code == CLEAR 
-	 || param_ptr->op_code == GOTOXY) {
-	io_scheduler();
+				 || param_ptr->op_code == WRITE 
+				 || param_ptr->op_code == CLEAR 
+				 || param_ptr->op_code == GOTOXY) {
+				io_scheduler();
       }
-    } else {
+    } else if(trm_iocb->count == 1) {
       trm_iocb->head = trm_iocb->tail = NULL;
       trm_iocb->count--;
       unblockPCB(temp_iod->curr);
@@ -131,17 +132,17 @@ void interrupt sys_call() {
       temp_iod = trm_iocb->head;
       switch(param_ptr->op_code) {
       case(READ):
-	trm_read(temp_iod->trans_buff, temp_iod->count);
-	break;
+				trm_read(temp_iod->trans_buff, temp_iod->count);
+				break;
       case(WRITE):
-	trm_write(temp_iod->trans_buff, temp_iod->count);
-	break;
+				trm_write(temp_iod->trans_buff, temp_iod->count);
+				break;
       case(CLEAR):
 				trm_clear();
 				break;
       case(GOTOXY):
-	trm_gotoxy(0, 0);
-	break;
+				trm_gotoxy(0, 0);
+				break;
       }
     }
   } else if(running != NULL) {
@@ -156,7 +157,8 @@ void interrupt sys_call() {
       break;
     }
   }
-  running->top = MK_FP(cop_ss, cop_sp);
+	running->top = MK_FP(cop_ss, cop_sp);
+			while(1);
   dispatch();
 }
 

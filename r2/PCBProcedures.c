@@ -42,7 +42,7 @@ int freePCB(pcb *toFree) {
 //Sets up the inner values for a PCB structure
 void setupPCB(pcb *toSetup, char *name, int class, int priority) {
   int errorCode;
-  if(strcpy(name, "TERMINAL")==0) {
+  if(strcmp(name, "TERMINAL")==0) {
     allocatePCB(toSetup, COM_STACK_SIZE);
   } else {
     allocatePCB(toSetup, STACK_SIZE);
@@ -65,7 +65,7 @@ void setupPCB(pcb *toSetup, char *name, int class, int priority) {
   } else {
     errorCode = NOT_ENOUGH_MEM;
   }
-  printError(errorCode);
+  //printError(errorCode);
 }
 
 //PARMSGOOD

@@ -6,7 +6,7 @@ pcb *running;
 pcb_queue *ready, *blocked;
 
 void main() {
-  sys_init(MODULE_R4); //don't forget to change version
+  sys_init(MODULE_F); //don't forget to change version
   queueInit();
   r3Init();
   r6Init();
