@@ -58,8 +58,7 @@ void commhand() {
 				break;
       }
     }
-		if(!repl) break;
-  } while(1);
+  } while(repl);
   strcpy(exitMessage,"Goodbye\n");
   exitSize = strlen(exitMessage);
   sys_req(WRITE, TERMINAL, exitMessage, &exitSize);
@@ -67,6 +66,7 @@ void commhand() {
   empty_queue(ready);
   empty_queue(blocked);
   cleanUpHistory();
+	dispatch();
 }
 
 int eval(char *buffer) {
@@ -88,11 +88,9 @@ int eval(char *buffer) {
   functions[10] = &showPCB;         strcpy(commands[10], "showPCB");
   functions[11] = &showReady;       strcpy(commands[11], "showReady");
   functions[12] = &showBlocked;     strcpy(commands[12], "showBlocked");
-  functions[13] = &exec;            strcpy(commands[13], "exec");
-  functions[14] = &clearScreen;     strcpy(commands[14], "clear");
-  functions[15] = &load;	    			strcpy(commands[15], "load");
-  functions[16] = &terminate;	    	strcpy(commands[16], "terminate");
-  functions[17] = &changePrompt;    strcpy(commands[17], "prompt");
+  functions[13] = &load;	    			strcpy(commands[13], "load");
+  functions[14] = &terminate;	    	strcpy(commands[14], "terminate");
+  functions[15] = &changePrompt;    strcpy(commands[15], "prompt");
 	
   //functions go above here
   strcpy(print, buffer);
