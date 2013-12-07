@@ -46,20 +46,20 @@ void commhand() {
   strcpy(buffer, "Welcome to MPX!\n\n");
   maxSize = strlen(buffer);
   sys_req(WRITE, TERMINAL, buffer, &maxSize);
-  maxSize = 129;
   do { //Loops until exit command is given
+		maxSize = 129; //maxSize is rewritten each time by sys_req
     buffer[0] = '\0';
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
-		maxSize = 128;
     sys_req(READ, TERMINAL, buffer, &maxSize);
     tokenize(&numCommands, commands, buffer, ";");
     for(i=0; i<numCommands; i++) {
       if(strlen(commands[i]) > 1) {
 				repl = eval(commands[i]);
+				break;
       }
-      if(!repl) break;
     }
-  } while(repl);
+		if(!repl) break;
+  } while(1);
   strcpy(exitMessage,"Goodbye\n");
   exitSize = strlen(exitMessage);
   sys_req(WRITE, TERMINAL, exitMessage, &exitSize);

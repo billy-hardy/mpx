@@ -97,6 +97,7 @@ void process_io(iod *to_process, int device) {
 //Accesses the parameters placed on the stack by sys_req, and determines the interrupt reason
 void interrupt sys_call() {
 	static iod *temp_iod;
+	static pcb *temp;
 	cop_ss = _SS;
 	cop_sp = _SP;
 	running->top = MK_FP(cop_ss, cop_sp);
@@ -119,46 +120,20 @@ void interrupt sys_call() {
 		if(temp_iod != NULL) {
 			process_io(temp_iod, COM_PORT);
 		}
-		/*if(temp_iod != NULL) {
-			switch(temp_iod->request) {
-			case(READ):
-				com_read(temp_iod->trans_buff, temp_iod->count);
-				break;
-			case(WRITE):
-				com_write(temp_iod->trans_buff, temp_iod->count);
-				break;
-			}
-		}*/
   }
 	if(trm_iocb->event_flag == 1) {
     trm_iocb->event_flag = 0;
     temp_iod = trm_iocb->head;
 		trm_iocb->head = trm_iocb->head->next;
 		trm_iocb->count--;
-	       //find based on name
-	       //if found unblock
-		unblockPCB(temp_iod->curr);
+		temp = findPCB(temp_iod->name);
+		if(temp != NULL) {
+			unblockPCB(temp_iod->curr);
+		}
 		sys_free_mem(temp_iod);
-	       //	temp_iod = temp_iod->next;
 		if(trm_iocb->head != NULL) {
 			process_io(trm_iocb->head, TERMINAL);
 		}
-		/*if(temp_iod != NULL) {
-			switch(param_ptr->op_code) {
-			case(READ):
-				trm_read(temp_iod->trans_buff, temp_iod->count);
-				break;
-			case(WRITE):
-				trm_write(temp_iod->trans_buff, temp_iod->count);
-				break;
-			case(CLEAR):
-				trm_clear();
-				break;
-			case(GOTOXY):
-				trm_gotoxy(0,0);
-				break;
-			}
-		}*/
 	}
 	switch(param_ptr->op_code) {
 	case(IDLE):
@@ -175,33 +150,6 @@ void interrupt sys_call() {
 	}
   dispatch();
 }
-
-/*
-void interrupt sys_call() {
-  static params *param_ptr;
-  running->top = MK_FP(_SS, _SP);
-  //switch to temp stack
-  new_ss = FP_SEG(sys_stack);
-  new_sp = FP_OFF(sys_stack) + SYS_STACK_SIZE;
-  _SS = new_ss;
-  _SP = new_sp;
-  
-  param_ptr = (params*) (running->top+sizeof(context));
-  if(running != NULL) {
-    switch(param_ptr->op_code) {
-    case(IDLE):
-      running->state = READY;
-      insertPCB(running);
-      break;
-    case(EXIT):
-      freePCB(running);
-      running = NULL;
-      break;
-    }
-  }
-  dispatch();
-}*/
-
 
 //R3INIT
 //Author: Billy Hardy
@@ -235,35 +183,6 @@ void io_scheduler() {
 	insertIOD(device, temp_iod);
   if(device->count == 1) {
     process_io(temp_iod, param_ptr->device_id);
-    //int time_limit, tstart;
-    /*switch(param_ptr->device_id) {
-    case(TERMINAL):
-			switch(temp_iod->request) {
-      case(READ):
-				trm_read(temp_iod->trans_buff, temp_iod->count);
-				break;
-      case(WRITE):
-				trm_write(temp_iod->trans_buff, temp_iod->count);
-				break;
-      case(CLEAR):
-				trm_clear();
-				break;
-      case(GOTOXY):
-				trm_gotoxy(0,0);
-				break;
-      }
-      break;
-    case(COM_PORT):
-			switch(temp_iod->request) {
-      case(READ):
-				com_read(temp_iod->trans_buff, temp_iod->count);
-				break;
-      case(WRITE):
-				com_write(temp_iod->trans_buff, temp_iod->count);
-				break;
-      }
-      break;
-    }*/
   } 
   running->state = BLOCKED;
 	insertPCB(running);
@@ -291,8 +210,6 @@ void io_init() {
   com_iocb = (iocb *) sys_alloc_mem(sizeof(iocb));
   trm_open(&(trm_iocb->event_flag));
   com_open(&(com_iocb->event_flag), 1200);
-	//trm_iocb->event_flag = 1;
-	//com_iocb->event_flag = 1;
 }
 
 //IO_TEAR_DOWN
