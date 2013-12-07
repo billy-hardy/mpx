@@ -48,6 +48,11 @@ typedef struct {
 #define INVALID_PRIOR -6
 #define INVALID_CLASS -7
 #define SUSP_SYS_PROC -8
+#define RES_SYS_PROC -9
+#define CHG_PRI_SYS_PROC -10
+#define TERM_SYS_PROC -11
+#define INV_COM_ALIAS -12
+#define ALIAS_TOO_LONG -13
 
 //function prototypes
 //definePCB.c

@@ -9,7 +9,7 @@
 void allocatePCB(pcb *newPCB, int stack_size) {
   if(newPCB != NULL) {
     newPCB->bottom = (unsigned char *) sys_alloc_mem(stack_size*sizeof(unsigned char));
-    newPCB->top = newPCB->bottom + STACK_SIZE - sizeof(context);
+    newPCB->top = newPCB->bottom + stack_size - sizeof(context);
   }
 }
 
@@ -41,13 +41,12 @@ int freePCB(pcb *toFree) {
 //Output: void
 //Sets up the inner values for a PCB structure
 void setupPCB(pcb *toSetup, char *name, int class, int priority) {
-  int errorCode;
-  if(strcmp(name, "TERMINAL")==0) {
-    allocatePCB(toSetup, COM_STACK_SIZE);
-  } else {
-    allocatePCB(toSetup, STACK_SIZE);
-  }
   if(toSetup != NULL) {
+		if(strcmp(name, "TERMINAL")==0) {
+			allocatePCB(toSetup, COM_STACK_SIZE);
+		} else {
+			allocatePCB(toSetup, STACK_SIZE);
+		}
     if(paramsGood(name, class, priority)) {
       strcpy(toSetup->name, name);
       toSetup->class = class;
@@ -57,15 +56,13 @@ void setupPCB(pcb *toSetup, char *name, int class, int priority) {
       toSetup->memory_size = 0;
       toSetup->load_address = NULL;
       toSetup->exec_address = NULL;
-      errorCode = SUCCESS;
     } else {
       toSetup = NULL;
-      errorCode = INVALID_PARAMS;
+      printError(INVALID_PARAMS);
     }
   } else {
-    errorCode = NOT_ENOUGH_MEM;
+    printError(NOT_ENOUGH_MEM);
   }
-  //printError(errorCode);
 }
 
 //PARMSGOOD
@@ -254,11 +251,26 @@ void printError(int errorCode) {
     strcpy(buffer, "\nPCB Name already exists.  Names must be unique!\n\n");
     break;
   case SUSP_SYS_PROC:
-	strcpy(buffer, "\nUnable to suspend system procedures.\n\n");
-	break;
+		strcpy(buffer, "\nUnable to suspend system procedures.\n\n");
+		break;
+	case RES_SYS_PROC:
+		strcpy(buffer, "\nUnable to resume system procedures.\n\n");
+		break;
   case ERR_SUP_NAMLNG: //-114
     strcpy(buffer, "\nName too long for buffer.\n\n");
     break;
+	case CHG_PRI_SYS_PROC:
+		strcpy(buffer, "\nUnable to change priority of system procedures.\n\n");
+		break;
+  case TERM_SYS_PROC:
+		strcpy(buffer, "\nUnable to terminate system procedures.\n\n");
+		break;
+	/*case INV_COM_ALIAS:
+		strcpy(buffer, "\nGiven command to alias is invalid.\n\n");
+		break;
+  case ALIAS_TOO_LONG:
+		strcpy(buffer, "\nGiven alias is too long. Max size is 20 characters.\n\n");
+		break;*/
   case ERR_SUP_FILNFD: //-117
     strcpy(buffer, "\nFile not found!\n\n");
     break;
@@ -293,8 +305,8 @@ pcb *getNextRunning() {
     temp = ready->head;
     while(temp != NULL) {
       if(!temp->suspended) {
-	returnVal = temp;
-	break;
+				returnVal = temp;
+				break;
       }
       temp = temp->next;
     }

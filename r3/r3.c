@@ -69,83 +69,125 @@ void interrupt dispatch() {
   }
 }
 
+void process_io(iod *to_process, int device) {
+	if(to_process->request == READ) {
+		if (device == TERMINAL) {
+			trm_read(to_process->trans_buff, to_process->count);
+		} else if (device == COM_PORT) {
+			com_read(to_process->trans_buff, to_process->count);
+		}
+	} else if(to_process->request == WRITE) { //Writing
+		if (device == TERMINAL) {
+			trm_write(to_process->trans_buff, to_process->count);
+		} else if (device == COM_PORT) {
+			com_write(to_process->trans_buff, to_process->count);
+		}
+	} else if(to_process->request == CLEAR) { //clear
+		trm_clear();
+	} else if(to_process->request == GOTOXY) {
+		trm_gotoxy(0,0);
+	}
+}
+
+
 //SYS_CALL
 //Author: Billy Hardy
 //Input: void (interrupt)
 //Output: void
 //Accesses the parameters placed on the stack by sys_req, and determines the interrupt reason
 void interrupt sys_call() {
-  //static iocb *device;
-  static iod *temp_iod;
-  cop_ss = _SS;
-  cop_sp = _SP;
+	static iod *temp_iod;
+	cop_ss = _SS;
+	cop_sp = _SP;
+	running->top = MK_FP(cop_ss, cop_sp);
+  param_ptr = (params *) (running->top + sizeof(context));
+  //switch to temp stack
+  new_ss = FP_SEG(sys_stack);
+  new_sp = FP_OFF(sys_stack);
+	new_sp += SYS_STACK_SIZE;
+  _SS = new_ss;
+  _SP = new_sp;
+  trm_getc();
+  if(com_iocb->event_flag == 1) {
+    com_iocb->event_flag = 0;
+    temp_iod = com_iocb->head;
+		com_iocb->head = com_iocb->head->next;
+		com_iocb->count--;
+		unblockPCB(temp_iod->curr);
+		sys_free_mem(temp_iod);
+		temp_iod = temp_iod->next;
+		if(temp_iod != NULL) {
+			process_io(temp_iod, COM_PORT);
+		}
+		/*if(temp_iod != NULL) {
+			switch(temp_iod->request) {
+			case(READ):
+				com_read(temp_iod->trans_buff, temp_iod->count);
+				break;
+			case(WRITE):
+				com_write(temp_iod->trans_buff, temp_iod->count);
+				break;
+			}
+		}*/
+  }
+	if(trm_iocb->event_flag == 1) {
+    trm_iocb->event_flag = 0;
+    temp_iod = trm_iocb->head;
+		trm_iocb->head = trm_iocb->head->next;
+		trm_iocb->count--;
+	       //find based on name
+	       //if found unblock
+		unblockPCB(temp_iod->curr);
+		sys_free_mem(temp_iod);
+	       //	temp_iod = temp_iod->next;
+		if(trm_iocb->head != NULL) {
+			process_io(trm_iocb->head, TERMINAL);
+		}
+		/*if(temp_iod != NULL) {
+			switch(param_ptr->op_code) {
+			case(READ):
+				trm_read(temp_iod->trans_buff, temp_iod->count);
+				break;
+			case(WRITE):
+				trm_write(temp_iod->trans_buff, temp_iod->count);
+				break;
+			case(CLEAR):
+				trm_clear();
+				break;
+			case(GOTOXY):
+				trm_gotoxy(0,0);
+				break;
+			}
+		}*/
+	}
+	switch(param_ptr->op_code) {
+	case(IDLE):
+		running->state = READY;
+		insertPCB(running);
+		break;
+	case(EXIT):
+		freePCB(running);
+		running = NULL;
+		break;
+	default:
+		io_scheduler();
+		break;
+	}
+  dispatch();
+}
+
+/*
+void interrupt sys_call() {
+  static params *param_ptr;
+  running->top = MK_FP(_SS, _SP);
   //switch to temp stack
   new_ss = FP_SEG(sys_stack);
   new_sp = FP_OFF(sys_stack) + SYS_STACK_SIZE;
   _SS = new_ss;
   _SP = new_sp;
-  trm_getc();
-  param_ptr = (params *) (running->top+sizeof(context));
-  if(com_iocb->event_flag == 1) {
-    com_iocb->event_flag = 0;
-    temp_iod = com_iocb->head;
-    if(com_iocb->count > 1) {
-      com_iocb->head = com_iocb->head->next;
-      com_iocb->count--;
-      if(param_ptr->op_code == READ 
-				 || param_ptr->op_code == WRITE) {
-				io_scheduler();
-      }
-    } else if(com_iocb->count == 1) {
-      com_iocb->head = com_iocb->tail = NULL;
-      com_iocb->count--;
-    }
-    unblockPCB(temp_iod->curr);
-    sys_free_mem(temp_iod);
-    temp_iod = com_iocb->head;
-    switch(param_ptr->op_code) {
-    case(READ):
-      com_read(temp_iod->trans_buff, temp_iod->count);
-      break;
-    case(WRITE):
-      com_write(temp_iod->trans_buff, temp_iod->count);
-      break;
-    }
-  }
-	if(trm_iocb->event_flag) {
-    trm_iocb->event_flag = 0;
-    temp_iod = trm_iocb->head;
-    if(trm_iocb->count > 1) {
-      trm_iocb->head = trm_iocb->head->next;
-      trm_iocb->count--;
-      if(param_ptr->op_code == READ 
-				 || param_ptr->op_code == WRITE 
-				 || param_ptr->op_code == CLEAR 
-				 || param_ptr->op_code == GOTOXY) {
-				io_scheduler();
-      }
-    } else if(trm_iocb->count == 1) {
-      trm_iocb->head = trm_iocb->tail = NULL;
-      trm_iocb->count--;
-      unblockPCB(temp_iod->curr);
-      sys_free_mem(temp_iod);
-      temp_iod = trm_iocb->head;
-      switch(param_ptr->op_code) {
-      case(READ):
-				trm_read(temp_iod->trans_buff, temp_iod->count);
-				break;
-      case(WRITE):
-				trm_write(temp_iod->trans_buff, temp_iod->count);
-				break;
-      case(CLEAR):
-				trm_clear();
-				break;
-      case(GOTOXY):
-				trm_gotoxy(0, 0);
-				break;
-      }
-    }
-  } else if(running != NULL) {
+  
+  param_ptr = (params*) (running->top+sizeof(context));
+  if(running != NULL) {
     switch(param_ptr->op_code) {
     case(IDLE):
       running->state = READY;
@@ -157,10 +199,9 @@ void interrupt sys_call() {
       break;
     }
   }
-	running->top = MK_FP(cop_ss, cop_sp);
-			while(1);
   dispatch();
-}
+}*/
+
 
 //R3INIT
 //Author: Billy Hardy
@@ -175,8 +216,8 @@ void r3Init() {
 //Author: Billy Hardy
 // TODO: Finish Comment
 void io_scheduler() {
-  static iod *new_iod;
   static iocb *device;
+	static iod *temp_iod;
   switch(param_ptr->device_id) {
   case(TERMINAL):
     device = trm_iocb;
@@ -185,62 +226,47 @@ void io_scheduler() {
     device = com_iocb;
     break;
   }
-  new_iod = (iod *)sys_alloc_mem(sizeof(iod));
-  new_iod->curr = running;
-  strcpy(new_iod->name, running->name);
-  new_iod->trans_buff = param_ptr->buff_addr;
-  new_iod->count = param_ptr->count_addr;
-  new_iod->request = param_ptr->op_code;
-  insertIOD(device, new_iod);
-  if(device->count == 0) {
-    int err_code, time_limit, tstart;
-    switch(param_ptr->device_id) {
+  temp_iod = (iod *)sys_alloc_mem(sizeof(iod));
+  temp_iod->curr = running;
+  strcpy(temp_iod->name, running->name);
+  temp_iod->trans_buff = param_ptr->buf_p;
+  temp_iod->count = param_ptr->count_p;
+  temp_iod->request = param_ptr->op_code;
+	insertIOD(device, temp_iod);
+  if(device->count == 1) {
+    process_io(temp_iod, param_ptr->device_id);
+    //int time_limit, tstart;
+    /*switch(param_ptr->device_id) {
     case(TERMINAL):
-      switch(new_iod->request) {
+			switch(temp_iod->request) {
       case(READ):
-				trm_read(new_iod->trans_buff, new_iod->count);
+				trm_read(temp_iod->trans_buff, temp_iod->count);
 				break;
       case(WRITE):
-				trm_write(new_iod->trans_buff, new_iod->count);
+				trm_write(temp_iod->trans_buff, temp_iod->count);
 				break;
       case(CLEAR):
 				trm_clear();
 				break;
       case(GOTOXY):
-				trm_gotoxy(0, 0);
+				trm_gotoxy(0,0);
 				break;
       }
       break;
     case(COM_PORT):
-      switch(new_iod->request) {
+			switch(temp_iod->request) {
       case(READ):
-				err_code = com_read(new_iod->trans_buff, new_iod->count);
-				time_limit = RD_TIME_LIMIT;
-				if(err_code != 0) {
-					printf("error reading!\n");
-					printf("error code = %d\n", err_code);
-				}
+				com_read(temp_iod->trans_buff, temp_iod->count);
 				break;
       case(WRITE):
-				err_code = com_write(new_iod->trans_buff, new_iod->count);
-				time_limit = WR_TIME_LIMIT;
-				if(err_code != 0) {
-					printf("error writing!\n");
-					printf("error code = %d\n", err_code);
-				}
+				com_write(temp_iod->trans_buff, temp_iod->count);
 				break;
       }
       break;
-    }
-    device->event_flag = 0;
-    tstart = time(NULL);
-    while(device->event_flag == 0) {
-      if((time(NULL)-tstart) > time_limit) {
-				printf("TIMEOUT: event flag not set\n");
-      }
-    }
-  }
+    }*/
+  } 
   running->state = BLOCKED;
+	insertPCB(running);
 }
 
 //INSERTIOD
@@ -252,23 +278,26 @@ void insertIOD(iocb *device, iod *to_insert) {
   } else {
     device->tail->next = to_insert;
     device->tail = to_insert;
+		to_insert->next = NULL;
   }
   device->count++;
 }
 
 //IO_INIT
 //Author: Billy Hardy
-//TODO: FINISH COMMENT
+//TODO: allocates iocbs for ports and opens ports
 void io_init() {
   trm_iocb = (iocb *) sys_alloc_mem(sizeof(iocb));
   com_iocb = (iocb *) sys_alloc_mem(sizeof(iocb));
   trm_open(&(trm_iocb->event_flag));
   com_open(&(com_iocb->event_flag), 1200);
+	//trm_iocb->event_flag = 1;
+	//com_iocb->event_flag = 1;
 }
 
 //IO_TEAR_DOWN
 //Author: Billy Hardy
-//TODO: FINISH COMMENT
+//Closes all ports and empties devices' iocbs.
 void io_tear_down() {
   trm_close();
   com_close();
@@ -280,7 +309,8 @@ void io_tear_down() {
 
 //EMPTY_IOCB
 //Author: Billy Hardy
-//TODO: FINISH COMMENT
+//TODO: empties the iocb and frees the memory
+//        associated with each iod.
 void empty_iocb(iocb *to_clear) {
   iod *curr;
   while(to_clear->count > 0) {

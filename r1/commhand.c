@@ -50,6 +50,7 @@ void commhand() {
   do { //Loops until exit command is given
     buffer[0] = '\0';
     sys_req(WRITE, TERMINAL, prompt, &promptSize);
+		maxSize = 128;
     sys_req(READ, TERMINAL, buffer, &maxSize);
     tokenize(&numCommands, commands, buffer, ";");
     for(i=0; i<numCommands; i++) {
@@ -92,7 +93,7 @@ int eval(char *buffer) {
   functions[15] = &load;	    			strcpy(commands[15], "load");
   functions[16] = &terminate;	    	strcpy(commands[16], "terminate");
   functions[17] = &changePrompt;    strcpy(commands[17], "prompt");
-
+	
   //functions go above here
   strcpy(print, buffer);
   tokenize(&argc, argv, buffer, " \t\n");

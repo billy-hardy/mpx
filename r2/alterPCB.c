@@ -74,8 +74,12 @@ int resumePCB(int argc, char **argv) { //Handle the running process  ** Does thi
     invalidArgs(argv[0]);
   } else {
 	if((tempPCB = findPCB(argv[1])) != NULL){
-		tempPCB->suspended = FALSE;
-		errorCode = SUCCESS;
+		if(tempPCB->class != SYS) {
+			tempPCB->suspended = FALSE;
+			errorCode = SUCCESS;
+		} else {
+			errorCode = RES_SYS_PROC;
+		}
 	}
 	else
 		errorCode = PCB_NOT_FOUND;
@@ -102,17 +106,21 @@ int setPCBPriority(int argc, char **argv) {
     invalidArgs(argv[0]);
   } else {
 		if((tempPCB = findPCB(argv[1])) != NULL) {
-		processVal =  priorityCheck(argv[2]);
-			if(processVal != INVALID_PRIOR) {
-				if(tempPCB->state == BLOCKED) {
-					tempPCB->priority = processVal;
+			if(tempPCB->class != SYS) {
+				processVal =  priorityCheck(argv[2]);
+				if(processVal != INVALID_PRIOR) {
+					if(tempPCB->state == BLOCKED) {
+						tempPCB->priority = processVal;
+					} else {
+						removePCB(tempPCB);
+						tempPCB->priority = processVal;
+						insertPCB(tempPCB);
+					}
 				} else {
-					removePCB(tempPCB);
-					tempPCB->priority = processVal;
-					insertPCB(tempPCB);
+					errorCode = INVALID_PRIOR;		
 				}
 			} else {
-				errorCode = INVALID_PRIOR;		
+				errorCode = CHG_PRI_SYS_PROC;
 			}
 		} else {
 			errorCode = PCB_NOT_FOUND;

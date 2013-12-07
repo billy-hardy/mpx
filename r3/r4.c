@@ -40,10 +40,14 @@ int terminate(int argc, char **argv){
 	//check arguments
 	if(argc == 2){
 		tempPCB = findPCB(argv[1]);
-		if(tempPCB != NULL)
-			terminateMemory(tempPCB);
-		else
-			printError(PCB_NOT_FOUND);
+		if(tempPCB->class != SYS) {
+			if(tempPCB != NULL)
+				terminateMemory(tempPCB);
+			else
+				printError(PCB_NOT_FOUND);
+		} else {
+			printError(TERM_SYS_PROC);
+		}
 	}
 	else
 		invalidArgs(argv[0]);
@@ -86,18 +90,15 @@ void loadProgram(char *processName, int priorityVal){
 				cPCB->DS = _DS;
 				cPCB->ES = _ES;
 				insertPCB(programPCB);  //If here, Program can be inserted into the ready queue w/ suspended status.
-			}
-			else{//Program Load Error
+			} else{//Program Load Error
 				printError(sysLoadProgramReturnVal);
 				return;					
 			}				
-		}
-		else{//Check Program Error
+		} else{//Check Program Error
 			printError(sysCheckReturnVal);
 			return;
 		}
-	}
-	else{//Duplicated PCB Name Error
+	} else{//Duplicated PCB Name Error
 		printError(DUP_PCB);
 		return;
 	}

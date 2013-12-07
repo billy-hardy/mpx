@@ -1,3 +1,6 @@
+#ifndef R3_H
+#define R3_H
+
 #include <dos.h>
 #include <time.h>
 #include "r2.h"
@@ -34,8 +37,8 @@ void terminateMemory(pcb *);
 typedef struct params {
   int op_code;
   int device_id;
-  unsigned char *buff_addr;
-  int *count_addr;
+  char *buf_p;
+  int *count_p;
 } params;
 
 //r6 stuff
@@ -63,4 +66,6 @@ void insertIOD(iocb *, iod *);
 void io_init();
 void io_tear_down();
 void empty_iocb(iocb *);
+void process_io(iod *to_process, int device);
 
+#endif

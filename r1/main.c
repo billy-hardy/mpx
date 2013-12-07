@@ -6,26 +6,35 @@ pcb *running;
 pcb_queue *ready, *blocked;
 
 void main() {
-  sys_init(MODULE_F); //don't forget to change version
+  sys_init(MODULE_F);
   queueInit();
   r3Init();
   r6Init();
+	
   io_init();
+	
   dispatch();
   queueFree();
+	
   io_tear_down();
+	
   sys_exit();
 }
 
 void r6Init() {
-  pcb *commhan;
+  pcb *commhan, *idle;
   context *con_commhan;
   //create commhand and idle processes
   commhan = sys_alloc_mem(sizeof(pcb));
   setupPCB(commhan, "TERMINAL", SYS, 127);
   con_commhan = (context *) commhan->top;
   load_procs(commhan, con_commhan, &commhand);
+	commhan->suspended = FALSE;
   loadProgram("IDLE", -128);
+	//eval("load IDLE -128");
+	idle = findPCB("IDLE");
+	idle->suspended = FALSE;
+	idle->class = SYS;
 }
 
 

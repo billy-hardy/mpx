@@ -72,7 +72,7 @@ int com_close() {
 
     disable();
     picMaskVal = inportb(PIC_MASK);
-    picMaskVal = picMaskVal | 0x10; //what should this be???
+    picMaskVal = picMaskVal | 0x10; 
     enable();
 
     outportb(COM1_MS, 0x00); //load 0's into modem status register
